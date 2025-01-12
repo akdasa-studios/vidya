@@ -31,7 +31,7 @@ erDiagram
         string name "Role name"
         string description "Role description"
         string tenantId FK "Tenant ID"
-        string organizationId FK "Organization ID"
+        opt[string] schoolId FK "School ID"
         string[] permissions "List of permissions"
     }
 
@@ -67,7 +67,6 @@ erDiagram
 *Lession* is a part of a course. Each course can have multiple lessons. For example, "Chapter 1", "Chapter 2" etc can be lessons in the "Bhagavad Gita" course. Each lesson can have a title and content.
 
 *Enrollment* is a record that links a user to a group. Each enrollment can have a status like "active", "inactive", "graduated" etc. Each enrollment can have a number of lessons opened.
-
 
 ```mermaid
 erDiagram
