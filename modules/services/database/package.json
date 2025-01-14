@@ -1,0 +1,18 @@
+{
+  "name": "@vidya/database",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:entities": "npm --workspace @vidya/entities run build",
+    "migrate": "npm run build:entities && npm run build && npx typeorm migration:run -d ./dist/main.js"
+  },
+  "author": "Advaita Kṛṣṇa Dāsa",
+  "description": "Database service for Vidya",
+  "dependencies": {
+    "@vidya/entities": "^1.0.0",
+    "pg": "^8.13.1",
+    "typeorm": "^0.3.20",
+    "typescript": "^5.1.3"
+  }
+}

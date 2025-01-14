@@ -1,0 +1,8 @@
+{
+  "name": "vidya",
+  "private": true,
+  "workspaces": [
+    "modules/libs/*",
+    "modules/services/*"
+  ]
+}
