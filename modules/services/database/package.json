@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "sudo service postgresql start && npm run migrate && sleep infinity",
     "build": "tsc",
     "build:entities": "npm --workspace @vidya/entities run build",
     "migrate": "npm run build:entities && npm run build && npx typeorm migration:run -d ./dist/main.js"
