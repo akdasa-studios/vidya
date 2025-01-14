@@ -13,8 +13,8 @@
 	},
 
 	"forwardPorts": [
-		"80:8000",
-		5432
+		80,        // gateway
+		5432       // database
 	],
 
 	"customizations": {
