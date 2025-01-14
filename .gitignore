@@ -1,1 +1,2 @@
-.data/
+.data/services/gateway/logs/*
+.data/services/gateway/temp/*
