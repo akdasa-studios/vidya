@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Nginx",
+            "type": "shell",
+            "args": [
+                "-p", "${workspaceFolder}/",
+                "-c", "${workspaceFolder}/modules/services/gateway/nginx.conf",
+                "-g", "daemon off;"
+            ],
+            "command": "nginx",
+            "problemMatcher": [],
+            "isBackground": true,
+            "icon": {
+                "id": "server",
+                "color": "terminal.ansiGreen"
+            },
+        }
+    ]
+}

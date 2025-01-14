@@ -12,7 +12,18 @@
     	}
 	},
 
-	"forwardPorts": [80, 5432]
+	"forwardPorts": [
+		"80:8000",
+		5432
+	],
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"actboy168.tasks"
+			]
+		}
+	}
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
