@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Service: Api",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "start:dev"
+            ],
+            "cwd": "${workspaceFolder}/modules/services/api",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Service: Database",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "start"
+            ],
+            "cwd": "${workspaceFolder}/modules/services/database",
+        }
+    ]
+}
