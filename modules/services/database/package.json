@@ -6,7 +6,9 @@
     "start": "sudo service postgresql start && npm run migrate && sleep infinity",
     "build": "tsc",
     "build:entities": "npm --workspace @vidya/entities run build",
-    "migrate": "npm run build:entities && npm run build && npx typeorm migration:run -d ./dist/main.js"
+    "migrate": "npm run build:entities && npm run build && npx typeorm migration:run -d ./dist/main.js",
+    "migrate:revert": "npm run build:entities && npm run build && npx typeorm migration:revert -d ./dist/main.js"
+
   },
   "author": "Advaita Kṛṣṇa Dāsa",
   "description": "Database service for Vidya",
