@@ -18,7 +18,7 @@ export class Group {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: false})
+  @Column({ nullable: false })
   courseId: string;
 
   @ManyToOne(() => Course)
