@@ -5,6 +5,7 @@ export enum LearningType {
   Group = 'group',
 }
 
+// TODO: Add relation to School
 @Entity({ name: 'courses' })
 export class Course {
   @PrimaryGeneratedColumn('uuid')
