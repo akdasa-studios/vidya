@@ -1,4 +1,5 @@
 import { Organization } from './organization';
 import { School } from './school';
-export const Entities = [Organization, School];
-export { Organization, School };
+import { Course } from './course';
+export { Organization, School, Course };
+export const Entities = [Organization, School, Course];
