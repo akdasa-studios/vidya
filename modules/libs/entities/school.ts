@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Organization } from './organization'; // Assuming you have an Organization entity
+import { Organization } from './organization';
 
 @Entity({ name: 'schools' })
 export class School {
@@ -8,7 +8,7 @@ export class School {
 
   @Column({nullable: false})
   name: string;
- 
+
   @Column({nullable: false})
   organizationId: string;
 

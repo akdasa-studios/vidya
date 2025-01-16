@@ -8,9 +8,9 @@ export class CreateSchoolTable1736961079489
           CREATE TABLE schools (
             id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
             name VARCHAR NOT NULL,
-            organizationId UUID NOT NULL,
+            "organizationId" UUID NOT NULL,
             CONSTRAINT fk_organization
-              FOREIGN KEY(organizationId) 
+              FOREIGN KEY("organizationId")
               REFERENCES organizations(id)
           );
         `);
