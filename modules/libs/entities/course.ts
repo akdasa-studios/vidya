@@ -25,7 +25,7 @@ export class Course {
   })
   learningType: LearningType;
 
-  @Column({nullable: false})
+  @Column({ nullable: false })
   schoolId: string;
 
   @ManyToOne(() => School)
