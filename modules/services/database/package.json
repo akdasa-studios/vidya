@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "sudo service postgresql start && npm run migrate && sleep infinity",
+    "start": "sudo service postgresql start && npm run migration:run && sleep infinity",
     "migration:create": "npm run build && read -p 'Enter migration name: ' name && npx typeorm migration:create ./migrations/$name",
     "migration:revert": "npm run build && npx typeorm migration:revert -d ./dist/main.js",
     "migration:run":    "npm run build && npx typeorm migration:run -d ./dist/main.js"
