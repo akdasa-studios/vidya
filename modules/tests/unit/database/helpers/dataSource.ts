@@ -20,9 +20,6 @@ const ensureDatabaseExists = async (config: { host: string; port: number; userna
     const result = await client.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [database]);
     if (result.rowCount === 0) {
       await client.query(`CREATE DATABASE "${database}"`);
-      console.log(`Database "${database}" created successfully.`);
-    } else {
-      console.log(`Database "${database}" already exists.`);
     }
   } catch (error) {
     console.error('Error creating database:', error);
@@ -32,12 +29,13 @@ const ensureDatabaseExists = async (config: { host: string; port: number; userna
 };
 
 beforeEach(async () => {
+  const databaseName = "test_" + process.env.JEST_WORKER_ID;
   await ensureDatabaseExists({
     host: 'localhost',
     port: 5432,
     username: 'postgres',
     password: 'postgres',
-    database: 'test',
+    database: databaseName,
   })
 
   dataSource = new DataSource({
@@ -46,8 +44,7 @@ beforeEach(async () => {
     port: 5432,
     username: 'postgres',
     password: 'postgres',
-    database: 'test',
-    dropSchema: true,
+    database: databaseName,
     entities: Entities,
     migrations: Migrations,
     logging: false,
@@ -57,6 +54,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  await dataSource.dropDatabase();
   await dataSource.destroy();
 });
 

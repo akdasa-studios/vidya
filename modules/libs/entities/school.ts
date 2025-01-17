@@ -6,13 +6,17 @@ export class School {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({nullable: false})
+  @Column({ nullable: false })
   name: string;
 
-  @Column({nullable: false})
+  @Column({ nullable: false })
   organizationId: string;
 
-  @ManyToOne(() => Organization)
+  @ManyToOne(
+    () => Organization,
+    org => org.schools,
+    { nullable: false }
+  )
   @JoinColumn({ name: 'organizationId' })
   organization: Organization;
 }

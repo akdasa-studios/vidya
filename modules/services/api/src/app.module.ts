@@ -15,6 +15,7 @@ import { OrganizationsService } from './organizations.service';
       database: 'postgres',
       entities: Entities,
       autoLoadEntities: true,
+      logging: true, // TODO: configure by environment variable
     }),
     TypeOrmModule.forFeature([Organization]),
   ],

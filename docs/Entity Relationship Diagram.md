@@ -15,18 +15,18 @@ Here are the entity relationship diagrams for the Viraha project. The diagrams a
 ```mermaid
 erDiagram
     Organization {
-        string(12) id PK
+        uuid id PK
         string name
     }
 
     School {
-        string(12) id PK
+        uuid id PK
         string name
         string organizationId FK
     }
 
     Role {
-        string(12) id PK
+        uuid id PK
         string name
         string description
         string organizationId
@@ -35,7 +35,7 @@ erDiagram
     }
 
     User {
-        string(12) id PK
+        uuid id PK
         string(99) email UK
         string name
         enum status
@@ -44,7 +44,7 @@ erDiagram
 
 
     UserRole {
-        string(12) id PK
+        uuid id PK
         string userId FK
         string roleId FK
     }
@@ -70,14 +70,15 @@ erDiagram
 ```mermaid
 erDiagram
     Course {
-        string(12) id PK
+        uuid id PK
         string name UK
         string description
+        string schoolId FK
         enum learningType "individual/group"
     }
 
     Group {
-        string(12) id PK
+        uuid id PK
         string name UK "Group name"
         string description "Group description"
         string courseId FK "Course ID"
@@ -86,7 +87,7 @@ erDiagram
     }
 
     Enrollment {
-        string(12) id PK
+        uuid id PK
         string userId FK "User ID"
         string roleId FK "Role ID"
         opt[string] groupId FK "Group ID"
@@ -96,7 +97,7 @@ erDiagram
     }
 
     Lesson {
-        string(12) id PK
+        uuid id PK
         string courseId FK "Course ID"
         int lessonNumber UK "Lesson order"
         string title UK "Lesson title"
