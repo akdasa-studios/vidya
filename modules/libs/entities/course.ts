@@ -1,11 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { School } from './school';
 
 export enum LearningType {
   Individual = 'individual',
   Group = 'group',
 }
 
-// TODO: Add relation to School
+
 @Entity({ name: 'courses' })
 export class Course {
   @PrimaryGeneratedColumn('uuid')
@@ -23,4 +24,11 @@ export class Course {
     default: LearningType.Individual,
   })
   learningType: LearningType;
+
+  @Column({nullable: false})
+  schoolId: string;
+
+  @ManyToOne(() => School)
+  @JoinColumn({ name: 'schoolId' })
+  school: School;
 }
