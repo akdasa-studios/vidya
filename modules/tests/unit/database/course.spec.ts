@@ -45,10 +45,9 @@ describe('Course', () => {
     expect(result.learningType).toBe(LearningType.Individual);
   });
 
-  it.each([
-    LearningType.Individual,
-    LearningType.Group
-  ])('should set learningType to "%s"', async (value: LearningType) => {
+  it.each(
+    Object.values(LearningType),
+  )('should set learningType to "%s"', async (value: LearningType) => {
     // Arrange
     const course = new Course();
     course.name = 'test course';

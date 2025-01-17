@@ -51,11 +51,9 @@ describe('Group', () => {
     expect(result.status).toBe(GroupStatus.Pending);
   });
 
-  it.each([
-    GroupStatus.Pending,
-    GroupStatus.Active,
-    GroupStatus.Inactive
-  ])('should set status to "%s"', async (value: GroupStatus) => {
+  it.each(
+    Object.values(GroupStatus),
+  )('should set status to "%s"', async (value: GroupStatus) => {
     // Arrange
     const group = new Group();
     group.name = 'test group';
