@@ -17,6 +17,6 @@ export class School {
     org => org.schools,
     { nullable: false }
   )
-  @JoinColumn({ name: 'organizationId' })
+  @JoinColumn()
   organization: Organization;
 }

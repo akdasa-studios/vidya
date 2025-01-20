@@ -11,8 +11,20 @@
    			"packages": "nginx"
     	}
 	},
+  "postCreateCommand": "./bootstrap.sh",
 
-	"forwardPorts": [80, 8001, 5432]
+	"forwardPorts": [
+		80,
+		8001,
+		5432
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				// "Orta.vscode-jest"
+			]
+		}
+	}
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",

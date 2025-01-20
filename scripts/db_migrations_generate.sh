@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# ---------------------------------------------------------------------------- #
+#                                     Doc                                      #
+# ---------------------------------------------------------------------------- #
+
+echo "
+# ---------------------------------------------- #
+#               Creating Migration               #
+# ---------------------------------------------- #
+
+Enter the name of the migration you want to create.
+Please use snake_case for the migration name.
+Example: migration_example
+"
+
+
+# ---------------------------------------------------------------------------- #
+#                                     Task                                     #
+# ---------------------------------------------------------------------------- #
+
+echo "Migration Name: "
+read name
+npx --workspace @vidya/database typeorm migration:generate ./migrations/$name -d ./main.ts
+echo "// Add your migration here ^^" >> ./modules/services/database/index.ts
