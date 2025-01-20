@@ -23,7 +23,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				// "Orta.vscode-jest"
+				"yzhang.markdown-all-in-one",
+				"TakumiI.markdowntable"
 			]
 		}
 	}
