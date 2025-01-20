@@ -1,6 +1,6 @@
 import { Organization, School, Course, LearningType } from "@vidya/entities";
 import { QueryFailedError } from "typeorm";
-import { dataSource } from "./helpers/dataSource";
+import { dataSource } from "../helpers/dataSource";
 
 describe('Course', () => {
   let org: Organization;

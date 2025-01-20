@@ -24,7 +24,13 @@
 		"vscode": {
 			"extensions": [
 				"yzhang.markdown-all-in-one",
-				"TakumiI.markdowntable"
+				"TakumiI.markdowntable",
+				"firsttris.vscode-jest-runner",
+				"Orta.vscode-jest",
+        "bierner.markdown-mermaid",
+        "github.vscode-pull-request-github",
+        "stackbreak.comment-divider",
+        "cweijan.vscode-postgresql-client2"
 			]
 		}
 	}
