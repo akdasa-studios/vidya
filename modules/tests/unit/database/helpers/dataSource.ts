@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
 import { Entities } from '@vidya/entities';
-import { Migrations } from '@vidya/database';
 import { Client} from 'pg';
 
 let dataSource: DataSource;
@@ -46,10 +45,13 @@ beforeEach(async () => {
     password: 'postgres',
     database: databaseName,
     entities: Entities,
-    migrations: Migrations,
+    migrations: [
+      "/workspaces/vidya/modules/services/database/migrations/*.ts"
+    ],
     logging: false,
   });
   await dataSource.initialize();
+  await dataSource.showMigrations();
   await dataSource.runMigrations();
 });
 
