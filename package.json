@@ -5,12 +5,5 @@
     "modules/libs/*",
     "modules/services/*",
     "modules/tests/unit/*"
-  ],
-  "scripts": {
-    "build:all": "npm run build --workspaces --if-present",
-    "test:all": "npm run test --workspaces --if-present",
-
-    "database:migrations:create": "npm run --workspace @vidya/database migration:create",
-    "database:migrations:run": "npm run --workspace @vidya/database migration:run"
-  }
+  ]
 }
