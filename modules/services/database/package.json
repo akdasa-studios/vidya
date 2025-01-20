@@ -1,0 +1,20 @@
+{
+  "name": "@vidya/database",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "sudo service postgresql start && npm run migration:run && sleep infinity",
+    "migration:create": "npm run build && read -p 'Enter migration name: ' name && npx typeorm migration:create ./migrations/$name",
+    "migration:revert": "npm run build && npx typeorm migration:revert -d ./dist/main.js",
+    "migration:run":    "npm run build && npx typeorm migration:run -d ./dist/main.js"
+  },
+  "author": "Advaita Kṛṣṇa Dāsa",
+  "description": "Database service for Vidya",
+  "dependencies": {
+    "@vidya/entities": "^1.0.0",
+    "pg": "^8.13.1",
+    "typeorm": "^0.3.20",
+    "typescript": "^5.1.3"
+  }
+}
