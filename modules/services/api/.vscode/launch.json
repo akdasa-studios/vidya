@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "name": "⚙️ Services :: Api",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "start:debug"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+      "console": "integratedTerminal"
+    }
+  ]
+}

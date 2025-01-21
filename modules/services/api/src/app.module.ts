@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Entities, Organization } from '@vidya/entities';
 import { OrganizationsService } from './organizations.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,8 +18,9 @@ import { OrganizationsService } from './organizations.service';
       logging: true, // TODO: configure by environment variable
     }),
     TypeOrmModule.forFeature([Organization]),
+    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [OrganizationsService],
 })
 export class AppModule {}

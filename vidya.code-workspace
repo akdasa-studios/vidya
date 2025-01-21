@@ -18,7 +18,7 @@
     },
     {
       "name": "📦 Libs :: Protocol",
-      "path": "./modules/libs/Protocol"
+      "path": "./modules/libs/protocol"
     },
     {
       "name": "⚙️ Services :: Api",
@@ -35,6 +35,10 @@
 		{
       "name": "🧪 Tests :: Unit :: Database",
 			"path": "./modules/tests/unit/database"
+		},
+		{
+      "name": "🧪 Tests :: Integration :: Api",
+			"path": "./modules/tests/integration/api"
 		},
     {
       "name": "📚 Docs",
