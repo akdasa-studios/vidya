@@ -4,6 +4,7 @@
   "workspaces": [
     "modules/libs/*",
     "modules/services/*",
-    "modules/tests/unit/*"
+    "modules/tests/unit/*",
+    "modules/tests/integration/*"
   ]
 }

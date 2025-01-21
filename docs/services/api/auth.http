@@ -1,0 +1,19 @@
+### Send authentication request
+
+POST http://localhost:8001/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "login": "test@example.com"
+}
+
+
+### Send authentication request with code
+
+POST http://localhost:8001/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "login": "test@example.com",
+    "code": "123456"
+}
