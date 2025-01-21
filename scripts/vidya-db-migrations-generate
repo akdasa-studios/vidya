@@ -22,4 +22,3 @@ Example: migration_example
 echo "Migration Name: "
 read name
 npx --workspace @vidya/database typeorm migration:generate ./migrations/$name -d ./main.ts
-echo "// Add your migration here ^^" >> ./modules/services/database/index.ts
