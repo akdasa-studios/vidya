@@ -13,8 +13,8 @@
     }
   },
   "include": [
-    "*.ts"
-, "specs/course.spec.ts", "specs/group.spec.ts", "specs/lesson.spec.ts", "specs/organization.spec.ts", "specs/school.spec.ts"  ],
+    "specs/*.ts",
+  ],
   "exclude": [
     "node_modules"
   ]
