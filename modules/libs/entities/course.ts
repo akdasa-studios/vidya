@@ -21,6 +21,7 @@ export class Course {
   @Column({
     type: 'enum',
     enum: LearningType,
+    enumName: 'courseLearningType',
     default: LearningType.Individual,
   })
   learningType: LearningType;
@@ -29,6 +30,6 @@ export class Course {
   schoolId: string;
 
   @ManyToOne(() => School)
-  @JoinColumn({ name: 'schoolId' })
+  @JoinColumn()
   school: School;
 }

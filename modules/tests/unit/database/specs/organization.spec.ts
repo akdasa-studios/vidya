@@ -1,5 +1,5 @@
 import { Organization, School } from "@vidya/entities";
-import { dataSource } from "./helpers/dataSource";
+import { dataSource } from "../helpers/dataSource";
 
 describe('Organization', () => {
   test('should create an organization', async () => {

@@ -22,7 +22,7 @@ export class Group {
   courseId: string;
 
   @ManyToOne(() => Course)
-  @JoinColumn({ name: 'courseId' })
+  @JoinColumn()
   course: Course;
 
   @Column({ nullable: true })
@@ -32,6 +32,7 @@ export class Group {
     type: 'enum',
     enum: GroupStatus,
     default: GroupStatus.Pending,
+    enumName: 'groupStatus',
   })
   status: GroupStatus;
 }

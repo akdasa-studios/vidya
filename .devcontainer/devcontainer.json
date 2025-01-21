@@ -11,15 +11,27 @@
    			"packages": "nginx"
     	}
 	},
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/workspaces/vidya/scripts"
+  },
 
-	"forwardPorts": [80, 8001, 5432]
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "uname -a",
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"forwardPorts": [
+		80,
+		8001,
+		5432
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"yzhang.markdown-all-in-one",
+				"TakumiI.markdowntable",
+				"firsttris.vscode-jest-runner",
+				"Orta.vscode-jest",
+        "bierner.markdown-mermaid",
+        "github.vscode-pull-request-github",
+        "stackbreak.comment-divider",
+        "cweijan.vscode-postgresql-client2"
+			]
+		}
+	}
 }

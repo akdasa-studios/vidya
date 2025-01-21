@@ -13,7 +13,7 @@ export class Lesson {
   courseId: string;
 
   @ManyToOne(() => Course)
-  @JoinColumn({ name: 'courseId' })
+  @JoinColumn()
   course: Course;
 
   @Column({ unique: true })

@@ -5,15 +5,19 @@ export class CreateSchoolTable1736961079489
 {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-          CREATE TABLE schools (
-            id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-            name VARCHAR NOT NULL,
-            "organizationId" UUID NOT NULL,
-            CONSTRAINT fk_organization
-              FOREIGN KEY("organizationId")
-              REFERENCES organizations(id)
-          );
-        `);
+      CREATE TABLE "schools" (
+        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "name" character varying NOT NULL,
+        "organizationId" uuid NOT NULL,
+        CONSTRAINT "PK_95b932e47ac129dd8e23a0db548" PRIMARY KEY ("id")
+      );
+
+      ALTER TABLE "schools"
+        ADD CONSTRAINT "FK_42ef534f0b1efdbc6aece928cdd"
+        FOREIGN KEY ("organizationId")
+        REFERENCES "organizations"("id")
+        ON DELETE NO ACTION ON UPDATE NO ACTION;
+    `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

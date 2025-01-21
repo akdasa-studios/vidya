@@ -1,0 +1,174 @@
+{
+	"folders": [
+    {
+      "name": "⚡️ Apps :: Admin",
+      "path": "./modules/apps/admin"
+    },
+    {
+      "name": "📱 Apps :: Mobile",
+      "path": "./modules/apps/mobile"
+    },
+    {
+      "name": "📦 Libs :: Domain",
+      "path": "./modules/libs/domain"
+    },
+    {
+      "name": "📦 Libs :: Entities",
+      "path": "./modules/libs/entities"
+    },
+    {
+      "name": "📦 Libs :: Protocol",
+      "path": "./modules/libs/Protocol"
+    },
+    {
+      "name": "⚙️ Services :: Api",
+      "path": "./modules/services/api"
+    },
+    {
+      "name": "🫙 Services :: Database",
+      "path": "./modules/services/database"
+    },
+    {
+      "name": "🚪 Services :: Gateway",
+      "path": "./modules/services/gateway"
+    },
+		{
+      "name": "🧪 Tests :: Unit :: Database",
+			"path": "./modules/tests/unit/database"
+		},
+    {
+      "name": "📚 Docs",
+      "path": "./docs"
+    },
+    {
+      "name": "🚀 Scripts",
+      "path": "./scripts"
+    },
+	],
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🫙 Database :: Run",
+        "detail": "Run the database",
+        "command": "vidya-db-run",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [],
+        "presentation": { "reveal": "always" },
+        "group": "none",
+        "isBackground": true,
+      },
+      {
+        "label": "🫙 Database :: Drop",
+        "detail": "Drop the database",
+        "command": "vidya-db-drop",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [],
+        "presentation": { "reveal": "always" },
+        "group": "none",
+      },
+      {
+        "label": "🫙 Database :: Generate Migration",
+        "detail": "Generate a new migration",
+        "command": "vidya-db-migrations-generate",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [],
+        "presentation": { "reveal": "always" },
+        "group": "none",
+      },
+      {
+        "label": "🫙 Database :: Run Migrations",
+        "detail": "Run the database migrations",
+        "command": "vidya-db-migrations-run",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [],
+        "presentation": { "reveal": "always" },
+        "group": "none",
+      },
+      {
+        "label": "⚒️ Build All",
+        "detail": "Build all modules",
+        "command": "vidya-build",
+        "type": "shell",
+        "args": [],
+        "problemMatcher": [],
+        "presentation": { "reveal": "always" },
+        "group": "build",
+      }
+    ]
+  },
+  "settings": {
+    /* -------------------------------------------------------------------------- */
+    /*                                   editor                                   */
+    /* -------------------------------------------------------------------------- */
+
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+
+    /* -------------------------------------------------------------------------- */
+    /*                                   linter                                   */
+    /* -------------------------------------------------------------------------- */
+
+    "eslint.validate": [
+      "javascript",
+      "typescript",
+      "vue"
+    ],
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    tests                                   */
+    /* -------------------------------------------------------------------------- */
+
+    "jest.enable": false,
+    "jest.jestCommandLine": "npx jest",
+    "jest.runMode": "on-demand",
+
+    /* -------------------------------------------------------------------------- */
+    /*                                 file types                                 */
+    /* -------------------------------------------------------------------------- */
+
+    "[feature]": {
+      "editor.formatOnType": true,
+      "editor.formatOnSave": true,
+    },
+    "typescript.preferences.autoImportFileExcludePatterns": [
+      "**/dist/**",
+    ],
+
+    /* -------------------------------------------------------------------------- */
+    /*                                   github                                   */
+    /* -------------------------------------------------------------------------- */
+
+    "githubIssues.issueBranchTitle": "${user}/issue-${issueNumber}-${sanitizedIssueTitle}",
+
+    /* -------------------------------------------------------------------------- */
+    /*                                   search                                   */
+    /* -------------------------------------------------------------------------- */
+
+    "search.exclude": {
+      "**/dist/**": true
+    },
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/.hg/store/**": true,
+      "**/dist/**": true,
+      "**/node_modules/**": true
+    },
+  },
+}
