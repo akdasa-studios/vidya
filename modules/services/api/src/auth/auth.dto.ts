@@ -1,24 +1,54 @@
 import * as protocol from '@vidya/protocol';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
+/* -------------------------------------------------------------------------- */
+/*                              One Time Password                             */
+/* -------------------------------------------------------------------------- */
+
+export class GetOtpRequest implements protocol.GetOtpRequest {
+  @ApiProperty({ example: 'example@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
+
+export class GetOtpResponse implements protocol.GetOtpResponse {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 'message' })
+  message: string;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Authentcation                               */
+/* -------------------------------------------------------------------------- */
 export class AuthRequest implements protocol.AuthRequest {
   @ApiProperty({ example: 'example@example.com' })
   @IsEmail()
   @IsNotEmpty()
-  login: string;
+  email: string;
 
-  @ApiPropertyOptional({ example: '123123' })
+  @ApiProperty({ example: '123123' })
   @IsString()
-  @IsOptional()
-  code?: string | undefined;
+  @IsNotEmpty()
+  otp: string;
 }
 
 export class AuthResponse implements protocol.AuthResponse {
-  @ApiPropertyOptional({ example: 'token' })
+  @ApiProperty({ example: 'token' })
   @IsString()
-  token?: string | undefined;
+  accessToken: string;
+
+  @ApiProperty({ example: 'token' })
+  @IsString()
+  refreshToken: string;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                   Common                                   */
+/* -------------------------------------------------------------------------- */
 
 export class ErrorResponse implements protocol.ErrorResponse {
   @ApiProperty({ example: 'error' })

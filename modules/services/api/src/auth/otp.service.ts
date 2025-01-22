@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
 @Injectable()
-export class AuthService {
+export class OtpService {
   private client: Redis;
 
   constructor() {
@@ -13,19 +13,19 @@ export class AuthService {
     });
   }
 
-  async generateAuthCode(login: string): Promise<string> {
+  async generate(login: string): Promise<string> {
     const key = domain.OtpStorageKey(login);
     const code = Math.floor(100000 + Math.random() * 999999).toString();
     await this.client.set(key, code, 'EX', 300);
     return code;
   }
 
-  async isAuthCodeExpired(login: string): Promise<boolean> {
+  async isExpired(login: string): Promise<boolean> {
     const key = domain.OtpStorageKey(login);
     return !(await this.client.exists(key));
   }
 
-  async validateAuthCode(login: string, code: string): Promise<boolean> {
+  async validate(login: string, code: string): Promise<boolean> {
     const key = domain.OtpStorageKey(login);
     const storedCode = await this.client.get(key);
 
