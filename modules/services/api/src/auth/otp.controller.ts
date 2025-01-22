@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
-import { Routes } from '@vidya/domain';
+import { Routes } from '@vidya/protocol';
 import { ErrorResponse, GetOtpRequest, GetOtpResponse } from './auth.dto';
 import { OtpService } from './otp.service';
 

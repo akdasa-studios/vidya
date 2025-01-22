@@ -1,6 +1,14 @@
 {
   "name": "@vidya/protocol",
   "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
   "keywords": [],
-  "author": "Advaita Kṛṣṇa Dāsa"
+  "author": "Advaita Kṛṣṇa Dāsa",
+  "dependencies": {
+    "typeorm": "^0.3.20",
+    "typescript": "^5.1.3"
+  }
 }

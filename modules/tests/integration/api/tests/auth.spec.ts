@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { test, expect } from '@playwright/test';
 import { Redis } from 'ioredis';
 import { AuthRequest, AuthResponse, GetOtpRequest } from '@vidya/protocol';
-import { OtpStorageKey, Routes } from '@vidya/domain';
+import { OtpStorageKey, Routes } from '@vidya/protocol';
 
 
 test.describe('Authentication', () => {

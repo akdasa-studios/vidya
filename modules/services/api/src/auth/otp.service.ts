@@ -1,4 +1,4 @@
-import * as domain from '@vidya/domain';
+import { OtpStorageKey } from '@vidya/protocol';
 import { Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
@@ -14,19 +14,19 @@ export class OtpService {
   }
 
   async generate(login: string): Promise<string> {
-    const key = domain.OtpStorageKey(login);
+    const key = OtpStorageKey(login);
     const code = Math.floor(100000 + Math.random() * 999999).toString();
     await this.client.set(key, code, 'EX', 300);
     return code;
   }
 
   async isExpired(login: string): Promise<boolean> {
-    const key = domain.OtpStorageKey(login);
+    const key = OtpStorageKey(login);
     return !(await this.client.exists(key));
   }
 
   async validate(login: string, code: string): Promise<boolean> {
-    const key = domain.OtpStorageKey(login);
+    const key = OtpStorageKey(login);
     const storedCode = await this.client.get(key);
 
     // if code is correct, expire it immediately

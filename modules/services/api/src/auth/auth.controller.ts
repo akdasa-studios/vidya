@@ -5,7 +5,7 @@ import { ApiBadRequestResponse, ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
-import { Routes } from '@vidya/domain';
+import { Routes } from '@vidya/protocol';
 import { AuthRequest, AuthResponse, ErrorResponse } from './auth.dto';
 import { OtpService } from './otp.service';
 
