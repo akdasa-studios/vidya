@@ -13,7 +13,7 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
-  @Index()
+  @Index({ unique: true })
   @Column({ nullable: true })
   phone: string;
 }
