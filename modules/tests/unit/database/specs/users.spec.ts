@@ -36,7 +36,7 @@ describe('User', () => {
     await expect(save).rejects.toThrow(QueryFailedError);
   });
 
-  test('should raise error if email is not specified', async () => {
+  test('should raise error if email and phone are not specified', async () => {
     // Arrange
     const user = new User();
     user.name = 'test user';

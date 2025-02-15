@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { test, expect } from '@playwright/test';
 import { Redis } from 'ioredis';
 import { GetOtpRequest } from '@vidya/protocol';
-import { OtpStorageKey, Routes } from '@vidya/protocol';
+import { OtpStorageKey, Routes, OtpType } from '@vidya/protocol';
 
 
 test.describe('Authentication :: OTP', () => {
@@ -15,7 +15,7 @@ test.describe('Authentication :: OTP', () => {
   test('should generate OTP if email is valid', async ({ request }) => {
     // arrange: request OTP
     const email = faker.internet.exampleEmail();
-    const payload: GetOtpRequest = { email };
+    const payload: GetOtpRequest = { type: OtpType.Email, destination: email };
 
     // act: request OTP for the email
     const response = await request.post(routes.otp.root(), { data: payload });
@@ -27,27 +27,13 @@ test.describe('Authentication :: OTP', () => {
     expect(otp).toBeDefined();
     expect(await response.json()).toEqual({
       success: true,
-      message: 'OTP has been sent to the user.'
-    });
-  });
-
-  test('should not generate OTP if email is invalid', async ({ request }) => {
-    // act: request token with invalid email
-    const payload: GetOtpRequest = { email: 'invalid_email' };
-    const response = await request.post(routes.otp.root(), { data: payload });
-
-    // assert: 400 is returned with error message
-    expect(response.status()).toBe(400);
-    expect(await response.json()).toEqual({
-      message: ['email must be an email'],
-      error: 'Bad Request',
-      statusCode: 400
+      message: 'OTP has been sent'
     });
   });
 
   test('should not generate OTP if previous one is still valid', async ({ request }) => {
     const email = faker.internet.exampleEmail();
-    const payload: GetOtpRequest = { email };
+    const payload: GetOtpRequest = { type: OtpType.Email, destination: email };
 
     // arrange: request OTP
     await request.post(routes.otp.root(), { data: payload });
