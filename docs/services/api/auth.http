@@ -5,7 +5,7 @@ content-type: application/json
 
 {
   "type": "email",
-  "destination": "test@example.com"
+  "destination": "example@example.com"
 }
 
 
@@ -15,8 +15,8 @@ POST http://localhost:8001/auth/login/otp HTTP/1.1
 content-type: application/json
 
 {
-  "login": "test@example.com",
-  "otp": "186681"
+  "login": "example@example.com",
+  "otp": "123123"
 }
 
 
@@ -24,8 +24,7 @@ content-type: application/json
 
 GET http://localhost:8001/auth/profile HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MzY2OTRkOC1jMmI3LTQ1M2MtYTI4MC1hYjBmNzE5Yjc0NDMiLCJzdWIiOiI3NzExZjA5Mi0zODAyLTQyNDgtYmZiOS1hZTAzZDE5OTMwMWUiLCJpYXQiOjE3Mzk2MTY4NTQsImV4cCI6MTczOTYxNzc1NH0.42s1i4Cdjw4TeA8UsApAL0hciiAqdLt0SQm5aTN0mSA
-
+Authorization: Bearer TOKEN
  
 ### Refresh token
 
@@ -33,5 +32,5 @@ POST http://localhost:8001/auth/tokens/refresh HTTP/1.1
 content-type: application/json
 
 {
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZDA1ZGU1Ni1kNDE4LTQzNGUtYmQ4Mi0xOTE5YzU0YzdhNmYiLCJzdWIiOiI3NzExZjA5Mi0zODAyLTQyNDgtYmZiOS1hZTAzZDE5OTMwMWUiLCJpYXQiOjE3Mzk2Mjc3MzcsImV4cCI6MTc0MDIzMjUzN30.KmoEC9xE2R1uwh8DoBu1IS9E0due1rMZf-QgVLIkrGc"
+  "refreshToken": "TOKEN"
 }
