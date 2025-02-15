@@ -35,8 +35,10 @@ export class OtpService {
     // to prevent replay attacks and multiple logins
     if (code === stored.code) {
       await this.client.expire(key, 0);
+      return stored;
     }
 
-    return stored;
+    // if code is incorrect, return undefined
+    return undefined;
   }
 }
