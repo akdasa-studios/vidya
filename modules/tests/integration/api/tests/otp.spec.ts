@@ -4,7 +4,6 @@ import { Redis } from 'ioredis';
 import { GetOtpRequest } from '@vidya/protocol';
 import { OtpStorageKey, Routes, OtpType } from '@vidya/protocol';
 
-
 test.describe('Authentication :: OTP', () => {
   const routes = Routes('http://localhost:8001');
   const redis = new Redis({
@@ -12,7 +11,7 @@ test.describe('Authentication :: OTP', () => {
     port: 6379, // TODO: configure by environment variable
   });
 
-  test('should generate OTP if email is valid', async ({ request }) => {
+  test('should generate OTP', async ({ request }) => {
     // arrange: request OTP
     const email = faker.internet.exampleEmail();
     const payload: GetOtpRequest = { type: OtpType.Email, destination: email };
@@ -20,18 +19,17 @@ test.describe('Authentication :: OTP', () => {
     // act: request OTP for the email
     const response = await request.post(routes.otp.root(), { data: payload });
 
-
     // assert: OTP is generated
     const otp = await redis.get(OtpStorageKey(email));
 
     expect(otp).toBeDefined();
     expect(await response.json()).toEqual({
       success: true,
-      message: 'OTP has been sent'
+      message: 'OTP has been sent',
     });
   });
 
-  test('should not generate OTP if previous one is still valid', async ({ request }) => {
+  test('should not generate OTP if previous one valid', async ({ request }) => {
     const email = faker.internet.exampleEmail();
     const payload: GetOtpRequest = { type: OtpType.Email, destination: email };
 
@@ -45,7 +43,7 @@ test.describe('Authentication :: OTP', () => {
     expect(response.status()).toBe(429);
     expect(await response.json()).toEqual({
       success: false,
-      message: 'An OTP has already been generated and is still valid.'
+      message: 'An OTP has already been generated and is still valid.',
     });
   });
 });
