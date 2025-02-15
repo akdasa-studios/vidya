@@ -15,11 +15,15 @@ export class CreateUsersTable1737562068895 implements MigrationInterface {
       );
       
       CREATE UNIQUE INDEX "IDX_97672ac88f789774dd47f7c8be" ON "users" ("email");
-      CREATE INDEX "IDX_a000cca60bcf04454e72769949" ON "users" ("phone");
+      CREATE UNIQUE INDEX "IDX_a000cca60bcf04454e72769949" ON "users" ("phone");
     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "users"`);
+    await queryRunner.query(`
+      DROP TABLE "users";
+      DROP INDEX "public"."IDX_a000cca60bcf04454e72769949";
+      DROP INDEX "public"."IDX_97672ac88f789774dd47f7c8be";
+    `);
   }
 }
