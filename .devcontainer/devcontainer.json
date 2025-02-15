@@ -34,8 +34,7 @@
 				"cweijan.vscode-postgresql-client2",
 				"humao.rest-client",
 				"cweijan.vscode-redis-client",
-				"ms-playwright.playwright",
-        "sandertenbrinke.readme-auto-open"
+				"ms-playwright.playwright"
 			]
 		}
 	}
