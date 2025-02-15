@@ -4,6 +4,7 @@ import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { Routes } from '@vidya/protocol';
+
 import { ErrorResponse, GetOtpRequest, GetOtpResponse } from '../models/auth';
 import { OtpService } from '../services/otp';
 

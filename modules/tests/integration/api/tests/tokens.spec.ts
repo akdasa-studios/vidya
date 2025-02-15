@@ -18,7 +18,7 @@ test.describe('Authentication :: Tokens :: Refresh', () => {
 
   test.beforeEach(async ({ request }) => {
     email = faker.internet.exampleEmail();
-    otp = { code: '123456', method: OtpType.Email };
+    otp = { code: '123456', type: OtpType.Email };
     await redis.set(OtpStorageKey(email), JSON.stringify(otp));
 
     const payload: AuthRequest = { login: email, otp: otp.code };

@@ -1,19 +1,25 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
-import { RevokedTokensService } from '../services/revokedTokens';
+import { JwtConfig } from '@vidya/api/configs';
 import { JwtToken } from '@vidya/protocol';
+import { Request } from 'express';
+
+import { RevokedTokensService } from '../services/revokedTokens';
 
 @Injectable()
 export class AuthenticatedUser implements CanActivate {
   constructor(
-    private jwtService: JwtService,
-    private revoketTokensService: RevokedTokensService,
+    @Inject(JwtConfig.KEY)
+    private readonly jwtConfig: ConfigType<typeof JwtConfig>,
+    private readonly jwtService: JwtService,
+    private readonly revoketTokensService: RevokedTokensService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -25,7 +31,7 @@ export class AuthenticatedUser implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync<JwtToken>(token, {
-        secret: 'SECRET', // TODO: use env variable
+        secret: this.jwtConfig.secret,
       });
 
       const isTokenRevoked = await this.revoketTokensService.isRevoked(payload);

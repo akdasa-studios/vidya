@@ -4,11 +4,12 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
-import { Routes, OtpType } from '@vidya/protocol';
+import { OtpType, Routes } from '@vidya/protocol';
+
 import { AuthRequest, AuthResponse, ErrorResponse } from '../models/auth';
+import { AuthService } from '../services/auth';
 import { OtpService } from '../services/otp';
 import { UsersService } from '../services/users';
-import { AuthService } from '../services/auth';
 
 @Controller()
 @ApiTags('Authentication')
@@ -58,7 +59,7 @@ export class LoginController {
       [OtpType.Sms]: 'phone',
     } as const;
     const user = await this.usersService.getOrCreateByLogin(
-      otpTypeToLoginFieldMap[otp.method],
+      otpTypeToLoginFieldMap[otp.type],
       request.login,
     );
     const tokens = await this.authService.generateTokens(user.id);

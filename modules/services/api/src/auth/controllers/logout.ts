@@ -7,12 +7,13 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Routes } from '@vidya/protocol';
-import { ErrorResponse, LogOutRequest, LogOutResponse } from '../models/auth';
-import { RevokedTokensService } from '../services/revokedTokens';
-import { AuthService } from '../services/auth';
-import { UserId, UserAccessToken } from '../utils/authenticatedUserId';
 import { JwtToken } from '@vidya/protocol';
+
+import { ErrorResponse, LogOutRequest, LogOutResponse } from '../models/auth';
+import { AuthService } from '../services/auth';
+import { RevokedTokensService } from '../services/revokedTokens';
 import { AuthenticatedUser } from '../utils/authenticatedUserGuard';
+import { UserAccessToken, UserId } from '../utils/authenticatedUserId';
 
 @Controller()
 @ApiTags('Authentication')

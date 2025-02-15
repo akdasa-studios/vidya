@@ -17,5 +17,5 @@ export type OtpMethod = `${OtpType}`;
 
 export type Otp = {
   code: string;
-  method: OtpType;
+  type: OtpType;
 }

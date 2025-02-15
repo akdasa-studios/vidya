@@ -1,16 +1,26 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
+import RedisConfig from '@vidya/api/configs/redis.config';
 import { RevokedTokenStorageKey } from '@vidya/protocol';
-import { Injectable } from '@nestjs/common';
-import { Redis } from 'ioredis';
 import { JwtToken } from '@vidya/protocol';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class RevokedTokensService {
-  private client: Redis;
+  private readonly client: Redis;
 
-  constructor() {
+  /**
+   * Constructs an instance of the service with the provided Redis configuration.
+   *
+   * @param redisConfig The configuration object for Redis
+   */
+  constructor(
+    @Inject(RedisConfig.KEY)
+    private readonly redisConfig: ConfigType<typeof RedisConfig>,
+  ) {
     this.client = new Redis({
-      host: 'localhost', // TODO: configure by environment variable
-      port: 6379, // TODO: configure by environment variable
+      host: redisConfig.host,
+      port: redisConfig.port,
     });
   }
 
