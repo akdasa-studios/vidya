@@ -52,15 +52,12 @@ export class LogOutController {
     @UserId() userId: string,
     @UserAccessToken() userAccessToken: JwtToken,
   ): Promise<LogOutResponse> {
-    console.log('userId', userId);
-    console.log('userAccessToken', userAccessToken);
-
     // revoke access token to prevent reusing it
     await this.revokedTokensService.revoke(userAccessToken);
 
     // revoke refresh token if still valid
     const token = await this.authService.verifyToken(request.refreshToken);
-    if (!token) {
+    if (token) {
       await this.revokedTokensService.revoke(token);
     }
 
