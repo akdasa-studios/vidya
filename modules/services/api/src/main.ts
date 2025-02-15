@@ -11,6 +11,7 @@ async function bootstrap() {
     .setTitle('Vidya')
     .setDescription('The Vidya API')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, documentFactory);

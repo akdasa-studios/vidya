@@ -1,5 +1,5 @@
 {
-	"folders": [
+  "folders": [
     {
       "name": "⚡️ Apps :: Admin",
       "path": "./modules/apps/admin"
@@ -32,14 +32,14 @@
       "name": "🚪 Services :: Gateway",
       "path": "./modules/services/gateway"
     },
-		{
+    {
       "name": "🧪 Tests :: Unit :: Database",
-			"path": "./modules/tests/unit/database"
-		},
-		{
+      "path": "./modules/tests/unit/database"
+    },
+    {
       "name": "🧪 Tests :: Integration :: Api",
-			"path": "./modules/tests/integration/api"
-		},
+      "path": "./modules/tests/integration/api"
+    },
     {
       "name": "📚 Docs",
       "path": "./docs"
@@ -48,7 +48,7 @@
       "name": "🚀 Scripts",
       "path": "./scripts"
     },
-	],
+  ],
   "tasks": {
     "version": "2.0.0",
     "tasks": [
@@ -59,7 +59,9 @@
         "type": "shell",
         "args": [],
         "problemMatcher": [],
-        "presentation": { "reveal": "always" },
+        "presentation": {
+          "reveal": "always"
+        },
         "group": "none",
         "isBackground": true,
       },
@@ -70,7 +72,9 @@
         "type": "shell",
         "args": [],
         "problemMatcher": [],
-        "presentation": { "reveal": "always" },
+        "presentation": {
+          "reveal": "always"
+        },
         "group": "none",
       },
       {
@@ -80,7 +84,9 @@
         "type": "shell",
         "args": [],
         "problemMatcher": [],
-        "presentation": { "reveal": "always" },
+        "presentation": {
+          "reveal": "always"
+        },
         "group": "none",
       },
       {
@@ -90,7 +96,9 @@
         "type": "shell",
         "args": [],
         "problemMatcher": [],
-        "presentation": { "reveal": "always" },
+        "presentation": {
+          "reveal": "always"
+        },
         "group": "none",
       },
       {
@@ -100,45 +108,60 @@
         "type": "shell",
         "args": [],
         "problemMatcher": [],
-        "presentation": { "reveal": "always" },
+        "presentation": {
+          "reveal": "always"
+        },
         "group": "build",
       }
     ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "⚙️ Services :: Api",
+        "request": "launch",
+        "runtimeArgs": [
+          "run-script",
+          "start:debug"
+        ],
+        "runtimeExecutable": "npm",
+        "skipFiles": [
+          "<node_internals>/**"
+        ],
+        "type": "node",
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": []
   },
   "settings": {
     /* -------------------------------------------------------------------------- */
     /*                                   editor                                   */
     /* -------------------------------------------------------------------------- */
-
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit"
     },
-
     /* -------------------------------------------------------------------------- */
     /*                                   linter                                   */
     /* -------------------------------------------------------------------------- */
-
     "eslint.validate": [
       "javascript",
       "typescript",
       "vue"
     ],
-
     /* -------------------------------------------------------------------------- */
     /*                                    tests                                   */
     /* -------------------------------------------------------------------------- */
-
     "jest.enable": false,
     "jest.jestCommandLine": "npx jest",
     "jest.runMode": "on-demand",
-
     /* -------------------------------------------------------------------------- */
     /*                                 file types                                 */
     /* -------------------------------------------------------------------------- */
-
     "[feature]": {
       "editor.formatOnType": true,
       "editor.formatOnSave": true,
@@ -146,17 +169,13 @@
     "typescript.preferences.autoImportFileExcludePatterns": [
       "**/dist/**",
     ],
-
     /* -------------------------------------------------------------------------- */
     /*                                   github                                   */
     /* -------------------------------------------------------------------------- */
-
     "githubIssues.issueBranchTitle": "${user}/issue-${issueNumber}-${sanitizedIssueTitle}",
-
     /* -------------------------------------------------------------------------- */
     /*                                   search                                   */
     /* -------------------------------------------------------------------------- */
-
     "search.exclude": {
       "**/dist/**": true
     },

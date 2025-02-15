@@ -3,6 +3,7 @@ import { School } from './school';
 import { Course, LearningType } from './course';
 import { Group, GroupStatus } from './group';
 import { Lesson } from './lesson';
+import { User } from './user';
 
 export {
   Course,
@@ -11,7 +12,8 @@ export {
   LearningType,
   Lesson,
   Organization,
-  School
+  School,
+  User,
 };
 
 export const Entities = [
@@ -19,5 +21,6 @@ export const Entities = [
   Group,
   Lesson,
   Organization,
-  School
+  School,
+  User,
 ];

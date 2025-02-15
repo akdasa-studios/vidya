@@ -1,4 +1,4 @@
-import { OtpStorageKey } from '@vidya/protocol';
+import { Otp, OtpStorageKey } from '@vidya/protocol';
 import { Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
 
@@ -13,10 +13,11 @@ export class OtpService {
     });
   }
 
-  async generate(login: string): Promise<string> {
+  async generate(login: string, method: string): Promise<string> {
     const key = OtpStorageKey(login);
     const code = Math.floor(100000 + Math.random() * 999999).toString();
-    await this.client.set(key, code, 'EX', 300);
+    const payload = JSON.stringify({ code, method } as Otp);
+    await this.client.set(key, payload, 'EX', 300);
     return code;
   }
 
@@ -25,16 +26,17 @@ export class OtpService {
     return !(await this.client.exists(key));
   }
 
-  async validate(login: string, code: string): Promise<boolean> {
+  async validate(login: string, code: string): Promise<Otp | undefined> {
     const key = OtpStorageKey(login);
-    const storedCode = await this.client.get(key);
+    const stored: Otp = JSON.parse(await this.client.get(key));
+    if (!stored) return undefined;
 
     // if code is correct, expire it immediately
     // to prevent replay attacks and multiple logins
-    if (code === storedCode) {
+    if (code === stored.code) {
       await this.client.expire(key, 0);
     }
 
-    return code === storedCode;
+    return stored;
   }
 }
