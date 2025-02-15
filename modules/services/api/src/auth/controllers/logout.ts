@@ -9,7 +9,8 @@ import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Routes } from '@vidya/protocol';
 import { JwtToken } from '@vidya/protocol';
 
-import { ErrorResponse, LogOutRequest, LogOutResponse } from '../models/auth';
+import { LogOutRequest, LogOutResponse } from '../models/auth';
+import { ErrorResponse } from '../models/common';
 import { AuthService } from '../services/auth';
 import { RevokedTokensService } from '../services/revokedTokens';
 import { AuthenticatedUser } from '../utils/authenticatedUserGuard';

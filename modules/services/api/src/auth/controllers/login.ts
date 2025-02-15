@@ -6,7 +6,8 @@ import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { OtpType, Routes } from '@vidya/protocol';
 
-import { AuthRequest, AuthResponse, ErrorResponse } from '../models/auth';
+import { AuthRequest, AuthResponse } from '../models/auth';
+import { ErrorResponse } from '../models/common';
 import { AuthService } from '../services/auth';
 import { OtpService } from '../services/otp';
 import { UsersService } from '../services/users';

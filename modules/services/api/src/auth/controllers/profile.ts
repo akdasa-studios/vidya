@@ -5,10 +5,12 @@ import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Routes } from '@vidya/protocol';
-import { ErrorResponse, GetProfileResponse } from '../models/auth';
+
+import { GetProfileResponse } from '../models/auth';
+import { ErrorResponse } from '../models/common';
 import { UsersService } from '../services/users';
-import { UserId } from '../utils/authenticatedUserId';
 import { AuthenticatedUser } from '../utils/authenticatedUserGuard';
+import { UserId } from '../utils/authenticatedUserId';
 
 @Controller()
 @ApiTags('User')

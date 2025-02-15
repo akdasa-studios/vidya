@@ -1,6 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import * as protocol from '@vidya/protocol';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 /* -------------------------------------------------------------------------- */
 /*                              One Time Password                             */
@@ -115,20 +115,4 @@ export class GetProfileResponse implements protocol.GetProfileResponse {
 
   @ApiProperty({ example: 'name' })
   name: string;
-}
-
-/* -------------------------------------------------------------------------- */
-/*                                   Common                                   */
-/* -------------------------------------------------------------------------- */
-
-export class ErrorResponse implements protocol.ErrorResponse {
-  @ApiProperty({ example: 'error' })
-  @IsString()
-  error: string;
-
-  @ApiProperty({ example: 400 })
-  statusCode: number;
-
-  @ApiProperty({ example: ['message'] })
-  message: string[];
 }

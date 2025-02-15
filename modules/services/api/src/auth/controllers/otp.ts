@@ -5,7 +5,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { Routes } from '@vidya/protocol';
 
-import { ErrorResponse, GetOtpRequest, GetOtpResponse } from '../models/auth';
+import { GetOtpRequest, GetOtpResponse } from '../models/auth';
+import { ErrorResponse } from '../models/common';
 import { OtpService } from '../services/otp';
 
 @Controller()

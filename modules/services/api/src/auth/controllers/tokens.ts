@@ -6,11 +6,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Routes } from '@vidya/protocol';
 
-import {
-  ErrorResponse,
-  RefreshTokensRequest,
-  RefreshTokensResponse,
-} from '../models/auth';
+import { RefreshTokensRequest, RefreshTokensResponse } from '../models/auth';
+import { ErrorResponse } from '../models/common';
 import { AuthService } from '../services/auth';
 import { RevokedTokensService } from '../services/revokedTokens';
 
