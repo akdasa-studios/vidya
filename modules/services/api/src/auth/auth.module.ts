@@ -3,15 +3,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '@vidya/entities';
 
-import { LoginController } from './controllers/login';
-import { LogOutController } from './controllers/logout';
-import { OtpController } from './controllers/otp';
-import { ProfileController } from './controllers/profile';
-import { TokensController } from './controllers/tokens';
-import { AuthService } from './services/auth';
-import { OtpService } from './services/otp';
-import { RevokedTokensService } from './services/revokedTokens';
-import { UsersService } from './services/users';
+import { LoginController } from './controllers/login.controller';
+import { OtpController } from './controllers/otp.controller';
+import { ProfileController } from './controllers/profile.controller';
+import { TokensController } from './controllers/tokens.controller';
+import { AuthService } from './services/auth.service';
+import { OtpService } from './services/otp.service';
+import { RevokedTokensService } from './services/revokedTokens.service';
+import { UsersService } from './services/users.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
@@ -20,7 +19,6 @@ import { UsersService } from './services/users';
     OtpController,
     TokensController,
     ProfileController,
-    LogOutController,
   ],
   providers: [OtpService, UsersService, AuthService, RevokedTokensService],
 })

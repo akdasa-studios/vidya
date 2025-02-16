@@ -1,13 +1,25 @@
-import { HttpCode, HttpException, HttpStatus } from '@nestjs/common';
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { ApiTags } from '@nestjs/swagger';
-import { ApiTooManyRequestsResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+} from '@nestjs/swagger';
+import {
+  ErrorResponse,
+  GetOtpRequest,
+  GetOtpResponse,
+} from '@vidya/api/auth/models';
+import { OtpService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
-
-import { GetOtpRequest, GetOtpResponse } from '../models/auth';
-import { ErrorResponse } from '../models/common';
-import { OtpService } from '../services/otp';
 
 @Controller()
 @ApiTags('Authentication')

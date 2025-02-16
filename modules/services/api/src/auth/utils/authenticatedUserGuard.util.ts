@@ -11,7 +11,7 @@ import { JwtConfig } from '@vidya/api/configs';
 import { JwtToken } from '@vidya/protocol';
 import { Request } from 'express';
 
-import { RevokedTokensService } from '../services/revokedTokens';
+import { RevokedTokensService } from '../services/revokedTokens.service';
 
 @Injectable()
 export class AuthenticatedUser implements CanActivate {

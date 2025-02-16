@@ -1,16 +1,20 @@
-import { Get, UseGuards } from '@nestjs/common';
-import { Controller } from '@nestjs/common';
-import { UnauthorizedException } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { ErrorResponse, GetProfileResponse } from '@vidya/api/auth/models';
+import { UsersService } from '@vidya/api/auth/services';
+import { AuthenticatedUser, UserId } from '@vidya/api/auth/utils';
 import { Routes } from '@vidya/protocol';
-
-import { GetProfileResponse } from '../models/auth';
-import { ErrorResponse } from '../models/common';
-import { UsersService } from '../services/users';
-import { AuthenticatedUser } from '../utils/authenticatedUserGuard';
-import { UserId } from '../utils/authenticatedUserId';
 
 @Controller()
 @ApiTags('User')

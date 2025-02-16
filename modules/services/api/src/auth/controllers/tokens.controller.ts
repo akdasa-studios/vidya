@@ -1,15 +1,24 @@
-import { HttpCode } from '@nestjs/common';
-import { Body, Controller, Post } from '@nestjs/common';
-import { UnauthorizedException } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOkResponse } from '@nestjs/swagger';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  ErrorResponse,
+  RefreshTokensRequest,
+  RefreshTokensResponse,
+} from '@vidya/api/auth/models';
+import { AuthService, RevokedTokensService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
-
-import { RefreshTokensRequest, RefreshTokensResponse } from '../models/auth';
-import { ErrorResponse } from '../models/common';
-import { AuthService } from '../services/auth';
-import { RevokedTokensService } from '../services/revokedTokens';
 
 @Controller()
 @ApiTags('Authentication')
