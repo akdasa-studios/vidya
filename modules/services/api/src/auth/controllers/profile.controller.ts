@@ -11,7 +11,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ErrorResponse, GetProfileResponse } from '@vidya/api/auth/models';
+import * as dto from '@vidya/api/auth/dto';
 import { UsersService } from '@vidya/api/auth/services';
 import { AuthenticatedUser, UserId } from '@vidya/api/auth/utils';
 import { Routes } from '@vidya/protocol';
@@ -33,20 +33,20 @@ export class ProfileController {
     operationId: 'auth::profile',
   })
   @ApiOkResponse({
-    type: GetProfileResponse,
+    type: dto.GetProfileResponse,
     description: 'User profile has been returned.',
   })
   @ApiUnauthorizedResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'User is not authorized.',
   })
-  async profile(@UserId() userId: string): Promise<GetProfileResponse> {
+  async profile(@UserId() userId: string): Promise<dto.GetProfileResponse> {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new UnauthorizedException(['user is not authorized']);
     }
 
-    return new GetProfileResponse({
+    return new dto.GetProfileResponse({
       userId: user.id,
       email: user.email,
       name: user.name,

@@ -2,8 +2,8 @@ import { faker } from '@faker-js/faker';
 import { test, expect } from '@playwright/test';
 import { Redis } from 'ioredis';
 import {
-  AuthRequest,
-  AuthResponse,
+  OtpLogInRequest,
+  OtpLogInResponse,
   GetOtpRequest,
   OtpType,
 } from '@vidya/protocol';
@@ -40,7 +40,7 @@ test.describe('Authentication', () => {
 
   test('should not authenticate if otp is incorrect', async ({ request }) => {
     const otp = faker.string.numeric({ length: 6 });
-    const payload: AuthRequest = { login: context.email, otp };
+    const payload: OtpLogInRequest = { login: context.email, otp };
 
     // act: request token without requesting OTP
     const response = await request.post(routes.auth.login('otp'), {
@@ -62,7 +62,7 @@ test.describe('Authentication', () => {
     await redis.expire(OtpStorageKey(context.email), 0);
 
     // act: request token with expired OTP
-    const payload: AuthRequest = { login: context.email, otp: context.otp };
+    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
     const response = await request.post(routes.auth.login('otp'), {
       data: payload,
     });
@@ -77,7 +77,7 @@ test.describe('Authentication', () => {
   });
 
   test('should not authenticate if otp is used', async ({ request }) => {
-    const payload: AuthRequest = { login: context.email, otp: context.otp };
+    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
 
     // arrange: request token with OTP
     await request.post(routes.auth.login('otp'), { data: payload });
@@ -102,11 +102,11 @@ test.describe('Authentication', () => {
 
   test('should authenticate if valid otp is provided', async ({ request }) => {
     // act: request token with OTP
-    const payload: AuthRequest = { login: context.email, otp: context.otp };
+    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
     const response = await request.post(routes.auth.login('otp'), {
       data: payload,
     });
-    const responseData: AuthResponse = await response.json();
+    const responseData: OtpLogInResponse = await response.json();
 
     // assert: token is returned
     expect(responseData.accessToken).toBeDefined();
@@ -116,7 +116,7 @@ test.describe('Authentication', () => {
   test('should authenticate if valid otp is provided after several mistakes', async ({
     request,
   }) => {
-    const payload: AuthRequest = { login: context.email, otp: context.otp };
+    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
 
     // arrange: request token with invalid OTP
     await request.post(routes.auth.login('otp'), {
@@ -130,7 +130,7 @@ test.describe('Authentication', () => {
     const response = await request.post(routes.auth.login('otp'), {
       data: payload,
     });
-    const responseData: AuthResponse = await response.json();
+    const responseData: OtpLogInResponse = await response.json();
 
     // assert: token is returned
     expect(responseData.accessToken).toBeDefined();

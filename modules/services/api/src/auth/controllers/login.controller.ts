@@ -14,24 +14,14 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import {
-  ErrorResponse,
-  LogOutRequest,
-  LogOutResponse,
-  OtpLogInRequest,
-  OtpLogInResponse,
-} from '@vidya/api/auth/models';
+import * as dto from '@vidya/api/auth/dto';
 import {
   AuthService,
   OtpService,
   RevokedTokensService,
   UsersService,
 } from '@vidya/api/auth/services';
-import {
-  AuthenticatedUser,
-  UserAccessToken,
-  UserId,
-} from '@vidya/api/auth/utils';
+import { AuthenticatedUser, UserAccessToken } from '@vidya/api/auth/utils';
 import { JwtToken, OtpType, Routes } from '@vidya/protocol';
 
 @Controller()
@@ -57,20 +47,20 @@ export class LoginController {
       `Returns access and refresh tokens if the user has been authorized.`,
   })
   @ApiOkResponse({
-    type: OtpLogInRequest,
+    type: dto.OtpLogInRequest,
     description: 'User has been authorized.',
   })
   @ApiUnauthorizedResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'OTP is invalid.',
   })
   @ApiTooManyRequestsResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'Too many requests',
   })
   async loginWithOtp(
-    @Body() request: OtpLogInRequest,
-  ): Promise<OtpLogInResponse> {
+    @Body() request: dto.OtpLogInRequest,
+  ): Promise<dto.OtpLogInResponse> {
     // TODO: rate limit login attempts
 
     // validate OTP, if invalid send 401 Unauthorized response
@@ -90,7 +80,7 @@ export class LoginController {
     );
     const tokens = await this.authService.generateTokens(user.id);
 
-    return new OtpLogInResponse({
+    return new dto.OtpLogInResponse({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     });
@@ -110,22 +100,21 @@ export class LoginController {
       `Log out user.\n\n` + `Revokes the refresh token and logs out the user.`,
   })
   @ApiOkResponse({
-    type: LogOutResponse,
+    type: dto.LogOutResponse,
     description: 'User has been logged out.',
   })
   @ApiBadRequestResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'Invalid request.',
   })
   @ApiUnauthorizedResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'Unauthorized request.',
   })
   async logoutUser(
-    @Body() request: LogOutRequest,
-    @UserId() userId: string,
+    @Body() request: dto.LogOutRequest,
     @UserAccessToken() userAccessToken: JwtToken,
-  ): Promise<LogOutResponse> {
+  ): Promise<dto.LogOutResponse> {
     // revoke access token to prevent reusing it
     await this.revokedTokensService.revoke(userAccessToken);
 
@@ -136,6 +125,6 @@ export class LoginController {
     }
 
     // user logged out
-    return new LogOutResponse();
+    return new dto.LogOutResponse();
   }
 }

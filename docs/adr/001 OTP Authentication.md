@@ -1,4 +1,4 @@
-# ADR 001: JWT Token Authentication Mechanism
+# ADR 001: OTP Authentication
 
 We need a secure and scalable authentication mechanism for our application. To facilitate this, we have decided to use JSON Web Token (JWT) authentication with a one-time password (OTP) mechanism.
 

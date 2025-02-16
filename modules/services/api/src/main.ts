@@ -13,6 +13,10 @@ async function bootstrap() {
     .setDescription('The Vidya API')
     .setVersion('1.0')
     .addBearerAuth()
+    .addTag('Authentication', 'Endpoints for authentication', {
+      description: 'Docs',
+      url: 'https://github.com/akdasa-studios/vidya/blob/main/docs/adr/001%20OTP%20Authentication.md',
+    })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, documentFactory);

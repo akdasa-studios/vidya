@@ -1,3 +1,5 @@
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +12,7 @@ import {
 import { Entities, Organization } from '@vidya/entities';
 
 import { AuthModule } from './auth/auth.module';
+import { OrgModule } from './org/org.module';
 import { OrganizationsService } from './organizations.service';
 
 @Module({
@@ -17,6 +20,9 @@ import { OrganizationsService } from './organizations.service';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [DbConfig, OtpConfig, RedisConfig, JwtConfig],
+    }),
+    AutomapperModule.forRoot({
+      strategyInitializer: classes(),
     }),
     TypeOrmModule.forRootAsync({
       useFactory: (dbConfig: ConfigType<typeof DbConfig>) => ({
@@ -36,6 +42,7 @@ import { OrganizationsService } from './organizations.service';
     }),
     TypeOrmModule.forFeature([Organization]),
     AuthModule,
+    OrgModule,
   ],
   controllers: [],
   providers: [OrganizationsService],

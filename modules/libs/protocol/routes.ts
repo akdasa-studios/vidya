@@ -10,5 +10,14 @@ export const Routes = (baseUrl: string = '') => ({
   },
   otp: {
     root: () => `${baseUrl}/auth/otp`,
+  },
+  org: {
+    roles: {
+      find: () => `${baseUrl}/org/roles`,
+      get: (id: string) => `${baseUrl}/org/roles/${id}`,
+      create: () => `${baseUrl}/org/roles`,
+      update: (id: string) => `${baseUrl}/org/roles/${id}`,
+      delete: (id: string) => `${baseUrl}/org/roles/${id}`,
+    }
   }
 })

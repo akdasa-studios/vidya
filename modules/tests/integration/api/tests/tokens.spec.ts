@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { test, expect, APIRequestContext } from '@playwright/test';
 import { Redis } from 'ioredis';
-import { AuthRequest, OtpType } from '@vidya/protocol';
+import { OtpLogInRequest, OtpType } from '@vidya/protocol';
 import { OtpStorageKey, Routes, Otp } from '@vidya/protocol';
 
 test.describe('Authentication :: Tokens :: Refresh', () => {
@@ -21,7 +21,7 @@ test.describe('Authentication :: Tokens :: Refresh', () => {
     otp = { code: '123456', type: OtpType.Email };
     await redis.set(OtpStorageKey(email), JSON.stringify(otp));
 
-    const payload: AuthRequest = { login: email, otp: otp.code };
+    const payload: OtpLogInRequest = { login: email, otp: otp.code };
     const response = await request.post(routes.auth.login('otp'), {
       data: payload,
     });
