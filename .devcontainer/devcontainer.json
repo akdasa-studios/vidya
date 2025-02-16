@@ -7,6 +7,7 @@
 		"ghcr.io/devcontainers/features/python:1": {},
 		"ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {},
 		"ghcr.io/itsmechlark/features/postgresql:1": {},
+    "ghcr.io/itsmechlark/features/redis-server:1": {},
  		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
    			"packages": "nginx"
     	}
@@ -27,10 +28,13 @@
 				"TakumiI.markdowntable",
 				"firsttris.vscode-jest-runner",
 				"Orta.vscode-jest",
-        "bierner.markdown-mermaid",
-        "github.vscode-pull-request-github",
-        "stackbreak.comment-divider",
-        "cweijan.vscode-postgresql-client2"
+				"bierner.markdown-mermaid",
+				"github.vscode-pull-request-github",
+				"stackbreak.comment-divider",
+				"cweijan.vscode-postgresql-client2",
+				"humao.rest-client",
+				"cweijan.vscode-redis-client",
+				"ms-playwright.playwright"
 			]
 		}
 	}

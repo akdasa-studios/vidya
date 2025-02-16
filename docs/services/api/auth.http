@@ -1,0 +1,36 @@
+### Get OTP code
+
+POST http://localhost:8001/auth/otp HTTP/1.1
+content-type: application/json
+
+{
+  "type": "email",
+  "destination": "example@example.com"
+}
+
+
+### Send authentication request
+
+POST http://localhost:8001/auth/login/otp HTTP/1.1
+content-type: application/json
+
+{
+  "login": "example@example.com",
+  "otp": "123123"
+}
+
+
+### Get Profile
+
+GET http://localhost:8001/auth/profile HTTP/1.1
+content-type: application/json
+Authorization: Bearer TOKEN
+ 
+### Refresh token
+
+POST http://localhost:8001/auth/tokens/refresh HTTP/1.1
+content-type: application/json
+
+{
+  "refreshToken": "TOKEN"
+}
