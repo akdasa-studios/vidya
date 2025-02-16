@@ -3,6 +3,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -33,14 +34,34 @@ export class RolesController {
     operationId: 'roles::getList',
   })
   @ApiOkResponse({
-    type: dto.GetRolesListResponse,
+    type: dto.GetRoleSummariesListResponse,
     description: 'Get a list of roles.',
   })
-  async getRolesList(): Promise<dto.GetRolesListResponse> {
-    const roles = await this.rolesService.findAll();
-    return new dto.GetRolesListResponse({
-      roles: this.mapper.mapArray(roles, entities.Role, dto.Role),
+  async getRolesList(): Promise<dto.GetRoleSummariesListResponse> {
+    const roles = await this.rolesService.findAllBy({});
+    return new dto.GetRoleSummariesListResponse({
+      roles: this.mapper.mapArray(roles, entities.Role, dto.RoleSummary),
     });
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                               GET /roles/:id                               */
+  /* -------------------------------------------------------------------------- */
+
+  @Get(Routes().org.roles.get(':id'))
+  @ApiOperation({
+    summary: 'Returns a role',
+    operationId: 'roles::get',
+  })
+  @ApiOkResponse({
+    type: dto.GetRoleResponse,
+    description: 'Get a role.',
+  })
+  async getRole(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<dto.GetRoleResponse> {
+    const role = await this.rolesService.findOneBy({ id });
+    return this.mapper.map(role, entities.Role, dto.Role);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -69,7 +90,7 @@ export class RolesController {
   /*                              PATCH /roles/:id                              */
   /* -------------------------------------------------------------------------- */
 
-  @Patch(Routes().org.roles.update())
+  @Patch(Routes().org.roles.update(':id'))
   @ApiOperation({
     summary: 'Update a role',
     operationId: 'roles::update',
@@ -86,6 +107,26 @@ export class RolesController {
       { id },
       this.mapper.map(request, dto.UpdateRoleRequest, entities.Role),
     );
-    return new dto.UpdateRoleResponse();
+    return new dto.UpdateRoleResponse(id);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                              DELETE /roles/:id                             */
+  /* -------------------------------------------------------------------------- */
+
+  @Delete(Routes().org.roles.delete(':id'))
+  @ApiOperation({
+    summary: 'Delete a role',
+    operationId: 'roles::delete',
+  })
+  @ApiOkResponse({
+    type: dto.DeleteRoleResponse,
+    description: 'Deletes a role.',
+  })
+  async deleteRole(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<dto.DeleteRoleResponse> {
+    await this.rolesService.deleteOneBy({ id });
+    return new dto.DeleteRoleResponse(id);
   }
 }
