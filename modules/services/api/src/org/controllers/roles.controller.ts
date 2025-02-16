@@ -28,10 +28,10 @@ export class RolesController {
   /*                                 GET /roles                                 */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().org.roles.getList())
+  @Get(Routes().org.roles.find())
   @ApiOperation({
     summary: 'Returns a list of roles',
-    operationId: 'roles::getList',
+    operationId: 'roles::find',
   })
   @ApiOkResponse({
     type: dto.GetRoleSummariesListResponse,

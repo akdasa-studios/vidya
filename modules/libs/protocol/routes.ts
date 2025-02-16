@@ -13,7 +13,7 @@ export const Routes = (baseUrl: string = '') => ({
   },
   org: {
     roles: {
-      getList: () => `${baseUrl}/org/roles`,
+      find: () => `${baseUrl}/org/roles`,
       get: (id: string) => `${baseUrl}/org/roles/${id}`,
       create: () => `${baseUrl}/org/roles`,
       update: (id: string) => `${baseUrl}/org/roles/${id}`,
