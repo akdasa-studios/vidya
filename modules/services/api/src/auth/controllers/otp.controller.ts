@@ -13,11 +13,7 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import {
-  ErrorResponse,
-  GetOtpRequest,
-  GetOtpResponse,
-} from '@vidya/api/auth/models';
+import * as dto from '@vidya/api/auth/dto';
 import { OtpService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
 
@@ -40,23 +36,23 @@ export class OtpController {
       `Returns success message if the OTP has been sent. If the OTP has ` +
       `already been generated and is still valid, returns an error message.`,
   })
-  @ApiBody({ type: GetOtpRequest })
+  @ApiBody({ type: dto.GetOtpRequest })
   @ApiOkResponse({
-    type: GetOtpResponse,
+    type: dto.GetOtpResponse,
     description: 'OTP has been sent to the user.',
   })
   @ApiTooManyRequestsResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'An OTP has already been generated and is still valid.',
   })
   async generateOtpCode(
-    @Body() request: GetOtpRequest,
-  ): Promise<GetOtpResponse> {
+    @Body() request: dto.GetOtpRequest,
+  ): Promise<dto.GetOtpResponse> {
     // check if an OTP has already been generated and is still valid
     const isExpired = await this.otpService.isExpired(request.destination);
     if (!isExpired) {
       throw new HttpException(
-        new GetOtpResponse({
+        new dto.GetOtpResponse({
           success: false,
           message: 'An OTP has already been generated and is still valid.',
         }),
@@ -75,6 +71,6 @@ export class OtpController {
     }
 
     // return success message
-    return new GetOtpResponse();
+    return new dto.GetOtpResponse();
   }
 }

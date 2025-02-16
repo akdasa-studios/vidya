@@ -12,11 +12,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import {
-  ErrorResponse,
-  RefreshTokensRequest,
-  RefreshTokensResponse,
-} from '@vidya/api/auth/models';
+import * as dto from '@vidya/api/auth/dto';
 import { AuthService, RevokedTokensService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
 
@@ -42,20 +38,20 @@ export class TokensController {
       `Returns new access and refresh tokens if the refresh token is valid.`,
   })
   @ApiOkResponse({
-    type: RefreshTokensResponse,
+    type: dto.RefreshTokensResponse,
     description: 'Tokens have been refreshed.',
   })
   @ApiBadRequestResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'Unable to refresh tokens.',
   })
   @ApiUnauthorizedResponse({
-    type: ErrorResponse,
+    type: dto.ErrorResponse,
     description: 'Refresh token is invalid.',
   })
   async refreshTokens(
-    @Body() request: RefreshTokensRequest,
-  ): Promise<RefreshTokensResponse> {
+    @Body() request: dto.RefreshTokensRequest,
+  ): Promise<dto.RefreshTokensResponse> {
     // verify refresh token, if invalid send 401 Unauthorized response
     const refreshToken = await this.authService.verifyToken(
       request.refreshToken,
@@ -76,7 +72,7 @@ export class TokensController {
 
     // generate new tokens
     const tokens = await this.authService.generateTokens(refreshToken.sub);
-    return new RefreshTokensResponse({
+    return new dto.RefreshTokensResponse({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     });
