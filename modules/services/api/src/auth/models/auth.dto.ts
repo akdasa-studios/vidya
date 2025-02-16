@@ -6,7 +6,6 @@ import { IsNotEmpty, IsString } from 'class-validator';
 /*                                Authentcation                               */
 /* -------------------------------------------------------------------------- */
 
-// TODO: rename to login request
 export class OtpLogInRequest implements protocol.OtpLogInRequest {
   @ApiProperty({ example: 'example@example.com' })
   @IsNotEmpty()
