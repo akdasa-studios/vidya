@@ -17,7 +17,7 @@ import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Roles')
+@ApiTags('Users and Roles')
 export class RolesController {
   constructor(
     private readonly rolesService: RolesService,

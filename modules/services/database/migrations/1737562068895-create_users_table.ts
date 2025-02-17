@@ -14,7 +14,7 @@ export class CreateUsersTable1737562068895 implements MigrationInterface {
         CONSTRAINT "CHK_8cf21de8c29e0c6409031a354f" CHECK (email IS NOT NULL OR phone IS NOT NULL)
       );
       
-      CREATE UNIQUE INDEX "IDX_97672ac88f789774dd47f7c8be" ON "users" ("email");
+      CREATE UNIQUE INDEX "unique_lower_email_idx" ON "users" (LOWER("email"));
       CREATE UNIQUE INDEX "IDX_a000cca60bcf04454e72769949" ON "users" ("phone");
     `);
   }
