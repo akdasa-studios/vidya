@@ -1,14 +1,6 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as dto from '@vidya/api/org/dto';
 import { RolesService } from '@vidya/api/org/services';
@@ -33,11 +25,15 @@ export class UserRolesController {
     operationId: 'userRoles::all',
   })
   @ApiOkResponse({
-    // type: dto.GetRoleSummariesListResponse,
+    type: dto.GetUserRolesListResponse,
     description: 'Get list of assigned roles to a user.',
   })
-  async getRolesList(): Promise<any> {
-    return [];
+  async getRolesList(
+    @Query() request: dto.GetUserRolesListRequest,
+  ): Promise<dto.GetUserRolesListResponse> {
+    const roles = await this.rolesService.getRolesOfUser(request.userId);
+    const userRoles = this.mapper.mapArray(roles, entities.Role, dto.UserRole);
+    return new dto.GetUserRolesListResponse(userRoles);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -50,30 +46,14 @@ export class UserRolesController {
     operationId: 'userRoles::create',
   })
   @ApiOkResponse({
-    // type: dto.CreateRoleResponse,
+    type: dto.SetUserRolesResponse,
     description: 'Assigns an existing role to a user.',
   })
-  async createRole(@Body() request: any): Promise<any> {
-    return {};
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                   DELETE /org/users/:userId/roles/:roleId                  */
-  /* -------------------------------------------------------------------------- */
-
-  @Delete(Routes().org.userRoles.delete(':userId', ':roleId'))
-  @ApiOperation({
-    summary: 'Remove a role from a user',
-    operationId: 'userRoles::delete',
-  })
-  @ApiOkResponse({
-    // type: dto.DeleteRoleResponse,
-    description: 'Remove an existing role from a user.',
-  })
-  async deleteRole(
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('roleId', new ParseUUIDPipe()) roleId: string,
-  ): Promise<any> {
-    return {};
+  async createRole(
+    @Query() query: dto.SetUserRolesQuery,
+    @Body() request: dto.SetUserRolesRequest,
+  ): Promise<dto.SetUserRolesResponse> {
+    await this.rolesService.setRolesForUser(query.userId, request.roleIds);
+    return new dto.SetUserRolesResponse();
   }
 }

@@ -2,6 +2,7 @@ import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
+import { ModuleRef } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   DbConfig,
@@ -10,6 +11,7 @@ import {
   RedisConfig,
 } from '@vidya/api/configs';
 import { Entities, Organization } from '@vidya/entities';
+import { useContainer } from 'class-validator';
 
 import { AuthModule } from './auth/auth.module';
 import { OrgModule } from './org/org.module';
