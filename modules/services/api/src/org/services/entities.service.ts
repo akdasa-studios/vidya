@@ -28,6 +28,16 @@ export abstract class EntitiesService<TEntity extends object> {
   }
 
   /**
+   * Checks if an entity exists based on the provided query.
+   *
+   * @param query The query to filter the entity.
+   * @returns A promise that resolves to a boolean.
+   */
+  async existsBy(query: FindOptionsWhere<TEntity>): Promise<boolean> {
+    return await this.repository.existsBy(query);
+  }
+
+  /**
    * Finds one entity based on the provided query.
    *
    * @param query The query to filter the entity.

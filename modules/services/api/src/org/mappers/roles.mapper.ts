@@ -28,6 +28,11 @@ export class RolesMappingProfile extends AutomapperProfile {
       );
 
       createMap(
+        mapper, entities.Role, dto.UserRole,
+        forMember((d) => d.roleId,      mapFrom((s) => s.id)),
+      );
+
+      createMap(
         mapper, dto.CreateRoleRequest, entities.Role,
         forMember((d) => d.name,        mapFrom((s) => s.name)),
         forMember((d) => d.description, mapFrom((s) => s.description)),
