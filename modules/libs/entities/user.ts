@@ -23,7 +23,7 @@ export class User {
   @OneToMany(() => UserRole, userRole => userRole.user)
   public userRoles: UserRole[];
 
-  @ManyToMany(() => Role, role => role.users)
+  @ManyToMany(() => Role)
   @JoinTable({
     name: 'userRoles',
     joinColumn: {
