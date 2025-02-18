@@ -5,13 +5,24 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { RequirePermissions } from '@vidya/api/auth/decorators';
+import { AuthenticatedUser, AuthorizedUser } from '@vidya/api/auth/guards';
 import * as dto from '@vidya/api/org/dto';
+import { RoleExistsPipe } from '@vidya/api/org/pipes';
 import { RolesService } from '@vidya/api/org/services';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
@@ -29,6 +40,9 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.roles.find())
+  @RequirePermissions('roles:read')
+  @UseGuards(AuthenticatedUser, AuthorizedUser)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of roles',
     operationId: 'roles::find',
@@ -57,10 +71,16 @@ export class RolesController {
     type: dto.GetRoleResponse,
     description: 'Get a role.',
   })
+  @ApiNotFoundResponse({
+    description: 'Role not found.',
+  })
   async getRole(
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<dto.GetRoleResponse> {
     const role = await this.rolesService.findOneBy({ id });
+    if (!role) {
+      throw new NotFoundException(`Role with id ${id} not found`);
+    }
     return this.mapper.map(role, entities.Role, dto.Role);
   }
 
@@ -99,8 +119,11 @@ export class RolesController {
     type: dto.UpdateRoleResponse,
     description: 'Updates a role.',
   })
+  @ApiNotFoundResponse({
+    description: 'Role not found.',
+  })
   async updateRole(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
     @Body() request: dto.UpdateRoleRequest,
   ): Promise<dto.UpdateRoleResponse> {
     await this.rolesService.updateOneBy(
@@ -123,8 +146,11 @@ export class RolesController {
     type: dto.DeleteRoleResponse,
     description: 'Deletes a role.',
   })
+  @ApiNotFoundResponse({
+    description: 'Role not found.',
+  })
   async deleteRole(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
   ): Promise<dto.DeleteRoleResponse> {
     await this.rolesService.deleteOneBy({ id });
     return new dto.DeleteRoleResponse(id);

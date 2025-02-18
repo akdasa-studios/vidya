@@ -13,7 +13,10 @@ import { RevokedTokensService } from './services/revokedTokens.service';
 import { UsersService } from './services/users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    JwtModule.register({ global: true }),
+  ],
   controllers: [
     LoginController,
     OtpController,
@@ -21,5 +24,6 @@ import { UsersService } from './services/users.service';
     ProfileController,
   ],
   providers: [OtpService, UsersService, AuthService, RevokedTokensService],
+  exports: [RevokedTokensService],
 })
 export class AuthModule {}

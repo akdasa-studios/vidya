@@ -11,9 +11,10 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { UserId } from '@vidya/api/auth/decorators';
 import * as dto from '@vidya/api/auth/dto';
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UsersService } from '@vidya/api/auth/services';
-import { AuthenticatedUser, UserId } from '@vidya/api/auth/utils';
 import { Routes } from '@vidya/protocol';
 
 @Controller()

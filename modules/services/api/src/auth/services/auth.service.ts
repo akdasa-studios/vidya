@@ -18,11 +18,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async generateTokens(userId: string): Promise<Tokens> {
+  async generateTokens(userId: string, permissions: string[]): Promise<Tokens> {
     const accessToken = await this.jwtService.signAsync(
       {
         jti: uuidv4(),
         sub: userId,
+        permissions,
       },
       {
         expiresIn: this.jwtConfig.accessTokenExpiresIn,

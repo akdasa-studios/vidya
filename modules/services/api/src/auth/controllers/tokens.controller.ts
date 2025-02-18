@@ -13,7 +13,11 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import * as dto from '@vidya/api/auth/dto';
-import { AuthService, RevokedTokensService } from '@vidya/api/auth/services';
+import {
+  AuthService,
+  RevokedTokensService,
+  UsersService,
+} from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
@@ -22,6 +26,7 @@ export class TokensController {
   constructor(
     private readonly revokedTokensService: RevokedTokensService,
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
   ) {}
 
   /* -------------------------------------------------------------------------- */
@@ -70,8 +75,18 @@ export class TokensController {
     // revoke the refresh token to prevent replay attacks
     this.revokedTokensService.revoke(refreshToken);
 
+    // get user
+    const user = await this.usersService.findById(refreshToken.sub);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const permissions = user.roles.flatMap((role) => role.permissions);
+
     // generate new tokens
-    const tokens = await this.authService.generateTokens(refreshToken.sub);
+    const tokens = await this.authService.generateTokens(
+      refreshToken.sub,
+      permissions,
+    );
     return new dto.RefreshTokensResponse({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,

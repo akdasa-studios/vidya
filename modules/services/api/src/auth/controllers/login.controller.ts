@@ -14,14 +14,15 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { UserAccessToken } from '@vidya/api/auth/decorators';
 import * as dto from '@vidya/api/auth/dto';
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import {
   AuthService,
   OtpService,
   RevokedTokensService,
   UsersService,
 } from '@vidya/api/auth/services';
-import { AuthenticatedUser, UserAccessToken } from '@vidya/api/auth/utils';
 import { JwtToken, OtpType, Routes } from '@vidya/protocol';
 
 @Controller()
@@ -78,7 +79,9 @@ export class LoginController {
       otpTypeToLoginFieldMap[otp.type],
       request.login,
     );
-    const tokens = await this.authService.generateTokens(user.id);
+    console.log('user', user);
+    const permissions = user.roles.flatMap((role) => role.permissions);
+    const tokens = await this.authService.generateTokens(user.id, permissions);
 
     return new dto.OtpLogInResponse({
       accessToken: tokens.accessToken,
