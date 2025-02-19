@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import * as protocol from '@vidya/protocol';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Models                                   */
@@ -18,6 +18,14 @@ export class Role implements protocol.Role {
 
   @ApiProperty({ example: ['permissions'] })
   permissions: string[];
+
+  @ApiProperty({ example: 'organizationId' })
+  @IsUUID()
+  organizationId: string;
+
+  @ApiPropertyOptional({ example: 'schoolId' })
+  @IsOptional()
+  schoolId?: string;
 }
 
 export class RoleSummary implements protocol.RoleSummary {
@@ -36,7 +44,24 @@ export class RoleSummary implements protocol.RoleSummary {
 /* -------------------------------------------------------------------------- */
 
 export class GetRoleRequest implements protocol.GetRoleRequest {}
-export class GetRoleResponse extends Role implements protocol.GetRoleResponse {}
+export class GetRoleResponse extends Role implements protocol.GetRoleResponse {
+  organizationId: string;
+  schoolId?: string;
+}
+
+export class GetRoleSummariesListQuery
+  implements protocol.GetRoleSummariesListQuery
+{
+  @ApiPropertyOptional()
+  @IsUUID()
+  @IsOptional()
+  organizationId?: string;
+
+  @ApiPropertyOptional()
+  @IsUUID()
+  @IsOptional()
+  schoolId?: string;
+}
 
 export class GetRoleSummariesListResponse
   implements protocol.GetRoleSummariesListResponse
@@ -73,6 +98,14 @@ export class CreateRoleRequest implements protocol.CreateRoleRequest {
   @ApiProperty({ example: ['permissions'] })
   @IsString({ each: true })
   permissions: string[];
+
+  @ApiProperty({ example: 'organizationId' })
+  @IsUUID()
+  organizationId: string;
+
+  @ApiPropertyOptional({ example: 'schoolId' })
+  @IsOptional()
+  schoolId?: string;
 }
 
 export class CreateRoleResponse implements protocol.CreateRoleResponse {

@@ -1,12 +1,17 @@
-import { User, Role, UserRole } from "@vidya/entities";
+import { User, Role, UserRole, Organization } from "@vidya/entities";
 import { faker } from '@faker-js/faker';
 import { dataSource } from "../helpers/dataSource";
 
 describe('UserRoles', () => {
   let user: User;
   let role: Role;
+  let organization: Organization;
 
   beforeEach(async () => {
+    organization = new Organization();
+    organization.name = faker.company.name();
+    await dataSource.manager.save(organization);
+
     user = new User();
     user.name = faker.person.fullName();
     user.email = faker.internet.exampleEmail();
@@ -15,6 +20,7 @@ describe('UserRoles', () => {
     role.name = faker.person.jobTitle();
     role.description = faker.lorem.sentence();
     role.permissions = ['perm1', 'perm2'];
+    role.organizationId = organization.id;
 
     await dataSource.manager.save([user, role]);
   });

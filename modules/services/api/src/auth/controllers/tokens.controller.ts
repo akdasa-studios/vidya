@@ -1,3 +1,5 @@
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
@@ -18,6 +20,7 @@ import {
   RevokedTokensService,
   UsersService,
 } from '@vidya/api/auth/services';
+import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
@@ -27,6 +30,7 @@ export class TokensController {
     private readonly revokedTokensService: RevokedTokensService,
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
   /* -------------------------------------------------------------------------- */
@@ -80,12 +84,11 @@ export class TokensController {
     if (!user) {
       throw new UnauthorizedException();
     }
-    const permissions = user.roles.flatMap((role) => role.permissions);
 
     // generate new tokens
     const tokens = await this.authService.generateTokens(
       refreshToken.sub,
-      permissions,
+      this.mapper.mapArray(user.roles, entities.Role, dto.UserPermission),
     );
     return new dto.RefreshTokensResponse({
       accessToken: tokens.accessToken,

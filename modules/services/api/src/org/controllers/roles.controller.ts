@@ -10,17 +10,21 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { RequirePermissions } from '@vidya/api/auth/decorators';
-import { AuthenticatedUser, AuthorizedUser } from '@vidya/api/auth/guards';
+import {
+  RequirePermissions,
+  UserWithPermissions,
+} from '@vidya/api/auth/decorators';
+import { UserPermissions } from '@vidya/api/auth/utils'
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import * as dto from '@vidya/api/org/dto';
 import { RoleExistsPipe } from '@vidya/api/org/pipes';
 import { RolesService } from '@vidya/api/org/services';
@@ -40,8 +44,7 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.roles.find())
-  @RequirePermissions('roles:read')
-  @UseGuards(AuthenticatedUser, AuthorizedUser)
+  @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of roles',
@@ -51,8 +54,14 @@ export class RolesController {
     type: dto.GetRoleSummariesListResponse,
     description: 'Get a list of roles.',
   })
-  async getRolesList(): Promise<dto.GetRoleSummariesListResponse> {
-    const roles = await this.rolesService.findAllBy({});
+  async getRolesList(
+    @Query() query: dto.GetRoleSummariesListQuery,
+    @UserWithPermissions() permissions: UserPermissions,
+  ): Promise<dto.GetRoleSummariesListResponse> {
+    const roles = await this.rolesService.findPermittedBy(permissions, {
+      organizationId: query.organizationId,
+      schoolId: query.schoolId,
+    });
     return new dto.GetRoleSummariesListResponse({
       roles: this.mapper.mapArray(roles, entities.Role, dto.RoleSummary),
     });
@@ -63,6 +72,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.roles.get(':id'))
+  @UseGuards(AuthenticatedUser)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a role',
     operationId: 'roles::get',
@@ -71,17 +82,15 @@ export class RolesController {
     type: dto.GetRoleResponse,
     description: 'Get a role.',
   })
-  @ApiNotFoundResponse({
-    description: 'Role not found.',
-  })
   async getRole(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.GetRoleResponse> {
-    const role = await this.rolesService.findOneBy({ id });
-    if (!role) {
+    const roles = await this.rolesService.findPermittedBy(permissions, { id });
+    if (roles.length === 0) {
       throw new NotFoundException(`Role with id ${id} not found`);
     }
-    return this.mapper.map(role, entities.Role, dto.Role);
+    return this.mapper.map(roles[0], entities.Role, dto.Role);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -89,6 +98,7 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Post(Routes().org.roles.create())
+  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Create a new role',
     operationId: 'roles::create',
@@ -111,6 +121,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Patch(Routes().org.roles.update(':id'))
+  // @RequirePermissions('roles:read')
+  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Update a role',
     operationId: 'roles::update',
@@ -118,9 +130,6 @@ export class RolesController {
   @ApiOkResponse({
     type: dto.UpdateRoleResponse,
     description: 'Updates a role.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Role not found.',
   })
   async updateRole(
     @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
@@ -138,6 +147,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Delete(Routes().org.roles.delete(':id'))
+  @RequirePermissions('roles:read')
+  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Delete a role',
     operationId: 'roles::delete',
@@ -145,9 +156,6 @@ export class RolesController {
   @ApiOkResponse({
     type: dto.DeleteRoleResponse,
     description: 'Deletes a role.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Role not found.',
   })
   async deleteRole(
     @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,

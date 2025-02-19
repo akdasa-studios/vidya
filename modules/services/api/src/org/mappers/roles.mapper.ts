@@ -34,9 +34,11 @@ export class RolesMappingProfile extends AutomapperProfile {
 
       createMap(
         mapper, dto.CreateRoleRequest, entities.Role,
-        forMember((d) => d.name,        mapFrom((s) => s.name)),
-        forMember((d) => d.description, mapFrom((s) => s.description)),
-        forMember((d) => d.permissions, mapFrom((s) => s.permissions)),
+        forMember((d) => d.name,           mapFrom((s) => s.name)),
+        forMember((d) => d.description,    mapFrom((s) => s.description)),
+        forMember((d) => d.permissions,    mapFrom((s) => s.permissions)),
+        forMember((d) => d.organizationId, mapFrom((s) => s.organizationId)),
+        forMember((d) => d.schoolId,       mapFrom((s) => s.schoolId)),
       );
 
       createMap(

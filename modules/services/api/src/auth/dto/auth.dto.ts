@@ -68,3 +68,14 @@ export class RefreshTokensResponse implements protocol.RefreshTokensResponse {
   @IsNotEmpty()
   refreshToken: string;
 }
+
+export class UserPermission implements protocol.UserPermission {
+  @ApiProperty({ example: 'organizationId' })
+  oid: string;
+
+  @ApiProperty({ example: 'schoolId' })
+  sid?: string;
+
+  @ApiProperty({ example: ['permissions'] })
+  p: string[];
+}
