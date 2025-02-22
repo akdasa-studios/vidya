@@ -1,15 +1,15 @@
 import { faker } from '@faker-js/faker';
 import { test, expect, APIRequestContext } from '@playwright/test';
-import { Redis } from 'ioredis';
 import { OtpLogInRequest, OtpType } from '@vidya/protocol';
 import { OtpStorageKey, Routes, Otp } from '@vidya/protocol';
+import { redis } from '../helpers/redis';
 
 test.describe('Authentication :: Tokens :: Refresh', () => {
   const routes = Routes('http://localhost:8001');
-  const redis = new Redis({
-    host: 'localhost', // TODO: configure by environment variable
-    port: 6379, // TODO: configure by environment variable
-  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   Context                                  */
+  /* -------------------------------------------------------------------------- */
 
   let email: string;
   let otp: Otp;

@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { test, expect } from '@playwright/test';
-import { Redis } from 'ioredis';
 import {
   OtpLogInRequest,
   OtpLogInResponse,
@@ -8,30 +7,37 @@ import {
   OtpType,
 } from '@vidya/protocol';
 import { OtpStorageKey, Routes, Otp } from '@vidya/protocol';
+import { redis } from '../helpers/redis';
+
+const routes = Routes('http://localhost:8001');
 
 test.describe('Authentication', () => {
-  const routes = Routes('http://localhost:8001');
-  const redis = new Redis({
-    host: 'localhost', // TODO: configure by environment variable
-    port: 6379, // TODO: configure by environment variable
-  });
+  /* -------------------------------------------------------------------------- */
+  /*                                   Context                                  */
+  /* -------------------------------------------------------------------------- */
 
-  const context = {
-    email: '',
-    otp: '',
+  const unauthorizedResponse = {
+    message: ['otp is invalid'],
+    error: 'Unauthorized',
+    statusCode: 401,
   };
 
+  let email: string;
+  let otp: string;
+
+  /* -------------------------------------------------------------------------- */
+  /*                                    Tests                                   */
+  /* -------------------------------------------------------------------------- */
+
   test.beforeEach(async ({ request }) => {
-    context.email = faker.internet.exampleEmail();
+    email = faker.internet.exampleEmail();
     const payload: GetOtpRequest = {
       type: OtpType.Email,
-      destination: context.email,
+      destination: email,
     };
     await request.post(routes.otp.root(), { data: payload });
-    const storedOtp: Otp = JSON.parse(
-      await redis.get(OtpStorageKey(context.email)),
-    );
-    context.otp = storedOtp.code;
+    const storedOtp: Otp = JSON.parse(await redis.get(OtpStorageKey(email)));
+    otp = storedOtp.code;
   });
 
   /* -------------------------------------------------------------------------- */
@@ -39,61 +45,45 @@ test.describe('Authentication', () => {
   /* -------------------------------------------------------------------------- */
 
   test('should not authenticate if otp is incorrect', async ({ request }) => {
-    const otp = faker.string.numeric({ length: 6 });
-    const payload: OtpLogInRequest = { login: context.email, otp };
+    const data: OtpLogInRequest = {
+      login: email,
+      otp: faker.string.numeric({ length: 6 }),
+    };
 
     // act: request token without requesting OTP
-    const response = await request.post(routes.auth.login('otp'), {
-      data: payload,
-    });
-    const data = await response.json();
+    const response = await request.post(routes.auth.login('otp'), { data });
+    const responseData = await response.json();
 
     // assert: 401 is returned with error message
     expect(response.status()).toBe(401);
-    expect(data).toEqual({
-      message: ['otp is invalid'],
-      error: 'Unauthorized',
-      statusCode: 401,
-    });
+    expect(responseData).toEqual(unauthorizedResponse);
   });
 
   test('should not authenticate if otp is expired', async ({ request }) => {
     // arrange: expire OTP
-    await redis.expire(OtpStorageKey(context.email), 0);
+    await redis.expire(OtpStorageKey(email), 0);
 
     // act: request token with expired OTP
-    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
-    const response = await request.post(routes.auth.login('otp'), {
-      data: payload,
-    });
+    const data: OtpLogInRequest = { login: email, otp };
+    const response = await request.post(routes.auth.login('otp'), { data });
+    const responseData = await response.json();
 
     // assert: 401 is returned with error message
     expect(response.status()).toBe(401);
-    expect(await response.json()).toEqual({
-      message: ['otp is invalid'],
-      error: 'Unauthorized',
-      statusCode: 401,
-    });
+    expect(responseData).toEqual(unauthorizedResponse);
   });
 
   test('should not authenticate if otp is used', async ({ request }) => {
-    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
-
     // arrange: request token with OTP
-    await request.post(routes.auth.login('otp'), { data: payload });
+    const data: OtpLogInRequest = { login: email, otp };
+    await request.post(routes.auth.login('otp'), { data });
 
     // act: request token with used OTP
-    const response = await request.post(routes.auth.login('otp'), {
-      data: payload,
-    });
+    const response = await request.post(routes.auth.login('otp'), { data });
 
     // assert: 401 is returned with error message
     expect(response.status()).toBe(401);
-    expect(await response.json()).toEqual({
-      message: ['otp is invalid'],
-      error: 'Unauthorized',
-      statusCode: 401,
-    });
+    expect(await response.json()).toEqual(unauthorizedResponse);
   });
 
   /* -------------------------------------------------------------------------- */
@@ -102,10 +92,8 @@ test.describe('Authentication', () => {
 
   test('should authenticate if valid otp is provided', async ({ request }) => {
     // act: request token with OTP
-    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
-    const response = await request.post(routes.auth.login('otp'), {
-      data: payload,
-    });
+    const data: OtpLogInRequest = { login: email, otp };
+    const response = await request.post(routes.auth.login('otp'), { data });
     const responseData: OtpLogInResponse = await response.json();
 
     // assert: token is returned
@@ -116,7 +104,7 @@ test.describe('Authentication', () => {
   test('should authenticate if valid otp is provided after several mistakes', async ({
     request,
   }) => {
-    const payload: OtpLogInRequest = { login: context.email, otp: context.otp };
+    const payload: OtpLogInRequest = { login: email, otp };
 
     // arrange: request token with invalid OTP
     await request.post(routes.auth.login('otp'), {
