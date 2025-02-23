@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppName } from '@vidya/domain';
 
 import { AppModule } from './app.module';
 
@@ -10,7 +11,7 @@ async function bootstrap() {
   // TODO: Use on development environment only
   const config = new DocumentBuilder()
     .setTitle('Vidya')
-    .setDescription('The Vidya API')
+    .setDescription(`The ${AppName} API`)
     .setVersion('1.0')
     .addBearerAuth()
     .addTag('Authentication', 'Endpoints for authentication', {

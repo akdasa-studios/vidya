@@ -1,21 +1,29 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
+    "sourceMap": false,
+    "inlineSourceMap": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
-    "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "rootDirs": [
+      ".",
+      "../../libs/entities"
+    ],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@vidya/entities": ["../../libs/entities"]
+    }
   }
 }
