@@ -12,10 +12,12 @@
   "dependencies": {
     "@faker-js/faker": "^9.4.0",
     "@types/supertest": "^6.0.2",
+    "pg-mem": "^3.0.5",
     "playwright": "^1.49.1",
     "reflect-metadata": "^0.2.2",
     "supertest": "^7.0.0",
-    "typeorm": "^0.3.20"
+    "@nestjs/common": "10.4.15",
+    "@nestjs/testing": "10.4.15"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
