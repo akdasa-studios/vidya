@@ -30,7 +30,7 @@ export class OrganizationsController {
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
-  @Get()
+  @Get(Routes().org.find())
   @ApiOperation({
     summary: 'Returns a list of organizations',
     operationId: 'organizations::find',
@@ -91,7 +91,8 @@ export class OrganizationsController {
   })
   async deleteOrganization(
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
-  ): Promise<void> {
+  ): Promise<dto.DeleteOrganizationResponse> {
     await this.organizationsService.deleteOneBy({ id });
+    return { success: true };
   }
 }

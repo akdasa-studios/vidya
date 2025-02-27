@@ -11,15 +11,15 @@
     "baseUrl": ".",
     "rootDirs": [
       "src",
-      "../../libs/protocol",
-      "../../libs/entities",
-      "../../libs/domain",
+      "../../../libs/protocol",
+      "../../../libs/entities",
+      "../../../libs/domain",
     ],
     "paths": {
       "@vidya/api/*": ["src/*"],
-      "@vidya/protocol": ["../../libs/protocol"],
-      "@vidya/entities": ["../../libs/entities"],
-      "@vidya/domain": ["../../libs/domain"],
+      "@vidya/protocol": ["../../../libs/protocol"],
+      "@vidya/entities": ["../../../libs/entities"],
+      "@vidya/domain": ["../../../libs/domain"],
       "*": [
         "node_modules/*"
       ]

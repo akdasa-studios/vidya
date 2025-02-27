@@ -64,3 +64,8 @@ export class UpdateOrganizationResponse
   @ApiProperty({ example: 'name' })
   name: string;
 }
+
+export class DeleteOrganizationResponse {
+  @ApiProperty({ example: 'success' })
+  success: boolean;
+}

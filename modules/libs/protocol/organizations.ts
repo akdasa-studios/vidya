@@ -19,3 +19,7 @@ export type CreateOrganizationResponse = {
 
 export type UpdateOrganizationRequest = Pick<Partial<Organization>, 'name'>; 
 export type UpdateOrganizationResponse = Organization;
+
+export type DeleteOrganizationResponse = {
+  success: boolean;
+}
