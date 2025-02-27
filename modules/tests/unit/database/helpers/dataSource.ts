@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Entities } from '@vidya/entities';
-import { Client} from 'pg';
+import { Client } from 'pg';
 
 let dataSource: DataSource;
 

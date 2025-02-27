@@ -10,5 +10,5 @@ export const MainDataSource = new DataSource({
   database: 'postgres',
   logging: true,
   entities: Entities,
-  migrations: ['dist/migrations/**/*.{ts,js}'],
+  migrations: ['./dist/services/database/migrations/**/*.js'],
 });

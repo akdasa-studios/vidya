@@ -2,7 +2,7 @@
 /*                              One Time Password                             */
 /* -------------------------------------------------------------------------- */
 
-import { OtpType } from "otp";
+import { OtpType } from "./otp";
 
 /**
  * Request to get OTP for the specified destination.
