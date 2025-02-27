@@ -8,5 +8,5 @@ export default registerAs('db', () => ({
   password: process.env.VIDYA_DB_PASSWORD || 'postgres',
   database: process.env.VIDYA_DB_DATABASE || 'postgres',
   schema: process.env.VIDYA_DB_SCHEMA || 'public',
-  logging: process.env.VIDYA_DB_LOGGING === 'true',
+  logging: (process.env.VIDYA_DB_LOGGING ?? 'true') === 'true',
 }));

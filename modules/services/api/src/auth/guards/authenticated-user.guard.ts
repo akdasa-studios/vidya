@@ -40,6 +40,7 @@ export class AuthenticatedUser implements CanActivate {
       }
 
       request['accessToken'] = payload;
+      request['userId'] = payload.sub;
     } catch {
       throw new UnauthorizedException();
     }

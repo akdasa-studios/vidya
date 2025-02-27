@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtConfig } from '@vidya/api/configs';
-import { RefreshToken } from '@vidya/protocol';
+import { RefreshToken, UserPermission } from '@vidya/protocol';
 import { v4 as uuidv4 } from 'uuid';
 
 export type Tokens = {
@@ -18,11 +18,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async generateTokens(userId: string): Promise<Tokens> {
+  async generateTokens(
+    userId: string,
+    permissions: UserPermission[],
+  ): Promise<Tokens> {
     const accessToken = await this.jwtService.signAsync(
       {
         jti: uuidv4(),
         sub: userId,
+        permissions,
       },
       {
         expiresIn: this.jwtConfig.accessTokenExpiresIn,

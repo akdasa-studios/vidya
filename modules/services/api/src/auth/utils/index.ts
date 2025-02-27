@@ -1,2 +1,1 @@
-export * from './authenticatedUserGuard.util';
-export * from './authenticatedUserId.util';
+export * from './user-permissions.util';

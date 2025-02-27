@@ -5,6 +5,8 @@
 export type Role = {
   id: string;
   name: string;
+  organizationId: string;
+  schoolId?: string;
   description: string;
   permissions: string[];
 }
@@ -18,9 +20,13 @@ export type RoleSummary = Pick<Role, 'id' | 'name' | 'description'>;
 export interface GetRoleRequest {}
 export interface GetRoleResponse extends Role {}
 
-export interface GetRoleSummariesListRequest {}
+export interface GetRoleSummariesListQuery {
+  organizationId?: string;
+  schoolId?: string;
+}
+
 export interface GetRoleSummariesListResponse {
-  roles: Omit<Role, 'permissions'>[];
+  roles: RoleSummary[];
 }
 
 /* -------------------------------------------------------------------------- */

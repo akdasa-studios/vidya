@@ -5,19 +5,34 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  RequirePermissions,
+  UserWithPermissions,
+} from '@vidya/api/auth/decorators';
+import { UserPermissions } from '@vidya/api/auth/utils'
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import * as dto from '@vidya/api/org/dto';
+import { RoleExistsPipe } from '@vidya/api/org/pipes';
 import { RolesService } from '@vidya/api/org/services';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Roles')
+@ApiTags('Users and Roles')
 export class RolesController {
   constructor(
     private readonly rolesService: RolesService,
@@ -29,6 +44,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.roles.find())
+  @UseGuards(AuthenticatedUser)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of roles',
     operationId: 'roles::find',
@@ -37,8 +54,14 @@ export class RolesController {
     type: dto.GetRoleSummariesListResponse,
     description: 'Get a list of roles.',
   })
-  async getRolesList(): Promise<dto.GetRoleSummariesListResponse> {
-    const roles = await this.rolesService.findAllBy({});
+  async getRolesList(
+    @Query() query: dto.GetRoleSummariesListQuery,
+    @UserWithPermissions() permissions: UserPermissions,
+  ): Promise<dto.GetRoleSummariesListResponse> {
+    const roles = await this.rolesService.findPermittedBy(permissions, {
+      organizationId: query.organizationId,
+      schoolId: query.schoolId,
+    });
     return new dto.GetRoleSummariesListResponse({
       roles: this.mapper.mapArray(roles, entities.Role, dto.RoleSummary),
     });
@@ -49,6 +72,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.roles.get(':id'))
+  @UseGuards(AuthenticatedUser)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a role',
     operationId: 'roles::get',
@@ -59,9 +84,13 @@ export class RolesController {
   })
   async getRole(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.GetRoleResponse> {
-    const role = await this.rolesService.findOneBy({ id });
-    return this.mapper.map(role, entities.Role, dto.Role);
+    const roles = await this.rolesService.findPermittedBy(permissions, { id });
+    if (roles.length === 0) {
+      throw new NotFoundException(`Role with id ${id} not found`);
+    }
+    return this.mapper.map(roles[0], entities.Role, dto.Role);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -69,6 +98,7 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Post(Routes().org.roles.create())
+  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Create a new role',
     operationId: 'roles::create',
@@ -91,6 +121,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Patch(Routes().org.roles.update(':id'))
+  // @RequirePermissions('roles:read')
+  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Update a role',
     operationId: 'roles::update',
@@ -100,7 +132,7 @@ export class RolesController {
     description: 'Updates a role.',
   })
   async updateRole(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
     @Body() request: dto.UpdateRoleRequest,
   ): Promise<dto.UpdateRoleResponse> {
     await this.rolesService.updateOneBy(
@@ -115,6 +147,8 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Delete(Routes().org.roles.delete(':id'))
+  @RequirePermissions('roles:read')
+  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Delete a role',
     operationId: 'roles::delete',
@@ -124,7 +158,7 @@ export class RolesController {
     description: 'Deletes a role.',
   })
   async deleteRole(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
   ): Promise<dto.DeleteRoleResponse> {
     await this.rolesService.deleteOneBy({ id });
     return new dto.DeleteRoleResponse(id);

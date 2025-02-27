@@ -164,6 +164,7 @@
     "jest.enable": false,
     "jest.jestCommandLine": "npx jest",
     "jest.runMode": "on-demand",
+    "jestrunner.jestCommand": "npx jest",
     /* -------------------------------------------------------------------------- */
     /*                                 file types                                 */
     /* -------------------------------------------------------------------------- */

@@ -1,3 +1,5 @@
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
@@ -14,14 +16,16 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { UserAccessToken } from '@vidya/api/auth/decorators';
 import * as dto from '@vidya/api/auth/dto';
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import {
   AuthService,
   OtpService,
   RevokedTokensService,
   UsersService,
 } from '@vidya/api/auth/services';
-import { AuthenticatedUser, UserAccessToken } from '@vidya/api/auth/utils';
+import * as entities from '@vidya/entities';
 import { JwtToken, OtpType, Routes } from '@vidya/protocol';
 
 @Controller()
@@ -32,6 +36,7 @@ export class LoginController {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
     private readonly revokedTokensService: RevokedTokensService,
+    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
   /* -------------------------------------------------------------------------- */
@@ -78,7 +83,10 @@ export class LoginController {
       otpTypeToLoginFieldMap[otp.type],
       request.login,
     );
-    const tokens = await this.authService.generateTokens(user.id);
+    const tokens = await this.authService.generateTokens(
+      user.id,
+      this.mapper.mapArray(user.roles, entities.Role, dto.UserPermission),
+    );
 
     return new dto.OtpLogInResponse({
       accessToken: tokens.accessToken,
