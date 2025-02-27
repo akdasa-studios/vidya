@@ -38,6 +38,7 @@ export interface JwtToken {
 }
 
 export interface AccessToken extends JwtToken {
+  permissions: UserPermissions;
 }
 
 export interface RefreshToken extends JwtToken {
