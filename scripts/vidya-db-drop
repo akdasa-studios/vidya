@@ -18,4 +18,4 @@ echo "Starting Postgres..."
 sudo service postgresql start >> /dev/null
 
 echo "Dropping database..."
-npx --workspace @vidya/database typeorm schema:drop -d ./dist/main.js
+npx --workspace @vidya/database typeorm schema:drop -d ./dist/services/database/main.js

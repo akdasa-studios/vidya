@@ -58,7 +58,6 @@
         "command": "vidya-db-run",
         "type": "shell",
         "args": [],
-        "problemMatcher": [],
         "presentation": {
           "reveal": "always"
         },
@@ -130,8 +129,14 @@
           "<node_internals>/**"
         ],
         "type": "node",
-        "console": "integratedTerminal"
-      }
+        "console": "integratedTerminal",
+        "cwd": "/workspaces/vidya/modules/services/api",
+        "presentation": {
+          "hidden": false,
+          "group": "Services",
+          "order": 1
+        },
+      },
     ],
     "compounds": []
   },

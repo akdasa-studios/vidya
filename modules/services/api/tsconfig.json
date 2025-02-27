@@ -10,6 +10,12 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "rootDirs": [
+      "src",
+      "../../libs/protocol",
+      "../../libs/entities",
+      "../../libs/domain",
+    ],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -18,7 +24,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@vidya/api/*": ["src/*"]
-    }
+      "@vidya/api/*": ["src/*"],
+      "@vidya/protocol": ["../../libs/protocol"],
+      "@vidya/entities": ["../../libs/entities"],
+      "@vidya/domain": ["../../libs/domain"],
+    },
   }
 }
