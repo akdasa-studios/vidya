@@ -3,6 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import { inMemoryDataSource } from '@vidya/api/utils';
+import {
+  Permision,
+  PermissionActions,
+  PermissionResources,
+} from '@vidya/domain';
 import { DataSource } from 'typeorm';
 
 import { OrganizationsService } from '../services';
@@ -42,8 +47,18 @@ describe('OrganizationsController', () => {
 
       // act
       const userPermissions = new UserPermissions([
-        { oid: org1.id, p: ['orgs:read'] },
-        { oid: org2.id, p: ['orgs:read'] },
+        {
+          oid: org1.id,
+          p: [
+            Permision(PermissionResources.Organization, PermissionActions.Read),
+          ],
+        },
+        {
+          oid: org2.id,
+          p: [
+            Permision(PermissionResources.Organization, PermissionActions.Read),
+          ],
+        },
       ]);
       const response = await orgsController.getOrganizations(userPermissions);
 
@@ -61,7 +76,12 @@ describe('OrganizationsController', () => {
 
       // act
       const userPermissions = new UserPermissions([
-        { oid: org.id, p: ['orgs:read'] },
+        {
+          oid: org.id,
+          p: [
+            Permision(PermissionResources.Organization, PermissionActions.Read),
+          ],
+        },
       ]);
       const response = await orgsController.getOrganization(
         org.id,
@@ -88,7 +108,12 @@ describe('OrganizationsController', () => {
 
     it('should throw an error if organization does not exist', async () => {
       const userPermissions = new UserPermissions([
-        { oid: faker.string.uuid(), p: ['orgs:read'] },
+        {
+          oid: faker.string.uuid(),
+          p: [
+            Permision(PermissionResources.Organization, PermissionActions.Read),
+          ],
+        },
       ]);
 
       expect(async () => {
@@ -104,7 +129,16 @@ describe('OrganizationsController', () => {
   describe('createOrganization', () => {
     it('should create an organization', async () => {
       const request = { name: faker.company.name() };
-      const userPermissions = new UserPermissions([{ p: ['orgs:create'] }]);
+      const userPermissions = new UserPermissions([
+        {
+          p: [
+            Permision(
+              PermissionResources.Organization,
+              PermissionActions.Create,
+            ),
+          ],
+        },
+      ]);
       const response = await orgsController.createOrganization(
         request,
         userPermissions,
@@ -121,7 +155,16 @@ describe('OrganizationsController', () => {
     });
 
     it.skip('should throw an error if name is not specified', async () => {
-      const userPermissions = new UserPermissions([{ p: ['orgs:create'] }]);
+      const userPermissions = new UserPermissions([
+        {
+          p: [
+            Permision(
+              PermissionResources.Organization,
+              PermissionActions.Create,
+            ),
+          ],
+        },
+      ]);
       expect(
         async () =>
           await orgsController.createOrganization(
@@ -140,7 +183,15 @@ describe('OrganizationsController', () => {
       async (request) => {
         const org = await orgsService.create({ name: faker.company.name() });
         const userPermissions = new UserPermissions([
-          { oid: org.id, p: ['orgs:update'] },
+          {
+            oid: org.id,
+            p: [
+              Permision(
+                PermissionResources.Organization,
+                PermissionActions.Update,
+              ),
+            ],
+          },
         ]);
         expect(
           async () =>
@@ -160,7 +211,15 @@ describe('OrganizationsController', () => {
 
       // act
       const userPermissions = new UserPermissions([
-        { oid: org.id, p: ['orgs:update'] },
+        {
+          oid: org.id,
+          p: [
+            Permision(
+              PermissionResources.Organization,
+              PermissionActions.Update,
+            ),
+          ],
+        },
       ]);
       const response = await orgsController.updateOrganization(
         {
@@ -192,7 +251,15 @@ describe('OrganizationsController', () => {
 
       // act
       const userPermissions = new UserPermissions([
-        { oid: faker.string.uuid(), p: ['orgs:update'] },
+        {
+          oid: faker.string.uuid(),
+          p: [
+            Permision(
+              PermissionResources.Organization,
+              PermissionActions.Update,
+            ),
+          ],
+        },
       ]);
       expect(
         async () =>
@@ -211,7 +278,15 @@ describe('OrganizationsController', () => {
 
       // act
       const userPermissions = new UserPermissions([
-        { oid: org.id, p: ['orgs:delete'] },
+        {
+          oid: org.id,
+          p: [
+            Permision(
+              PermissionResources.Organization,
+              PermissionActions.Delete,
+            ),
+          ],
+        },
       ]);
       const response = await orgsController.deleteOrganization(
         org.id,
@@ -223,7 +298,15 @@ describe('OrganizationsController', () => {
     it('should throw an error if user does not have permissions', async () => {
       const org = await orgsService.create({ name: faker.company.name() });
       const userPermissions = new UserPermissions([
-        { oid: faker.string.uuid(), p: ['orgs:delete'] },
+        {
+          oid: faker.string.uuid(),
+          p: [
+            Permision(
+              PermissionResources.Organization,
+              PermissionActions.Delete,
+            ),
+          ],
+        },
       ]);
       expect(
         async () =>

@@ -20,6 +20,11 @@ import {
 import { UserWithPermissions } from '@vidya/api/auth/decorators';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/org/dto';
+import {
+  Permision,
+  PermissionActions,
+  PermissionResources,
+} from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
@@ -50,10 +55,9 @@ export class OrganizationsController {
   async getOrganizations(
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<GetOrganizationsResponse> {
-    const orgs =
-      await this.organizationsService.findPermittedOrganizationsBy(
-        userPermissions,
-      );
+    const orgs = await this.organizationsService
+      .scopedBy(userPermissions)
+      .findAllBy({});
     return {
       items: this.mapper.mapArray(
         orgs,
@@ -72,10 +76,9 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.GetOrganizationResponse> {
-    const orgs = await this.organizationsService.findPermittedOrganizationsBy(
-      userPermissions,
-      { id },
-    );
+    const orgs = await this.organizationsService
+      .scopedBy(userPermissions)
+      .findAllBy({ id });
     if (orgs.length === 0) {
       throw new NotFoundException(`Organization with id ${id} not found`);
     }
@@ -91,7 +94,11 @@ export class OrganizationsController {
     @Body() request: dto.CreateOrganizationRequest,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.CreateOrganizationResponse> {
-    if (!userPermissions.hasPermissions(['orgs:create'])) {
+    if (
+      !userPermissions.hasPermissions([
+        Permision(PermissionResources.Organization, PermissionActions.Create),
+      ])
+    ) {
       throw new ForbiddenException(
         'User does not have permission to create organizations',
       );
@@ -117,7 +124,11 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.UpdateOrganizationResponse> {
-    this.checkUserPermissions(userPermissions, ['orgs:update'], id);
+    this.checkUserPermissions(
+      userPermissions,
+      [Permision(PermissionResources.Organization, PermissionActions.Update)],
+      id,
+    );
     const org = await this.organizationsService.updateOneBy({ id }, request);
     return this.mapper.map(
       org,
@@ -138,7 +149,11 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.DeleteOrganizationResponse> {
-    this.checkUserPermissions(userPermissions, ['orgs:delete'], id);
+    this.checkUserPermissions(
+      userPermissions,
+      [Permision(PermissionResources.Organization, PermissionActions.Delete)],
+      id,
+    );
     await this.organizationsService.deleteOneBy({ id });
     return { success: true };
   }
