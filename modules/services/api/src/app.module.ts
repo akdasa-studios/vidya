@@ -13,7 +13,7 @@ import { Entities, Organization } from '@vidya/entities';
 
 import { AuthModule } from './auth/auth.module';
 import { OrgModule } from './org/org.module';
-import { OrganizationsService } from './organizations.service';
+import { OrganizationsService } from './org/services/organizations.service';
 
 @Module({
   imports: [

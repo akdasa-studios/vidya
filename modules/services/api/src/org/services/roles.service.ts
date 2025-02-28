@@ -49,9 +49,6 @@ export class RolesService extends EntitiesService<Role> {
       : permittedSchools;
 
     // make a query to get roles based on the filters
-    console.log('filterOrgs', filterOrgs);
-    console.log('filterSchools', filterSchools);
-    console.log('id', filter.id);
     return await this.repository.find({
       where: {
         organizationId: In(filterOrgs),

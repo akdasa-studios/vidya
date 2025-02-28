@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "target": "es6", // or higher
+    "module": "commonjs", // or appropriate module system
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -16,6 +16,16 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "rootDirs": [
+      "../../../libs/protocol",
+      "../../../libs/entities",
+      "../../../libs/domain",
+    ],
+    "paths": {
+      "@vidya/protocol": ["../../../libs/protocol"],
+      "@vidya/entities": ["../../../libs/entities"],
+      "@vidya/domain": ["../../../libs/domain"],
+    },
+  },
 }

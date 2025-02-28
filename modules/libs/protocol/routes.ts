@@ -23,6 +23,11 @@ export const Routes = (baseUrl: string = '') => ({
       all: (userId: string) => `${baseUrl}/org/users/${userId}/roles`,
       create: (userId: string) => `${baseUrl}/org/users/${userId}/roles`,
       delete: (userId: string, roleId: string) => `${baseUrl}/org/users/${userId}/roles/${roleId}`,
-    }
-  }
+    },
+    find: () => `${baseUrl}/org`,
+    get: (id: string) => `${baseUrl}/org/${id}`,
+    create: () => `${baseUrl}/org`,
+    update: (id: string) => `${baseUrl}/org/${id}`,
+    delete: (id: string) => `${baseUrl}/org/${id}`,
+  },
 })
