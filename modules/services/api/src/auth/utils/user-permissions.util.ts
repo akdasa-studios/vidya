@@ -4,6 +4,18 @@ export class UserPermissions {
   constructor(private readonly userPermissions: protocol.UserPermission[]) {}
 
   /**
+   * Returns true if user has all provided permissions
+   *
+   * @param permissions Permissions to check
+   * @returns True if user has all provided permissions
+   */
+  public hasPermissions(permissions: string[]): boolean {
+    return this.userPermissions.some((p) =>
+      permissions.every((permission) => p.p.includes(permission)),
+    );
+  }
+
+  /**
    * Returns list of organization ids that user has access to
    * based on the provided permissions
    *

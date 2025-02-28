@@ -102,8 +102,12 @@ export interface LogOutResponse {
  * @remarks Used short names for the properties to reduce the size of a JWT token.
  */
 export type UserPermission = {
-  /* Organization ID */
-  oid: string, 
+  /**
+   * Organization ID
+   * Note: User can have permissions not related to
+   *       organizations for example, `orgs:create`.
+   */
+  oid?: string, 
 
   /* School ID */
   sid?: string,
