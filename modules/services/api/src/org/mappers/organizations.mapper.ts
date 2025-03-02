@@ -8,19 +8,25 @@ import * as entities from "@vidya/entities";
 export class OrganizationsMapperProfile extends AutomapperProfile {
   constructor(@InjectMapper() mapper: Mapper) {
     super(mapper);
-  } 
+  }
 
   override get profile() {
     return (mapper: Mapper) => {
       createMap(
-        mapper, entities.Organization, dto.Organization,
-        forMember((d) => d.id, mapFrom((s) => s.id)),
+        mapper, entities.Organization, dto.OrganizationSummary,
+        forMember((d) => d.id,   mapFrom((s) => s.id)),
+        forMember((d) => d.name, mapFrom((s) => s.name)),
+      );
+
+      createMap(
+        mapper, entities.Organization, dto.OrganizationDetails,
+        forMember((d) => d.id,   mapFrom((s) => s.id)),
         forMember((d) => d.name, mapFrom((s) => s.name)),
       );
 
       createMap(
         mapper, entities.Organization, dto.UpdateOrganizationResponse,
-        forMember((d) => d.id, mapFrom((s) => s.id)),
+        forMember((d) => d.id,   mapFrom((s) => s.id)),
         forMember((d) => d.name, mapFrom((s) => s.name)),
       )
       

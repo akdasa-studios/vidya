@@ -2,7 +2,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import * as protocol from '@vidya/protocol';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class Organization implements protocol.Organization {
+/* -------------------------------------------------------------------------- */
+/*                                   Models                                   */
+/* -------------------------------------------------------------------------- */
+
+export class OrganizationSummary implements protocol.OrganizationSummary {
   @ApiProperty({ example: 'id' })
   id: string;
 
@@ -10,27 +14,22 @@ export class Organization implements protocol.Organization {
   name: string;
 }
 
-export class GetOrganizationsResponse
-  implements protocol.GetOrganizationsResponse
-{
-  @ApiProperty({ type: [Organization] })
-  items: Organization[];
-}
-
-export class GetOrganizationResponse
-  implements protocol.GetOrganizationResponse
-{
+export class OrganizationDetails implements protocol.OrganizationSummary {
   @ApiProperty({ example: 'id' })
   id: string;
 
   @ApiProperty({ example: 'name' })
   name: string;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                   Create                                   */
+/* -------------------------------------------------------------------------- */
 
 export class CreateOrganizationRequest
   implements protocol.CreateOrganizationRequest
 {
-  @ApiProperty({ example: 'name' })
+  @ApiProperty({ example: 'Organization' })
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -39,15 +38,40 @@ export class CreateOrganizationRequest
 export class CreateOrganizationResponse
   implements protocol.CreateOrganizationResponse
 {
-  @ApiProperty({ example: 'id' })
+  @ApiProperty({ example: 'ea53353e-2255-4eef-8709-d52cd837ce8e' })
   @IsString()
   id: string;
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                    Read                                    */
+/* -------------------------------------------------------------------------- */
+
+export class GetOrganizationsResponse
+  implements protocol.GetOrganizationsResponse
+{
+  @ApiProperty({ type: [OrganizationSummary] })
+  items: OrganizationSummary[];
+}
+
+export class GetOrganizationResponse
+  implements protocol.GetOrganizationResponse
+{
+  @ApiProperty({ example: 'ea53353e-2255-4eef-8709-d52cd837ce8e' })
+  id: string;
+
+  @ApiProperty({ example: 'Organization' })
+  name: string;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Update                                   */
+/* -------------------------------------------------------------------------- */
+
 export class UpdateOrganizationRequest
   implements protocol.UpdateOrganizationRequest
 {
-  @ApiPropertyOptional({ example: 'name' })
+  @ApiPropertyOptional({ example: 'Organization' })
   @IsString()
   @IsNotEmpty()
   @IsOptional()
@@ -57,13 +81,16 @@ export class UpdateOrganizationRequest
 export class UpdateOrganizationResponse
   implements protocol.UpdateOrganizationResponse
 {
-  @ApiProperty({ example: 'id' })
-  @IsString()
+  @ApiProperty({ example: 'ea53353e-2255-4eef-8709-d52cd837ce8e' })
   id: string;
 
-  @ApiProperty({ example: 'name' })
+  @ApiProperty({ example: 'Organization' })
   name: string;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                   Delete                                   */
+/* -------------------------------------------------------------------------- */
 
 export class DeleteOrganizationResponse {
   @ApiProperty({ example: 'success' })

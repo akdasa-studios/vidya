@@ -20,6 +20,9 @@ import {
 import { UserWithPermissions } from '@vidya/api/auth/decorators';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/org/dto';
+import { GetOrganizationsResponse } from '@vidya/api/org/dto';
+import { OrganizationExistsPipe } from '@vidya/api/org/pipes';
+import { OrganizationsService } from '@vidya/api/org/services';
 import {
   Permision,
   PermissionActions,
@@ -27,10 +30,6 @@ import {
 } from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
-
-import { GetOrganizationsResponse } from '../dto/organizations.dto';
-import { OrganizationExistsPipe } from '../pipes';
-import { OrganizationsService } from '../services/organizations.service';
 
 @Controller()
 export class OrganizationsController {
@@ -62,7 +61,7 @@ export class OrganizationsController {
       items: this.mapper.mapArray(
         orgs,
         entities.Organization,
-        dto.Organization,
+        dto.OrganizationSummary,
       ),
     };
   }
@@ -82,7 +81,11 @@ export class OrganizationsController {
     if (orgs.length === 0) {
       throw new NotFoundException(`Organization with id ${id} not found`);
     }
-    return this.mapper.map(orgs[0], entities.Organization, dto.Organization);
+    return this.mapper.map(
+      orgs[0],
+      entities.Organization,
+      dto.OrganizationDetails,
+    );
   }
 
   /* -------------------------------------------------------------------------- */

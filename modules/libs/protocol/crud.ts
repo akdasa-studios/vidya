@@ -1,50 +1,51 @@
-import * as crud from './crud'
-
 /* -------------------------------------------------------------------------- */
 /*                                   Models                                   */
 /* -------------------------------------------------------------------------- */
 
-export type OrganizationSummary = {
-  id: string;
-  name: string;
-}
-
-export type OrganizationDetails = OrganizationSummary & {
+export type ItemWithId<TIdType> = {
+  id: TIdType;
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   Create                                   */
+/*                                   Creaate                                  */
 /* -------------------------------------------------------------------------- */
 
-export type CreateOrganizationRequest = 
-  crud.CreateItemRequest<Omit<OrganizationDetails, 'id'>>;
+export type CreateItemRequest<TItemType> = TItemType;
 
-export type CreateOrganizationResponse = 
-  crud.CreateItemResponse<OrganizationSummary['id']>;
+export type CreateItemResponse<TIdentityType> = {
+  id: TIdentityType;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                    Read                                    */
 /* -------------------------------------------------------------------------- */
 
-export type GetOrganizationsResponse = 
-  crud.GetItemsListResponse<OrganizationSummary>;
+/**
+ * Generic response for retrieving a list of
+ * items of a certain type.
+ */
+export type GetItemsListResponse<TItemType> = {
+  items: TItemType[];
+}
 
-export type GetOrganizationResponse = 
-  crud.GetItemResponse<OrganizationDetails>;
+/**
+ * Generic response for retrieving a single item of
+ * a certain type.
+ */
+export type GetItemResponse<TItemType> = TItemType;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Update                                   */
 /* -------------------------------------------------------------------------- */
 
-export type UpdateOrganizationRequest = 
-  crud.UpdateItemRequest<Omit<OrganizationDetails, 'id'>>; 
+export type UpdateItemRequest<TItemType> = Partial<TItemType>;
 
-export type UpdateOrganizationResponse = 
-  crud.UpdateItemResponse<OrganizationDetails>;
+export type UpdateItemResponse<TItemType> = Partial<TItemType>;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Delete                                   */
 /* -------------------------------------------------------------------------- */
 
-export type DeleteOrganizationResponse = 
-  crud.DeleteItemResponse;
+export type DeleteItemResponse = {
+  success: boolean;
+}
