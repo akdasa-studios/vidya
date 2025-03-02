@@ -1,12 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '@vidya/api/app.module';
-import { inMemoryDataSource } from '@vidya/api/utils';
-import { DataSource } from 'typeorm';
 
 import { OrganizationsService } from '../../services';
 import { OrganizationsController } from '../organizations.controller';
-import { Context, createContext } from './context';
+import { Context, createContext, createModule } from './context';
 
 describe('OrganizationsController', () => {
   /* -------------------------------------------------------------------------- */
@@ -15,20 +11,13 @@ describe('OrganizationsController', () => {
 
   let ctx: Context;
   let ctr: OrganizationsController;
-  let module: TestingModule;
 
   /* -------------------------------------------------------------------------- */
   /*                                 Before Each                                */
   /* -------------------------------------------------------------------------- */
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(DataSource)
-      .useValue(await inMemoryDataSource())
-      .compile();
-
+    const module = await createModule();
     ctr = module.get(OrganizationsController);
     ctx = await createContext(module.get(OrganizationsService));
   });
@@ -38,20 +27,6 @@ describe('OrganizationsController', () => {
   /* -------------------------------------------------------------------------- */
 
   describe('updateOrganization', () => {
-    it.skip.each([{ name: '' }])(
-      'should throw an error if request is incorrect',
-      async (request) => {
-        expect(
-          async () =>
-            await ctr.updateOrganization(
-              request,
-              ctx.orgs.first.id,
-              ctx.permissions.updateFirst,
-            ),
-        ).rejects.toThrow();
-      },
-    );
-
     it('should update an organization', async () => {
       const updatedName = faker.company.name() + ' Updated';
       const response = await ctr.updateOrganization(
@@ -65,7 +40,7 @@ describe('OrganizationsController', () => {
     });
 
     it('should throw an error if organization does not exist', async () => {
-      expect(
+      await expect(
         async () =>
           await ctr.updateOrganization(
             { name: 'Updated Org 1' },
@@ -76,7 +51,7 @@ describe('OrganizationsController', () => {
     });
 
     it('should throw an error if organization does not exist', async () => {
-      expect(
+      await expect(
         async () =>
           await ctr.updateOrganization(
             { name: 'Updated Org 1' },

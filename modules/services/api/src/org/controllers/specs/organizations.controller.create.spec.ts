@@ -1,12 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '@vidya/api/app.module';
-import { inMemoryDataSource } from '@vidya/api/utils';
-import { DataSource } from 'typeorm';
 
 import { OrganizationsService } from '../../services';
 import { OrganizationsController } from '../organizations.controller';
-import { Context, createContext } from './context';
+import { Context, createContext, createModule } from './context';
 
 describe('OrganizationsController', () => {
   /* -------------------------------------------------------------------------- */
@@ -15,20 +11,13 @@ describe('OrganizationsController', () => {
 
   let ctx: Context;
   let ctr: OrganizationsController;
-  let module: TestingModule;
 
   /* -------------------------------------------------------------------------- */
   /*                                 Before Each                                */
   /* -------------------------------------------------------------------------- */
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(DataSource)
-      .useValue(await inMemoryDataSource())
-      .compile();
-
+    const module = await createModule();
     ctr = module.get(OrganizationsController);
     ctx = await createContext(module.get(OrganizationsService));
   });
@@ -48,19 +37,12 @@ describe('OrganizationsController', () => {
     });
 
     it('should throw an error if user does not have permissions', async () => {
-      expect(async () => {
+      await expect(async () => {
         await ctr.createOrganization(
           { name: faker.company.name() },
           ctx.permissions.no,
         );
       }).rejects.toThrow();
-    });
-
-    it.skip('should throw an error if name is not specified', async () => {
-      expect(
-        async () =>
-          await ctr.createOrganization({ name: '' }, ctx.permissions.create),
-      ).rejects.toThrow();
     });
   });
 });
