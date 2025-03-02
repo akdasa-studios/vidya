@@ -1,4 +1,4 @@
-import { Permission } from '@vidya/domain';
+import * as domain from '@vidya/domain';
 import * as protocol from '@vidya/protocol';
 
 export class UserPermissions {
@@ -10,7 +10,7 @@ export class UserPermissions {
    * @param permissions Permissions to check
    * @returns True if user has all provided permissions
    */
-  public hasPermissions(permissions: Permission[]): boolean {
+  public hasPermissions(permissions: domain.PermissionKey[]): boolean {
     return this.userPermissions.some((p) =>
       permissions.every((permission) => p.p.includes(permission)),
     );
@@ -23,7 +23,9 @@ export class UserPermissions {
    * @param permissions List of permissions to check
    * @returns List of organization ids that user has access to
    */
-  public getPermittedOrganizations(permissions: Permission[]): string[] {
+  public getPermittedOrganizations(
+    permissions: domain.PermissionKey[],
+  ): string[] {
     return (
       this.userPermissions
         // organization level permissions
@@ -43,7 +45,7 @@ export class UserPermissions {
    * @param permissions List of permissions to check
    * @returns List of school ids that user has access to
    */
-  public getPermittedSchools(permissions: Permission[]): string[] {
+  public getPermittedSchools(permissions: domain.PermissionKey[]): string[] {
     return this.userPermissions
       .filter(
         (userPermission) =>

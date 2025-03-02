@@ -23,11 +23,7 @@ import * as dto from '@vidya/api/org/dto';
 import { GetOrganizationsResponse } from '@vidya/api/org/dto';
 import { OrganizationExistsPipe } from '@vidya/api/org/pipes';
 import { OrganizationsService } from '@vidya/api/org/services';
-import {
-  Permision,
-  PermissionActions,
-  PermissionResources,
-} from '@vidya/domain';
+import * as domain from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
@@ -97,11 +93,7 @@ export class OrganizationsController {
     @Body() request: dto.CreateOrganizationRequest,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.CreateOrganizationResponse> {
-    if (
-      !userPermissions.hasPermissions([
-        Permision(PermissionResources.Organization, PermissionActions.Create),
-      ])
-    ) {
+    if (!userPermissions.hasPermissions(['orgs:create'])) {
       throw new ForbiddenException(
         'User does not have permission to create organizations',
       );
@@ -127,11 +119,7 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.UpdateOrganizationResponse> {
-    this.checkUserPermissions(
-      userPermissions,
-      [Permision(PermissionResources.Organization, PermissionActions.Update)],
-      id,
-    );
+    this.checkUserPermissions(userPermissions, ['orgs:update'], id);
     const org = await this.organizationsService.updateOneBy({ id }, request);
     return this.mapper.map(
       org,
@@ -152,11 +140,7 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.DeleteOrganizationResponse> {
-    this.checkUserPermissions(
-      userPermissions,
-      [Permision(PermissionResources.Organization, PermissionActions.Delete)],
-      id,
-    );
+    this.checkUserPermissions(userPermissions, ['orgs:delete'], id);
     await this.organizationsService.deleteOneBy({ id });
     return { success: true };
   }
@@ -167,7 +151,7 @@ export class OrganizationsController {
 
   private checkUserPermissions(
     userPermissions: UserPermissions,
-    requiredPermissions: string[],
+    requiredPermissions: domain.PermissionKey[],
     id: string,
   ) {
     if (

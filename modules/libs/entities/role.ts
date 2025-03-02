@@ -1,3 +1,4 @@
+import * as domain from '@vidya/domain';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
 import { UserRole } from './userRole';
 import { School } from './school';
@@ -27,7 +28,7 @@ export class Role {
   school: School;
 
   @Column('varchar', { array: true, nullable: true })
-  permissions: string[];
+  permissions: domain.PermissionKey[];
 
   @OneToMany(() => UserRole, userRole => userRole.role)
   public userRoles: UserRole[];

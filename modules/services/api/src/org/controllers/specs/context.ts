@@ -4,11 +4,6 @@ import { AppModule } from '@vidya/api/app.module';
 import { OtpService, RevokedTokensService } from '@vidya/api/auth/services';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import { inMemoryDataSource } from '@vidya/api/utils';
-import {
-  Permision,
-  PermissionActions,
-  PermissionResources,
-} from '@vidya/domain';
 import { Organization } from '@vidya/entities';
 import { DataSource } from 'typeorm';
 
@@ -57,40 +52,30 @@ export const createContext = async (
     readFirst: new UserPermissions([
       {
         oid: orgFirst.id,
-        p: [
-          Permision(PermissionResources.Organization, PermissionActions.Read),
-        ],
+        p: ['orgs:read'],
       },
     ]),
     readSecond: new UserPermissions([
       {
         oid: orgSecond.id,
-        p: [
-          Permision(PermissionResources.Organization, PermissionActions.Read),
-        ],
+        p: ['orgs:read'],
       },
     ]),
     updateFirst: new UserPermissions([
       {
         oid: orgFirst.id,
-        p: [
-          Permision(PermissionResources.Organization, PermissionActions.Update),
-        ],
+        p: ['orgs:update'],
       },
     ]),
     deleteFirst: new UserPermissions([
       {
         oid: orgFirst.id,
-        p: [
-          Permision(PermissionResources.Organization, PermissionActions.Delete),
-        ],
+        p: ['orgs:delete'],
       },
     ]),
     create: new UserPermissions([
       {
-        p: [
-          Permision(PermissionResources.Organization, PermissionActions.Create),
-        ],
+        p: ['orgs:create'],
       },
     ]),
   };
