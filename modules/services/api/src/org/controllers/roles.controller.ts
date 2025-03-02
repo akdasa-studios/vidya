@@ -23,8 +23,8 @@ import {
   RequirePermissions,
   UserWithPermissions,
 } from '@vidya/api/auth/decorators';
-import { UserPermissions } from '@vidya/api/auth/utils'
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
+import { UserPermissions } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/org/dto';
 import { RoleExistsPipe } from '@vidya/api/org/pipes';
 import { RolesService } from '@vidya/api/org/services';
@@ -43,7 +43,7 @@ export class RolesController {
   /*                                 GET /roles                                 */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().org.roles.find())
+  @Get(Routes().roles.find())
   @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
@@ -71,7 +71,7 @@ export class RolesController {
   /*                               GET /roles/:id                               */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().org.roles.get(':id'))
+  @Get(Routes().roles.get(':id'))
   @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
@@ -97,7 +97,7 @@ export class RolesController {
   /*                                 POST /roles                                */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().org.roles.create())
+  @Post(Routes().roles.create())
   // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Create a new role',
@@ -120,7 +120,7 @@ export class RolesController {
   /*                              PATCH /roles/:id                              */
   /* -------------------------------------------------------------------------- */
 
-  @Patch(Routes().org.roles.update(':id'))
+  @Patch(Routes().roles.update(':id'))
   // @RequirePermissions('roles:read')
   // @UseGuards(AuthenticatedUser)
   @ApiOperation({
@@ -146,7 +146,7 @@ export class RolesController {
   /*                              DELETE /roles/:id                             */
   /* -------------------------------------------------------------------------- */
 
-  @Delete(Routes().org.roles.delete(':id'))
+  @Delete(Routes().roles.delete(':id'))
   @RequirePermissions('roles:read')
   // @UseGuards(AuthenticatedUser)
   @ApiOperation({

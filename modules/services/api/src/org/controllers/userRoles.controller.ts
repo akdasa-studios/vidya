@@ -19,7 +19,7 @@ export class UserRolesController {
   /*                        GET /org/users/:userId/roles                        */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().org.userRoles.all(':userId'))
+  @Get(Routes().userRoles.all(':userId'))
   @ApiOperation({
     summary: 'Get a list of roles of a user',
     operationId: 'userRoles::all',
@@ -40,7 +40,7 @@ export class UserRolesController {
   /*                        POST /org/users/:userId/roles                       */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().org.userRoles.create(':userId'))
+  @Post(Routes().userRoles.create(':userId'))
   @ApiOperation({
     summary: 'Assign a role to a user',
     operationId: 'userRoles::create',
