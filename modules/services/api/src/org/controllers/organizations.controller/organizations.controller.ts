@@ -11,13 +11,16 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
 import { UserWithPermissions } from '@vidya/api/auth/decorators';
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/org/dto';
 import { GetOrganizationsResponse } from '@vidya/api/org/dto';
@@ -39,6 +42,8 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.find())
+  @UseGuards(AuthenticatedUser)
+  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of organizations',
     operationId: 'organizations::find',

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { OrganizationsService } from '../../services';
+import { OrganizationsService } from '../../../services';
 import { OrganizationsController } from '../organizations.controller';
 import { Context, createContext, createModule } from './context';
 

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { OrganizationsService } from '../../services';
+import { OrganizationsService } from '../../../services';
 import { OrganizationsController } from '../organizations.controller';
 import { Context, createContext, createModule } from './context';
 
@@ -23,29 +23,24 @@ describe('OrganizationsController', () => {
   });
 
   /* -------------------------------------------------------------------------- */
-  /*                             Update Organization                            */
+  /*                             Delete Organization                            */
   /* -------------------------------------------------------------------------- */
 
-  describe('updateOrganization', () => {
-    it('should update an organization', async () => {
-      const updatedName = faker.company.name() + ' Updated';
-      const response = await ctr.updateOrganization(
-        { name: updatedName },
+  describe('deleteOrganization', () => {
+    it('should delete an organization', async () => {
+      const response = await ctr.deleteOrganization(
         ctx.orgs.first.id,
-        ctx.permissions.updateFirst,
+        ctx.permissions.deleteFirst,
       );
-
-      // assert
-      expect(response.name).toEqual(updatedName);
+      expect(response.success).toBeTruthy();
     });
 
-    it('should throw an error if organization does not exist', async () => {
+    it('should throw an error if user does not have permissions', async () => {
       await expect(
         async () =>
-          await ctr.updateOrganization(
-            { name: 'Updated Org 1' },
-            faker.string.uuid(),
-            ctx.permissions.updateFirst,
+          await ctr.deleteOrganization(
+            ctx.orgs.second.id,
+            ctx.permissions.deleteFirst,
           ),
       ).rejects.toThrow();
     });
@@ -53,10 +48,9 @@ describe('OrganizationsController', () => {
     it('should throw an error if organization does not exist', async () => {
       await expect(
         async () =>
-          await ctr.updateOrganization(
-            { name: 'Updated Org 1' },
-            ctx.orgs.second.id,
-            ctx.permissions.updateFirst,
+          await ctr.deleteOrganization(
+            faker.string.uuid(),
+            ctx.permissions.deleteFirst,
           ),
       ).rejects.toThrow();
     });

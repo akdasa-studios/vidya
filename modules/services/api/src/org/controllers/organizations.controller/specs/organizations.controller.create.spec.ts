@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { OrganizationsService } from '../../services';
+import { OrganizationsService } from '../../../services';
 import { OrganizationsController } from '../organizations.controller';
 import { Context, createContext, createModule } from './context';
 
@@ -23,36 +23,26 @@ describe('OrganizationsController', () => {
   });
 
   /* -------------------------------------------------------------------------- */
-  /*                             Delete Organization                            */
+  /*                            Create Organization                             */
   /* -------------------------------------------------------------------------- */
 
-  describe('deleteOrganization', () => {
-    it('should delete an organization', async () => {
-      const response = await ctr.deleteOrganization(
-        ctx.orgs.first.id,
-        ctx.permissions.deleteFirst,
+  describe('createOrganization', () => {
+    it('should create an organization', async () => {
+      const response = await ctr.createOrganization(
+        { name: faker.company.name() },
+        ctx.permissions.create,
       );
-      expect(response.success).toBeTruthy();
+
+      expect(response.id).toBeDefined();
     });
 
     it('should throw an error if user does not have permissions', async () => {
-      await expect(
-        async () =>
-          await ctr.deleteOrganization(
-            ctx.orgs.second.id,
-            ctx.permissions.deleteFirst,
-          ),
-      ).rejects.toThrow();
-    });
-
-    it('should throw an error if organization does not exist', async () => {
-      await expect(
-        async () =>
-          await ctr.deleteOrganization(
-            faker.string.uuid(),
-            ctx.permissions.deleteFirst,
-          ),
-      ).rejects.toThrow();
+      await expect(async () => {
+        await ctr.createOrganization(
+          { name: faker.company.name() },
+          ctx.permissions.no,
+        );
+      }).rejects.toThrow();
     });
   });
 });

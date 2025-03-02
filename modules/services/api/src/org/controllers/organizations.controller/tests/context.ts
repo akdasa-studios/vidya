@@ -7,7 +7,7 @@ import { inMemoryDataSource } from '@vidya/api/utils';
 import { Organization } from '@vidya/entities';
 import { DataSource } from 'typeorm';
 
-import { OrganizationsService } from '../../services';
+import { OrganizationsService } from '../../../services';
 
 export type Context = {
   orgs: {
@@ -25,7 +25,7 @@ export type Context = {
 };
 
 export const createModule = async () => {
-  return await Test.createTestingModule({
+  const module = await Test.createTestingModule({
     imports: [AppModule],
   })
     .overrideProvider(DataSource)
@@ -35,6 +35,10 @@ export const createModule = async () => {
     .overrideProvider(RevokedTokensService)
     .useValue({ isRevoked: jest.fn() })
     .compile();
+
+  const app = module.createNestApplication();
+  await app.init();
+  return app;
 };
 
 export const createContext = async (
