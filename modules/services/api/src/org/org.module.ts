@@ -5,7 +5,7 @@ import { User, UserRole } from '@vidya/entities';
 import { Organization, Role } from '@vidya/entities';
 
 import { RevokedTokensService } from '../auth/services';
-import { OrganizationsController } from './controllers/organizations.controller';
+import { OrganizationsController } from './controllers/organizations';
 import { RolesController } from './controllers/roles.controller';
 import { UserRolesController } from './controllers/userRoles.controller';
 import { OrganizationsMapperProfile } from './mappers/organizations.mapper';
