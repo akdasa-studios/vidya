@@ -79,6 +79,69 @@ describe('/orgs', () => {
       .expect(200)
       .expect({ items: [] });
   });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  POST /orgs                                */
+  /* -------------------------------------------------------------------------- */
+
+  it(`POST /orgs creates a new organization`, async () => {
+    const tokens = await authService.generateTokens(faker.string.uuid(), [
+      { oid: faker.string.uuid(), p: ['orgs:create'] },
+    ]);
+
+    const newOrg = { name: 'New Organization' };
+
+    return request(app.getHttpServer())
+      .post(Routes().org.create())
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .send(newOrg)
+      .expect(201)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('id');
+      });
+  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  PATCH /orgs/:id                           */
+  /* -------------------------------------------------------------------------- */
+
+  it(`PATCH /orgs/:id updates an existing organization`, async () => {
+    const tokens = await authService.generateTokens(faker.string.uuid(), [
+      { oid: ctx.orgs.first.id, p: ['orgs:update'] },
+    ]);
+
+    const updatedOrg = { name: 'Updated Organization' };
+
+    return request(app.getHttpServer())
+      .patch(Routes().org.update(ctx.orgs.first.id))
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .send(updatedOrg)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('id');
+        expect(res.body.name).toBe(updatedOrg.name);
+      });
+  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                  DELETE /orgs/:id                          */
+  /* -------------------------------------------------------------------------- */
+
+  it(`DELETE /orgs/:id deletes an existing organization`, async () => {
+    const tokens = await authService.generateTokens(faker.string.uuid(), [
+      { oid: ctx.orgs.first.id, p: ['orgs:delete'] },
+    ]);
+
+    return request(app.getHttpServer())
+      .delete(Routes().org.delete(ctx.orgs.first.id))
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('success');
+        expect(res.body.success).toBe(true);
+      });
+  });
+
   afterAll(async () => {
     await app.close();
   });

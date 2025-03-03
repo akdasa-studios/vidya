@@ -31,6 +31,7 @@ import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
+@UseGuards(AuthenticatedUser)
 export class OrganizationsController {
   constructor(
     private readonly organizationsService: OrganizationsService,
@@ -42,7 +43,6 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().org.find())
-  @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of organizations',
