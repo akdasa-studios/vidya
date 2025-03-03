@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Монтируем основной файл конфигурации nginx
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Монтируем файл с настройками endpoint'ов
+      - ./gateway/endpoints.conf:/etc/nginx/conf.d/endpoints.conf:ro
+      # Монтируем HTTPS-ключи в соответствующие директории внутри контейнера
+      - ./.data/services/gateway/keys/certs:/etc/ssl:ro
