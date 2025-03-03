@@ -44,6 +44,10 @@ describe('/orgs', () => {
       });
   });
 
+  /* -------------------------------------------------------------------------- */
+  /*                                  GET /orgs                                 */
+  /* -------------------------------------------------------------------------- */
+
   it(`GET /orgs returns only permitted organizations`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: ctx.orgs.first.id, p: ['orgs:read'] },
