@@ -1,8 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { useContainer } from 'class-validator';
 import { AppName } from '@vidya/domain';
+import { useContainer } from 'class-validator';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {

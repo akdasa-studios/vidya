@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
 import { OtpService, RevokedTokensService } from '@vidya/api/auth/services';
@@ -6,6 +7,7 @@ import { UserPermissions } from '@vidya/api/auth/utils';
 import { OrganizationsService } from '@vidya/api/edu/services';
 import { inMemoryDataSource } from '@vidya/api/utils';
 import { Organization } from '@vidya/entities';
+import { useContainer } from 'class-validator';
 import { DataSource } from 'typeorm';
 
 export type Context = {
@@ -36,6 +38,8 @@ export const createModule = async () => {
     .compile();
 
   const app = module.createNestApplication();
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   await app.init();
   return app;
 };

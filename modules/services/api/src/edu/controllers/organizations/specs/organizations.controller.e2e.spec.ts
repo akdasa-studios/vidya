@@ -12,7 +12,7 @@ import * as request from 'supertest';
 
 import { Context, createContext, createModule } from './context';
 
-describe('/orgs', () => {
+describe('/edu/orgs', () => {
   /* -------------------------------------------------------------------------- */
   /*                                   Context                                  */
   /* -------------------------------------------------------------------------- */
@@ -33,7 +33,7 @@ describe('/orgs', () => {
     mapper = app.get(DEFAULT_MAPPER_TOKEN);
   });
 
-  it(`GET /orgs returns 401 for unauthorized users`, () => {
+  it(`GET /edu/orgs returns 401 for unauthorized users`, () => {
     return request(app.getHttpServer())
       .get(Routes().edu.org.find())
       .set('Authorization', 'Bearer YOUR_AUTH_TOKEN')
@@ -45,10 +45,10 @@ describe('/orgs', () => {
   });
 
   /* -------------------------------------------------------------------------- */
-  /*                                  GET /orgs                                 */
+  /*                               GET /edu/orgs                                */
   /* -------------------------------------------------------------------------- */
 
-  it(`GET /orgs returns only permitted organizations`, async () => {
+  it(`GET /edu/orgs returns only permitted organizations`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: ctx.orgs.first.id, p: ['orgs:read'] },
     ]);
@@ -68,7 +68,7 @@ describe('/orgs', () => {
       });
   });
 
-  it(`GET /orgs returns nothing`, async () => {
+  it(`GET /edu/orgs returns nothing`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: faker.string.uuid(), p: ['orgs:read'] },
     ]);
@@ -81,10 +81,10 @@ describe('/orgs', () => {
   });
 
   /* -------------------------------------------------------------------------- */
-  /*                                  POST /orgs                                */
+  /*                               POST /edu/orgs                               */
   /* -------------------------------------------------------------------------- */
 
-  it(`POST /orgs creates a new organization`, async () => {
+  it(`POST /edu/orgs creates a new organization`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: faker.string.uuid(), p: ['orgs:create'] },
     ]);
@@ -101,11 +101,29 @@ describe('/orgs', () => {
       });
   });
 
+  it(`POST /edu/orgs returns 400 for invalid data`, async () => {
+    const tokens = await authService.generateTokens(faker.string.uuid(), [
+      { oid: faker.string.uuid(), p: ['orgs:create'] },
+    ]);
+
+    const invalidOrg = { name: '' }; // Invalid data
+
+    return request(app.getHttpServer())
+      .post(Routes().edu.org.create())
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .send(invalidOrg)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual(['name should not be empty']);
+      });
+  });
+
   /* -------------------------------------------------------------------------- */
-  /*                                  PATCH /orgs/:id                           */
+  /*                              PATCH /edu/orgs/:id                           */
   /* -------------------------------------------------------------------------- */
 
-  it(`PATCH /orgs/:id updates an existing organization`, async () => {
+  it(`PATCH /edu/orgs/:id updates an existing organization`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: ctx.orgs.first.id, p: ['orgs:update'] },
     ]);
@@ -123,11 +141,29 @@ describe('/orgs', () => {
       });
   });
 
+  it(`PATCH /edu/orgs/:id returns 403 for missing permissions`, async () => {
+    const tokens = await authService.generateTokens(faker.string.uuid(), [
+      { oid: ctx.orgs.first.id, p: ['orgs:read'] }, // Missing 'orgs:update' permission
+    ]);
+
+    const updatedOrg = { name: 'Updated Organization' };
+
+    return request(app.getHttpServer())
+      .patch(Routes().edu.org.update(ctx.orgs.first.id))
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .send(updatedOrg)
+      .expect(403)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toBe('User does not have permission');
+      });
+  });
+
   /* -------------------------------------------------------------------------- */
-  /*                                  DELETE /orgs/:id                          */
+  /*                            DELETE /edu/orgs/:id                            */
   /* -------------------------------------------------------------------------- */
 
-  it(`DELETE /orgs/:id deletes an existing organization`, async () => {
+  it(`DELETE /edu/orgs/:id deletes an existing organization`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: ctx.orgs.first.id, p: ['orgs:delete'] },
     ]);
@@ -139,6 +175,24 @@ describe('/orgs', () => {
       .expect((res) => {
         expect(res.body).toHaveProperty('success');
         expect(res.body.success).toBe(true);
+      });
+  });
+
+  it(`DELETE /edu/orgs/:id returns 404 for non-existent organization`, async () => {
+    const nonExistentId = faker.string.uuid();
+    const tokens = await authService.generateTokens(faker.string.uuid(), [
+      { oid: faker.string.uuid(), p: ['orgs:delete'] },
+    ]);
+
+    return request(app.getHttpServer())
+      .delete(Routes().edu.org.delete(nonExistentId)) // Non-existent ID
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .expect(404)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toBe(
+          `Organization with ID ${nonExistentId} not found`,
+        );
       });
   });
 
