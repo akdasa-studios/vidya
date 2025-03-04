@@ -25,14 +25,15 @@ import {
 } from '@vidya/api/auth/decorators';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UserPermissions } from '@vidya/api/auth/utils';
-import * as dto from '@vidya/api/org/dto';
-import { RoleExistsPipe } from '@vidya/api/org/pipes';
-import { RolesService } from '@vidya/api/org/services';
+import * as dto from '@vidya/api/edu/dto';
+import { RoleExistsPipe } from '@vidya/api/edu/pipes';
+import { RolesService } from '@vidya/api/edu/services';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Users and Roles')
+@ApiTags('Roles')
+@UseGuards(AuthenticatedUser)
 export class RolesController {
   constructor(
     private readonly rolesService: RolesService,
@@ -40,10 +41,10 @@ export class RolesController {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                                 GET /roles                                 */
+  /*                               GET /edu/roles                               */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().roles.find())
+  @Get(Routes().edu.roles.find())
   @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
@@ -68,10 +69,10 @@ export class RolesController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                               GET /roles/:id                               */
+  /*                             GET /edu/roles/:id                             */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().roles.get(':id'))
+  @Get(Routes().edu.roles.get(':id'))
   @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
@@ -94,11 +95,10 @@ export class RolesController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                 POST /roles                                */
+  /*                               POST /edu/roles                              */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().roles.create())
-  // @UseGuards(AuthenticatedUser)
+  @Post(Routes().edu.roles.create())
   @ApiOperation({
     summary: 'Create a new role',
     operationId: 'roles::create',
@@ -117,12 +117,10 @@ export class RolesController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              PATCH /roles/:id                              */
+  /*                            PATCH /edu/roles/:id                            */
   /* -------------------------------------------------------------------------- */
 
-  @Patch(Routes().roles.update(':id'))
-  // @RequirePermissions('roles:read')
-  // @UseGuards(AuthenticatedUser)
+  @Patch(Routes().edu.roles.update(':id'))
   @ApiOperation({
     summary: 'Update a role',
     operationId: 'roles::update',
@@ -143,12 +141,11 @@ export class RolesController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              DELETE /roles/:id                             */
+  /*                            DELETE /edu/roles/:id                           */
   /* -------------------------------------------------------------------------- */
 
-  @Delete(Routes().roles.delete(':id'))
+  @Delete(Routes().edu.roles.delete(':id'))
   @RequirePermissions('roles:read')
-  // @UseGuards(AuthenticatedUser)
   @ApiOperation({
     summary: 'Delete a role',
     operationId: 'roles::delete',

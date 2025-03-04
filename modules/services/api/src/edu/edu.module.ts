@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RolesService, UsersService } from '@vidya/api/org/services';
+import { RolesService, UsersService } from '@vidya/api/edu/services';
 import { User, UserRole } from '@vidya/entities';
 import { Organization, Role } from '@vidya/entities';
 
 import { RevokedTokensService } from '../auth/services';
-import { OrganizationsController } from './controllers/organizations';
-import { RolesController } from './controllers/roles.controller';
-import { UserRolesController } from './controllers/userRoles.controller';
+import {
+  OrganizationsController,
+  RolesController,
+  UserRolesController,
+} from './controllers';
 import { OrganizationsMapperProfile } from './mappers/organizations.mapper';
 import { RolesMappingProfile } from './mappers/roles.mapper';
 import { OrganizationsService } from './services/organizations.service';
@@ -27,4 +29,4 @@ import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
     OrganizationsService,
   ],
 })
-export class OrgModule {}
+export class EduModule {}

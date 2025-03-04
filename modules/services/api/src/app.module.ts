@@ -12,8 +12,8 @@ import {
 import { Entities, Organization } from '@vidya/entities';
 
 import { AuthModule } from './auth/auth.module';
-import { OrgModule } from './org/org.module';
-import { OrganizationsService } from './org/services/organizations.service';
+import { EduModule } from './edu/edu.module';
+import { OrganizationsService } from './edu/services/organizations.service';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { OrganizationsService } from './org/services/organizations.service';
     }),
     TypeOrmModule.forFeature([Organization]),
     AuthModule,
-    OrgModule,
+    EduModule,
   ],
   controllers: [],
   providers: [OrganizationsService],

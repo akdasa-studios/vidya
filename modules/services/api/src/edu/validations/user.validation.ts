@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UsersService } from '@vidya/api/org/services';
+import { UsersService } from '@vidya/api/edu/services';
 import {
   isUUID,
   registerDecorator,

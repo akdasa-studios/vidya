@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, PipeTransform } from '@nestjs/common';
-import { OrganizationsService } from '@vidya/api/org/services';
+import { OrganizationsService } from '@vidya/api/edu/services';
 
 @Injectable()
 export class OrganizationExistsPipe implements PipeTransform {

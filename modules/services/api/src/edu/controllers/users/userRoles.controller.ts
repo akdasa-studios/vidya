@@ -1,14 +1,16 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import * as dto from '@vidya/api/org/dto';
-import { RolesService } from '@vidya/api/org/services';
+import { AuthenticatedUser } from '@vidya/api/auth/guards';
+import * as dto from '@vidya/api/edu/dto';
+import { RolesService } from '@vidya/api/edu/services';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Users and Roles')
+@ApiTags('Users')
+@UseGuards(AuthenticatedUser)
 export class UserRolesController {
   constructor(
     private readonly rolesService: RolesService,
@@ -16,10 +18,10 @@ export class UserRolesController {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                        GET /org/users/:userId/roles                        */
+  /*                        GET /edu/users/:userId/roles                        */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().userRoles.all(':userId'))
+  @Get(Routes().edu.user(':userId').roles.all())
   @ApiOperation({
     summary: 'Get a list of roles of a user',
     operationId: 'userRoles::all',
@@ -37,10 +39,10 @@ export class UserRolesController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                        POST /org/users/:userId/roles                       */
+  /*                        POST /edu/users/:userId/roles                       */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().userRoles.create(':userId'))
+  @Post(Routes().edu.user(':userId').roles.create())
   @ApiOperation({
     summary: 'Assign a role to a user',
     operationId: 'userRoles::create',

@@ -3,8 +3,8 @@ import { DEFAULT_MAPPER_TOKEN } from '@automapper/nestjs';
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { AuthService } from '@vidya/api/auth/services';
-import * as dto from '@vidya/api/org/dto';
-import { OrganizationsService } from '@vidya/api/org/services';
+import * as dto from '@vidya/api/edu/dto';
+import { OrganizationsService } from '@vidya/api/edu/services';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 import { instanceToPlain } from 'class-transformer';
@@ -35,7 +35,7 @@ describe('/orgs', () => {
 
   it(`GET /orgs returns 401 for unauthorized users`, () => {
     return request(app.getHttpServer())
-      .get(Routes().org.find())
+      .get(Routes().edu.org.find())
       .set('Authorization', 'Bearer YOUR_AUTH_TOKEN')
       .expect(401)
       .expect({
@@ -54,7 +54,7 @@ describe('/orgs', () => {
     ]);
 
     return request(app.getHttpServer())
-      .get(Routes().org.find())
+      .get(Routes().edu.org.find())
       .set('Authorization', `Bearer ${tokens.accessToken}`)
       .expect(200)
       .expect({
@@ -74,7 +74,7 @@ describe('/orgs', () => {
     ]);
 
     return request(app.getHttpServer())
-      .get(Routes().org.find())
+      .get(Routes().edu.org.find())
       .set('Authorization', `Bearer ${tokens.accessToken}`)
       .expect(200)
       .expect({ items: [] });
@@ -92,7 +92,7 @@ describe('/orgs', () => {
     const newOrg = { name: 'New Organization' };
 
     return request(app.getHttpServer())
-      .post(Routes().org.create())
+      .post(Routes().edu.org.create())
       .set('Authorization', `Bearer ${tokens.accessToken}`)
       .send(newOrg)
       .expect(201)
@@ -113,7 +113,7 @@ describe('/orgs', () => {
     const updatedOrg = { name: 'Updated Organization' };
 
     return request(app.getHttpServer())
-      .patch(Routes().org.update(ctx.orgs.first.id))
+      .patch(Routes().edu.org.update(ctx.orgs.first.id))
       .set('Authorization', `Bearer ${tokens.accessToken}`)
       .send(updatedOrg)
       .expect(200)
@@ -133,7 +133,7 @@ describe('/orgs', () => {
     ]);
 
     return request(app.getHttpServer())
-      .delete(Routes().org.delete(ctx.orgs.first.id))
+      .delete(Routes().edu.org.delete(ctx.orgs.first.id))
       .set('Authorization', `Bearer ${tokens.accessToken}`)
       .expect(200)
       .expect((res) => {

@@ -22,10 +22,10 @@ import {
 import { UserWithPermissions } from '@vidya/api/auth/decorators';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UserPermissions } from '@vidya/api/auth/utils';
-import * as dto from '@vidya/api/org/dto';
-import { GetOrganizationsResponse } from '@vidya/api/org/dto';
-import { OrganizationExistsPipe } from '@vidya/api/org/pipes';
-import { OrganizationsService } from '@vidya/api/org/services';
+import * as dto from '@vidya/api/edu/dto';
+import { GetOrganizationsResponse } from '@vidya/api/edu/dto';
+import { OrganizationExistsPipe } from '@vidya/api/edu/pipes';
+import { OrganizationsService } from '@vidya/api/edu/services';
 import * as domain from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
@@ -39,10 +39,10 @@ export class OrganizationsController {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                                  GET /orgs                                 */
+  /*                           GET /edu/organizations                           */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().org.find())
+  @Get(Routes().edu.org.find())
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of organizations',
@@ -68,10 +68,10 @@ export class OrganizationsController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                GET /orgs/:id                               */
+  /*                         GET /edu/organizations/:id                         */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().org.get(':id'))
+  @Get(Routes().edu.org.get(':id'))
   async getOrganization(
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -90,10 +90,10 @@ export class OrganizationsController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                 POST /orgs                                 */
+  /*                          POST /edu/organizations                           */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().org.create())
+  @Post(Routes().edu.org.create())
   async createOrganization(
     @Body() request: dto.CreateOrganizationRequest,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -115,10 +115,10 @@ export class OrganizationsController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                               PATCH /orgs/:id                              */
+  /*                         PATCH /edu/organizations/:id                       */
   /* -------------------------------------------------------------------------- */
 
-  @Patch(Routes().org.update(':id'))
+  @Patch(Routes().edu.org.update(':id'))
   async updateOrganization(
     @Body() request: dto.UpdateOrganizationRequest,
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
@@ -134,10 +134,10 @@ export class OrganizationsController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              DELETE /orgs/:id                              */
+  /*                        DELETE /edu/organizations/:id                       */
   /* -------------------------------------------------------------------------- */
 
-  @Delete(Routes().org.delete(':id'))
+  @Delete(Routes().edu.org.delete(':id'))
   @ApiNotFoundResponse({
     description: 'Organization not found',
   })
