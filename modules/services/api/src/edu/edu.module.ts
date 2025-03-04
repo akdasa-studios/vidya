@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RevokedTokensService } from '@vidya/api/auth/services';
 import { RolesService, UsersService } from '@vidya/api/edu/services';
 import { User, UserRole } from '@vidya/entities';
 import { Organization, Role } from '@vidya/entities';
 
-import { RevokedTokensService } from '../auth/services';
 import {
   OrganizationsController,
   RolesController,

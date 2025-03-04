@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
+import { OrganizationsController } from '@vidya/api/edu/controllers';
+import { OrganizationsService } from '@vidya/api/edu/services';
 
-import { OrganizationsService } from '../../../services';
-import { OrganizationsController } from '../organizations.controller';
 import { Context, createContext, createModule } from './context';
 
 describe('OrganizationsController', () => {

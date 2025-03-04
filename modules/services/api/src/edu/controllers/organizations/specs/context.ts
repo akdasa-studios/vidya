@@ -3,11 +3,10 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
 import { OtpService, RevokedTokensService } from '@vidya/api/auth/services';
 import { UserPermissions } from '@vidya/api/auth/utils';
+import { OrganizationsService } from '@vidya/api/edu/services';
 import { inMemoryDataSource } from '@vidya/api/utils';
 import { Organization } from '@vidya/entities';
 import { DataSource } from 'typeorm';
-
-import { OrganizationsService } from '../../../services';
 
 export type Context = {
   orgs: {
