@@ -62,7 +62,7 @@ export class OrganizationsController {
   ): Promise<GetOrganizationsResponse> {
     const orgs = await this.organizationsService
       .scopedBy(userPermissions)
-      .findAllBy({});
+      .findAll({});
     return {
       items: this.mapper.mapArray(
         orgs,
@@ -95,7 +95,7 @@ export class OrganizationsController {
   ): Promise<dto.GetOrganizationResponse> {
     const orgs = await this.organizationsService
       .scopedBy(userPermissions)
-      .findAllBy({ id });
+      .findAll({ where: { id } });
     if (orgs.length === 0) {
       throw new NotFoundException(`Organization with id ${id} not found`);
     }
