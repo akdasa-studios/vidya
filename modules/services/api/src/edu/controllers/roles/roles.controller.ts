@@ -19,10 +19,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  RequirePermissions,
-  UserWithPermissions,
-} from '@vidya/api/auth/decorators';
+import { UserWithPermissions } from '@vidya/api/auth/decorators';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/edu/dto';
@@ -145,7 +142,6 @@ export class RolesController {
   /* -------------------------------------------------------------------------- */
 
   @Delete(Routes().edu.roles.delete(':id'))
-  @RequirePermissions('roles:read')
   @ApiOperation({
     summary: 'Delete a role',
     operationId: 'roles::delete',

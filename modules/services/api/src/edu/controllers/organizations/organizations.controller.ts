@@ -18,6 +18,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserWithPermissions } from '@vidya/api/auth/decorators';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
@@ -31,7 +32,11 @@ import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
+@ApiBearerAuth()
 @UseGuards(AuthenticatedUser)
+@ApiUnauthorizedResponse({
+  description: 'Unauthorized',
+})
 export class OrganizationsController {
   constructor(
     private readonly organizationsService: OrganizationsService,
@@ -43,14 +48,14 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().edu.org.find())
-  @ApiBearerAuth()
   @ApiOperation({
     summary: 'Returns a list of organizations',
+    description: 'Returns list of organizations that the user has access to.',
     operationId: 'organizations::find',
   })
   @ApiOkResponse({
     type: GetOrganizationsResponse,
-    description: 'Get a list of organizations.',
+    description: 'List of organizations.',
   })
   async getOrganizations(
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -72,6 +77,18 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Get(Routes().edu.org.get(':id'))
+  @ApiOperation({
+    summary: 'Get an organization by Id',
+    description: 'Returns an organization by Id if the user has access to it.',
+    operationId: 'organizations::get',
+  })
+  @ApiOkResponse({
+    type: dto.GetOrganizationResponse,
+    description: 'Organization details.',
+  })
+  @ApiNotFoundResponse({
+    description: 'Organization not found',
+  })
   async getOrganization(
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -94,6 +111,10 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Post(Routes().edu.org.create())
+  @ApiOperation({
+    summary: 'Create a new organization',
+    operationId: 'organizations::create',
+  })
   async createOrganization(
     @Body() request: dto.CreateOrganizationRequest,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -119,6 +140,13 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Patch(Routes().edu.org.update(':id'))
+  @ApiOperation({
+    summary: 'Update an organization',
+    operationId: 'organizations::update',
+  })
+  @ApiNotFoundResponse({
+    description: 'Organization not found',
+  })
   async updateOrganization(
     @Body() request: dto.UpdateOrganizationRequest,
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
@@ -138,6 +166,10 @@ export class OrganizationsController {
   /* -------------------------------------------------------------------------- */
 
   @Delete(Routes().edu.org.delete(':id'))
+  @ApiOperation({
+    summary: 'Delete an organization',
+    operationId: 'organizations::delete',
+  })
   @ApiNotFoundResponse({
     description: 'Organization not found',
   })
