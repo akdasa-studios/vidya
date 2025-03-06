@@ -21,6 +21,7 @@ describe('/edu/orgs', () => {
   let authService: AuthService;
   let mapper: Mapper;
   let ctx: Context;
+  let authTokenForFirstOrg: string;
 
   /* -------------------------------------------------------------------------- */
   /*                                    Setup                                   */
@@ -31,6 +32,11 @@ describe('/edu/orgs', () => {
     ctx = await createContext(app.get(OrganizationsService));
     authService = app.get(AuthService);
     mapper = app.get(DEFAULT_MAPPER_TOKEN);
+    authTokenForFirstOrg = (
+      await authService.generateTokens(faker.string.uuid(), [
+        { oid: ctx.orgs.first.id, p: ['orgs:read'] },
+      ])
+    ).accessToken;
   });
 
   afterAll(async () => {
@@ -38,13 +44,12 @@ describe('/edu/orgs', () => {
   });
 
   /* -------------------------------------------------------------------------- */
-  /*                                GET /edu/orgs                               */
+  /*                          Authentication Validation                         */
   /* -------------------------------------------------------------------------- */
 
   it(`GET /edu/orgs returns 401 for unauthorized users`, () => {
     return request(app.getHttpServer())
       .get(Routes().edu.org.find())
-      .set('Authorization', 'Bearer YOUR_AUTH_TOKEN')
       .expect(401)
       .expect({
         message: 'Unauthorized',
@@ -52,14 +57,14 @@ describe('/edu/orgs', () => {
       });
   });
 
-  it(`GET /edu/orgs returns only permitted organizations`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: ctx.orgs.first.id, p: ['orgs:read'] },
-    ]);
+  /* -------------------------------------------------------------------------- */
+  /*                               Positive Cases                               */
+  /* -------------------------------------------------------------------------- */
 
+  it(`GET /edu/orgs returns only permitted organizations`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.org.find())
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
       .expect(200)
       .expect({
         items: instanceToPlain(
@@ -72,7 +77,11 @@ describe('/edu/orgs', () => {
       });
   });
 
-  it(`GET /edu/orgs returns nothing`, async () => {
+  /* -------------------------------------------------------------------------- */
+  /*                               Negative Cases                               */
+  /* -------------------------------------------------------------------------- */
+
+  it(`GET /edu/orgs returns nothing if user do not have permissions`, async () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: faker.string.uuid(), p: ['orgs:read'] },
     ]);

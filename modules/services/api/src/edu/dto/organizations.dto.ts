@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import * as protocol from '@vidya/protocol';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Models                                   */
@@ -52,8 +52,11 @@ export class UpdateOrganizationRequest
 {
   @ApiPropertyOptional({ example: 'Organization' })
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
+  @Matches(/[^ ]+/, {
+    message: 'name should not be empty',
+  })
+  @MaxLength(128)
   name?: string;
 }
 
