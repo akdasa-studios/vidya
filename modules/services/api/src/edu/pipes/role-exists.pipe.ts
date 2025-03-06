@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, PipeTransform } from '@nestjs/common';
-import { RolesService } from '@vidya/api/org/services';
+import { RolesService } from '@vidya/api/edu/services';
 
 @Injectable()
 export class RoleExistsPipe implements PipeTransform {

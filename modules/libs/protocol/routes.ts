@@ -11,18 +11,27 @@ export const Routes = (baseUrl: string = '') => ({
   otp: {
     root: () => `${baseUrl}/auth/otp`,
   },
-  org: {
-    roles: {
-      find: () => `${baseUrl}/org/roles`,
-      get: (id: string) => `${baseUrl}/org/roles/${id}`,
-      create: () => `${baseUrl}/org/roles`,
-      update: (id: string) => `${baseUrl}/org/roles/${id}`,
-      delete: (id: string) => `${baseUrl}/org/roles/${id}`,
+  edu: {
+    org: {
+      find: () => `${baseUrl}/edu/organizations`,
+      get: (id: string) => `${baseUrl}/edu/organizations/${id}`,
+      create: () => `${baseUrl}/edu/organizations`,
+      update: (id: string) => `${baseUrl}/edu/organizations/${id}`,
+      delete: (id: string) => `${baseUrl}/edu/organizations/${id}`,
     },
-    userRoles: {
-      all: (userId: string) => `${baseUrl}/org/users/${userId}/roles`,
-      create: (userId: string) => `${baseUrl}/org/users/${userId}/roles`,
-      delete: (userId: string, roleId: string) => `${baseUrl}/org/users/${userId}/roles/${roleId}`,
-    }
+    roles: {
+      find: () => `${baseUrl}/edu/roles`,
+      get: (id: string) => `${baseUrl}/edu/roles/${id}`,
+      create: () => `${baseUrl}/edu/roles`,
+      update: (id: string) => `${baseUrl}/edu/roles/${id}`,
+      delete: (id: string) => `${baseUrl}/edu/roles/${id}`,
+    },
+    user: (userId: string) => ({
+      roles: {
+        all: () => `${baseUrl}/edu/users/${userId}/roles`,
+        create: () => `${baseUrl}/edu/users/${userId}/roles`,
+        delete: (roleId: string) => `${baseUrl}/edu/users/${userId}/roles/${roleId}`,
+      }
+    }),
   }
 })

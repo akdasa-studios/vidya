@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import * as domain from '@vidya/domain';
 import * as protocol from '@vidya/protocol';
 import { IsNotEmpty, IsString } from 'class-validator';
 
@@ -77,5 +78,5 @@ export class UserPermission implements protocol.UserPermission {
   sid?: string;
 
   @ApiProperty({ example: ['permissions'] })
-  p: string[];
+  p: domain.PermissionKey[];
 }

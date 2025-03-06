@@ -1,8 +1,9 @@
+import * as domain from '@vidya/domain';
+import { OtpType } from "./otp";
+
 /* -------------------------------------------------------------------------- */
 /*                              One Time Password                             */
 /* -------------------------------------------------------------------------- */
-
-import { OtpType } from "./otp";
 
 /**
  * Request to get OTP for the specified destination.
@@ -38,6 +39,7 @@ export interface JwtToken {
 }
 
 export interface AccessToken extends JwtToken {
+  permissions: UserPermission[];
 }
 
 export interface RefreshToken extends JwtToken {
@@ -101,20 +103,17 @@ export interface LogOutResponse {
  * @remarks Used short names for the properties to reduce the size of a JWT token.
  */
 export type UserPermission = {
-  /* Organization ID */
+  /**
+   * Organization ID
+   */
   oid: string, 
 
   /* School ID */
   sid?: string,
   
   /* Permissions */
-  p: string[]
+  p: domain.PermissionKey[]
 }
-
-/**
- * List of permissions.
- */
-export type UserPermissions = UserPermission[];
 
 /* -------------------------------------------------------------------------- */
 /*                                   Profile                                  */
