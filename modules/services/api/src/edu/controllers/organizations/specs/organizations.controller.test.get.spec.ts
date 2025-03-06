@@ -28,12 +28,12 @@ describe('OrganizationsController', () => {
 
   describe('getOrganizations', () => {
     it('should return an empty array if no permissions granted', async () => {
-      const res = await ctr.getOrganizations(ctx.permissions.no);
+      const res = await ctr.getMany(ctx.permissions.no);
       expect(res.items).toEqual([]);
     });
 
     it('should return all permitted organizations', async () => {
-      const res = await ctr.getOrganizations(ctx.permissions.readFirst);
+      const res = await ctr.getMany(ctx.permissions.readFirst);
       expect(res.items).toEqual([ctx.orgs.first]);
     });
   });
@@ -44,7 +44,7 @@ describe('OrganizationsController', () => {
 
   describe('getOrganization', () => {
     it('should return permitted organization', async () => {
-      const res = await ctr.getOrganization(
+      const res = await ctr.getOne(
         ctx.orgs.first.id,
         ctx.permissions.readFirst,
       );
@@ -54,17 +54,13 @@ describe('OrganizationsController', () => {
 
     it('should throw an error if no permissions', async () => {
       await expect(
-        async () =>
-          await ctr.getOrganization(ctx.orgs.first.id, ctx.permissions.no),
+        async () => await ctr.getOne(ctx.orgs.first.id, ctx.permissions.no),
       ).rejects.toThrow();
     });
 
     it('should throw an error if organization does not exist', async () => {
       await expect(async () => {
-        return await ctr.getOrganization(
-          faker.string.uuid(),
-          ctx.permissions.no,
-        );
+        return await ctr.getOne(faker.string.uuid(), ctx.permissions.no);
       }).rejects.toThrow();
     });
   });

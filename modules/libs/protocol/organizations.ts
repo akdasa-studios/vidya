@@ -13,16 +13,6 @@ export type OrganizationDetails = OrganizationSummary & {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   Create                                   */
-/* -------------------------------------------------------------------------- */
-
-export type CreateOrganizationRequest = 
-  crud.CreateItemRequest<Omit<OrganizationDetails, 'id'>>;
-
-export type CreateOrganizationResponse = 
-  crud.CreateItemResponse<OrganizationSummary['id']>;
-
-/* -------------------------------------------------------------------------- */
 /*                                    Read                                    */
 /* -------------------------------------------------------------------------- */
 

@@ -21,7 +21,6 @@ export type Context = {
     readSecond: UserPermissions;
     updateFirst: UserPermissions;
     deleteFirst: UserPermissions;
-    create: UserPermissions;
   };
 };
 
@@ -78,11 +77,6 @@ export const createContext = async (
       {
         oid: orgFirst.id,
         p: ['orgs:delete'],
-      },
-    ]),
-    create: new UserPermissions([
-      {
-        p: ['orgs:create'],
       },
     ]),
   };

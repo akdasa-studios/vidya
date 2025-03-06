@@ -23,27 +23,6 @@ export class OrganizationDetails implements protocol.OrganizationSummary {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   Create                                   */
-/* -------------------------------------------------------------------------- */
-
-export class CreateOrganizationRequest
-  implements protocol.CreateOrganizationRequest
-{
-  @ApiProperty({ example: 'Organization' })
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-}
-
-export class CreateOrganizationResponse
-  implements protocol.CreateOrganizationResponse
-{
-  @ApiProperty({ example: 'ea53353e-2255-4eef-8709-d52cd837ce8e' })
-  @IsString()
-  id: string;
-}
-
-/* -------------------------------------------------------------------------- */
 /*                                    Read                                    */
 /* -------------------------------------------------------------------------- */
 

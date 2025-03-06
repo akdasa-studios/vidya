@@ -1,12 +1,19 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Query, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import * as dto from '@vidya/api/edu/dto';
 import { RolesService } from '@vidya/api/edu/services';
+import { CrudDecorators } from '@vidya/api/utils';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
+
+const Crud = CrudDecorators({
+  entityName: 'Role',
+  getManyResponseDto: dto.GetUserRolesListResponse,
+  createOneResponseDto: dto.SetUserRolesResponse,
+});
 
 @Controller()
 @ApiTags('Users')
@@ -21,16 +28,8 @@ export class UserRolesController {
   /*                        GET /edu/users/:userId/roles                        */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().edu.user(':userId').roles.all())
-  @ApiOperation({
-    summary: 'Get a list of roles of a user',
-    operationId: 'userRoles::all',
-  })
-  @ApiOkResponse({
-    type: dto.GetUserRolesListResponse,
-    description: 'Get list of assigned roles to a user.',
-  })
-  async getRolesList(
+  @Crud.GetMany(Routes().edu.user(':userId').roles.all())
+  async getAll(
     @Query() request: dto.GetUserRolesListRequest,
   ): Promise<dto.GetUserRolesListResponse> {
     const roles = await this.rolesService.getRolesOfUser(request.userId);
@@ -42,16 +41,8 @@ export class UserRolesController {
   /*                        POST /edu/users/:userId/roles                       */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().edu.user(':userId').roles.create())
-  @ApiOperation({
-    summary: 'Assign a role to a user',
-    operationId: 'userRoles::create',
-  })
-  @ApiOkResponse({
-    type: dto.SetUserRolesResponse,
-    description: 'Assigns an existing role to a user.',
-  })
-  async createRole(
+  @Crud.CreateOne(Routes().edu.user(':userId').roles.create())
+  async set(
     @Query() query: dto.SetUserRolesQuery,
     @Body() request: dto.SetUserRolesRequest,
   ): Promise<dto.SetUserRolesResponse> {

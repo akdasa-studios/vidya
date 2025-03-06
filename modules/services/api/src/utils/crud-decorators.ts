@@ -6,14 +6,14 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-export function CrudDecorators(
-  entityName: string,
-  getOneResponseDto: any,
-  getManyResponseDto: any,
-  updateOneResponseDto: any,
-  deleteOneResponseDto: any,
-  createDto: any,
-) {
+export function CrudDecorators(options: {
+  entityName: string;
+  getOneResponseDto?: any;
+  getManyResponseDto?: any;
+  updateOneResponseDto?: any;
+  deleteOneResponseDto?: any;
+  createOneResponseDto?: any;
+}) {
   /* -------------------------------------------------------------------------- */
   /*                                   Get One                                  */
   /* -------------------------------------------------------------------------- */
@@ -26,15 +26,15 @@ export function CrudDecorators(
     ) {
       Get(route)(target, propertyKey, descriptor);
       ApiOperation({
-        summary: `Get one ${entityName} by Id`,
-        operationId: `${entityName}::getOne`,
+        summary: `Get one ${options.entityName} by Id`,
+        operationId: `${options.entityName}::getOne`,
       })(target, propertyKey, descriptor);
       ApiOkResponse({
-        type: getOneResponseDto,
-        description: `${entityName} details`,
+        type: options.getOneResponseDto,
+        description: `${options.entityName} details`,
       })(target, propertyKey, descriptor);
       ApiNotFoundResponse({
-        description: `${entityName} not found`,
+        description: `${options.entityName} not found`,
       })(target, propertyKey, descriptor);
       ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -56,12 +56,12 @@ export function CrudDecorators(
     ) {
       Get(route)(target, propertyKey, descriptor);
       ApiOperation({
-        summary: `Get many ${entityName}s`,
-        operationId: `${entityName}::getMany`,
+        summary: `Get many ${options.entityName}s`,
+        operationId: `${options.entityName}::getMany`,
       })(target, propertyKey, descriptor);
       ApiOkResponse({
-        type: getManyResponseDto,
-        description: `List of ${entityName}s`,
+        type: options.getManyResponseDto,
+        description: `List of ${options.entityName}s`,
       })(target, propertyKey, descriptor);
       ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -83,12 +83,12 @@ export function CrudDecorators(
     ) {
       Post(route)(target, propertyKey, descriptor);
       ApiOperation({
-        summary: `Create a new ${entityName}`,
-        operationId: `${entityName}::create`,
+        summary: `Create a new ${options.entityName}`,
+        operationId: `${options.entityName}::create`,
       })(target, propertyKey, descriptor);
       ApiOkResponse({
-        type: createDto,
-        description: `${entityName} created successfully`,
+        type: options.createOneResponseDto,
+        description: `${options.entityName} created successfully`,
       })(target, propertyKey, descriptor);
       ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -110,15 +110,15 @@ export function CrudDecorators(
     ) {
       Patch(route)(target, propertyKey, descriptor);
       ApiOperation({
-        summary: `Update a ${entityName}`,
-        operationId: `${entityName}::update`,
+        summary: `Update a ${options.entityName}`,
+        operationId: `${options.entityName}::update`,
       })(target, propertyKey, descriptor);
       ApiOkResponse({
-        type: updateOneResponseDto,
-        description: `${entityName} updated successfully`,
+        type: options.updateOneResponseDto,
+        description: `${options.entityName} updated successfully`,
       })(target, propertyKey, descriptor);
       ApiNotFoundResponse({
-        description: `${entityName} not found`,
+        description: `${options.entityName} not found`,
       })(target, propertyKey, descriptor);
       ApiUnauthorizedResponse({
         description: 'Unauthorized',
@@ -140,15 +140,15 @@ export function CrudDecorators(
     ) {
       Delete(route)(target, propertyKey, descriptor);
       ApiOperation({
-        summary: `Delete a ${entityName}`,
-        operationId: `${entityName}::delete`,
+        summary: `Delete a ${options.entityName}`,
+        operationId: `${options.entityName}::delete`,
       })(target, propertyKey, descriptor);
       ApiOkResponse({
-        type: deleteOneResponseDto,
-        description: `${entityName} deleted successfully`,
+        type: options.deleteOneResponseDto,
+        description: `${options.entityName} deleted successfully`,
       })(target, propertyKey, descriptor);
       ApiNotFoundResponse({
-        description: `${entityName} not found`,
+        description: `${options.entityName} not found`,
       })(target, propertyKey, descriptor);
       ApiUnauthorizedResponse({
         description: 'Unauthorized',

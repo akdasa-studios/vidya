@@ -105,10 +105,8 @@ export interface LogOutResponse {
 export type UserPermission = {
   /**
    * Organization ID
-   * Note: User can have permissions not related to
-   *       organizations for example, `orgs:create`.
    */
-  oid?: string, 
+  oid: string, 
 
   /* School ID */
   sid?: string,

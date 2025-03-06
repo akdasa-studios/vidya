@@ -29,12 +29,6 @@ export class OrganizationsMapperProfile extends AutomapperProfile {
         forMember((d) => d.id,   mapFrom((s) => s.id)),
         forMember((d) => d.name, mapFrom((s) => s.name)),
       )
-      
-      createMap(
-        mapper, entities.Organization, dto.CreateOrganizationResponse,
-        forMember((d) => d.id, mapFrom((s) => s.id)),
-      );
-
     }
   } 
 }

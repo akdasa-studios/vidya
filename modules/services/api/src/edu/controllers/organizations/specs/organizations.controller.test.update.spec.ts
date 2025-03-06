@@ -29,7 +29,7 @@ describe('OrganizationsController', () => {
   describe('updateOrganization', () => {
     it('should update an organization', async () => {
       const updatedName = faker.company.name() + ' Updated';
-      const response = await ctr.updateOrganization(
+      const response = await ctr.updateOne(
         { name: updatedName },
         ctx.orgs.first.id,
         ctx.permissions.updateFirst,
@@ -42,7 +42,7 @@ describe('OrganizationsController', () => {
     it('should throw an error if organization does not exist', async () => {
       await expect(
         async () =>
-          await ctr.updateOrganization(
+          await ctr.updateOne(
             { name: 'Updated Org 1' },
             faker.string.uuid(),
             ctx.permissions.updateFirst,
@@ -53,7 +53,7 @@ describe('OrganizationsController', () => {
     it('should throw an error if organization does not exist', async () => {
       await expect(
         async () =>
-          await ctr.updateOrganization(
+          await ctr.updateOne(
             { name: 'Updated Org 1' },
             ctx.orgs.second.id,
             ctx.permissions.updateFirst,

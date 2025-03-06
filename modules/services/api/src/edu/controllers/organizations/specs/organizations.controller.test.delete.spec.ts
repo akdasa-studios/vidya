@@ -28,7 +28,7 @@ describe('OrganizationsController', () => {
 
   describe('deleteOrganization', () => {
     it('should delete an organization', async () => {
-      const response = await ctr.deleteOrganization(
+      const response = await ctr.deleteOne(
         ctx.orgs.first.id,
         ctx.permissions.deleteFirst,
       );
@@ -38,20 +38,14 @@ describe('OrganizationsController', () => {
     it('should throw an error if user does not have permissions', async () => {
       await expect(
         async () =>
-          await ctr.deleteOrganization(
-            ctx.orgs.second.id,
-            ctx.permissions.deleteFirst,
-          ),
+          await ctr.deleteOne(ctx.orgs.second.id, ctx.permissions.deleteFirst),
       ).rejects.toThrow();
     });
 
     it('should throw an error if organization does not exist', async () => {
       await expect(
         async () =>
-          await ctr.deleteOrganization(
-            faker.string.uuid(),
-            ctx.permissions.deleteFirst,
-          ),
+          await ctr.deleteOne(faker.string.uuid(), ctx.permissions.deleteFirst),
       ).rejects.toThrow();
     });
   });

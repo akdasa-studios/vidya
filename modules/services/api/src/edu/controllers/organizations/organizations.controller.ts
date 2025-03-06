@@ -22,14 +22,13 @@ import * as domain from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
-const OrganizationsCrudDecorators = CrudDecorators(
-  'Organization',
-  dto.GetOrganizationResponse,
-  dto.GetOrganizationsResponse,
-  dto.CreateOrganizationResponse,
-  dto.UpdateOrganizationResponse,
-  dto.DeleteOrganizationResponse,
-);
+const Crud = CrudDecorators({
+  entityName: 'Organization',
+  getOneResponseDto: dto.GetOrganizationResponse,
+  getManyResponseDto: dto.GetOrganizationsResponse,
+  updateOneResponseDto: dto.UpdateOrganizationResponse,
+  deleteOneResponseDto: dto.DeleteOrganizationResponse,
+});
 
 @Controller()
 @ApiBearerAuth()
@@ -44,8 +43,8 @@ export class OrganizationsController {
   /*                         GET /edu/organizations/:id                         */
   /* -------------------------------------------------------------------------- */
 
-  @OrganizationsCrudDecorators.GetOne(Routes().edu.org.get(':id'))
-  async getOrganization(
+  @Crud.GetOne(Routes().edu.org.get(':id'))
+  async getOne(
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.GetOrganizationResponse> {
@@ -66,8 +65,8 @@ export class OrganizationsController {
   /*                           GET /edu/organizations                           */
   /* -------------------------------------------------------------------------- */
 
-  @OrganizationsCrudDecorators.GetMany(Routes().edu.org.find())
-  async getOrganizations(
+  @Crud.GetMany(Routes().edu.org.find())
+  async getMany(
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<GetOrganizationsResponse> {
     const orgs = await this.organizationsService
@@ -83,36 +82,11 @@ export class OrganizationsController {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                          POST /edu/organizations                           */
-  /* -------------------------------------------------------------------------- */
-
-  @OrganizationsCrudDecorators.CreateOne(Routes().edu.org.create())
-  async createOrganization(
-    @Body() request: dto.CreateOrganizationRequest,
-    @UserWithPermissions() userPermissions: UserPermissions,
-  ): Promise<dto.CreateOrganizationResponse> {
-    if (!userPermissions.hasPermissions(['orgs:create'])) {
-      throw new ForbiddenException(
-        'User does not have permission to create organizations',
-      );
-    }
-
-    const entity = await this.organizationsService.create({
-      name: request.name,
-    });
-    return this.mapper.map(
-      entity,
-      entities.Organization,
-      dto.CreateOrganizationResponse,
-    );
-  }
-
-  /* -------------------------------------------------------------------------- */
   /*                         PATCH /edu/organizations/:id                       */
   /* -------------------------------------------------------------------------- */
 
-  @OrganizationsCrudDecorators.UpdateOne(Routes().edu.org.update(':id'))
-  async updateOrganization(
+  @Crud.UpdateOne(Routes().edu.org.update(':id'))
+  async updateOne(
     @Body() request: dto.UpdateOrganizationRequest,
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -130,8 +104,8 @@ export class OrganizationsController {
   /*                        DELETE /edu/organizations/:id                       */
   /* -------------------------------------------------------------------------- */
 
-  @OrganizationsCrudDecorators.DeleteOne(Routes().edu.org.delete(':id'))
-  async deleteOrganization(
+  @Crud.DeleteOne(Routes().edu.org.delete(':id'))
+  async deleteOne(
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.DeleteOrganizationResponse> {
