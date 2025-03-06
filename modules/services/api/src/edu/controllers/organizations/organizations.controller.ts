@@ -49,7 +49,7 @@ export class OrganizationsController {
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.GetOrganizationResponse> {
     const orgs = await this.organizationsService
-      .scopedBy(userPermissions)
+      .scopedBy({ permissions: userPermissions })
       .findAll({ where: { id } });
     if (orgs.length === 0) {
       throw new NotFoundException(`Organization with id ${id} not found`);
@@ -57,7 +57,7 @@ export class OrganizationsController {
     return this.mapper.map(
       orgs[0],
       entities.Organization,
-      dto.OrganizationDetails,
+      dto.GetOrganizationResponse,
     );
   }
 
@@ -70,7 +70,7 @@ export class OrganizationsController {
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<GetOrganizationsResponse> {
     const orgs = await this.organizationsService
-      .scopedBy(userPermissions)
+      .scopedBy({ permissions: userPermissions })
       .findAll({});
     return {
       items: this.mapper.mapArray(
@@ -111,7 +111,7 @@ export class OrganizationsController {
   ): Promise<dto.DeleteOrganizationResponse> {
     this.checkUserPermissions(userPermissions, ['orgs:delete'], id);
     await this.organizationsService.deleteOneBy({ id });
-    return { success: true };
+    return new dto.DeleteOrganizationResponse({ success: true });
   }
 
   /* -------------------------------------------------------------------------- */

@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserPermissions } from '@vidya/api/auth/utils';
 import { Organization } from '@vidya/entities';
 import { In, Repository } from 'typeorm';
 
-import { ScopedEntitiesService } from './entities.service';
+import { Scope, ScopedEntitiesService } from './entities.service';
 
 @Injectable()
 export class OrganizationsService extends ScopedEntitiesService<
   Organization,
-  UserPermissions
+  Scope
 > {
   constructor(
     @InjectRepository(Organization) repository: Repository<Organization>,
   ) {
-    super(repository, (query, userPermissions) => {
-      const orgIds = userPermissions.getPermittedOrganizations(['orgs:read']);
+    super(repository, (query, scope) => {
+      const orgIds = scope.permissions.getPermittedOrganizations(['orgs:read']);
       const result = {
         where: {
           ...query?.where,

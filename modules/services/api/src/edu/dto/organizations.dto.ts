@@ -75,6 +75,9 @@ export class UpdateOrganizationResponse
 /* -------------------------------------------------------------------------- */
 
 export class DeleteOrganizationResponse {
+  constructor(options?: { success: boolean }) {
+    this.success = options.success;
+  }
   @ApiProperty({ example: 'success' })
   success: boolean;
 }

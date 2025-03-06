@@ -1,3 +1,4 @@
+import { UserPermissions } from '@vidya/api/auth/utils';
 import { validate, ValidationError } from 'class-validator';
 import {
   DeepPartial,
@@ -141,3 +142,7 @@ export class ScopedEntitiesServiceRequest<TEntity extends object> {
     return await this.service.findAll(this.applyScope(query));
   }
 }
+
+export type Scope = {
+  permissions: UserPermissions;
+};
