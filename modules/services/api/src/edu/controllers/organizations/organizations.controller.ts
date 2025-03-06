@@ -3,23 +3,13 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
-  Delete,
   ForbiddenException,
-  Get,
   NotFoundException,
   Param,
   ParseUUIDPipe,
-  Patch,
-  Post,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { UserWithPermissions } from '@vidya/api/auth/decorators';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UserPermissions } from '@vidya/api/auth/utils';
@@ -27,16 +17,23 @@ import * as dto from '@vidya/api/edu/dto';
 import { GetOrganizationsResponse } from '@vidya/api/edu/dto';
 import { OrganizationExistsPipe } from '@vidya/api/edu/pipes';
 import { OrganizationsService } from '@vidya/api/edu/services';
+import { CrudDecorators } from '@vidya/api/utils';
 import * as domain from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
+const OrganizationsCrudDecorators = CrudDecorators(
+  'Organization',
+  dto.GetOrganizationResponse,
+  dto.GetOrganizationsResponse,
+  dto.CreateOrganizationResponse,
+  dto.UpdateOrganizationResponse,
+  dto.DeleteOrganizationResponse,
+);
+
 @Controller()
 @ApiBearerAuth()
 @UseGuards(AuthenticatedUser)
-@ApiUnauthorizedResponse({
-  description: 'Unauthorized',
-})
 export class OrganizationsController {
   constructor(
     private readonly organizationsService: OrganizationsService,
@@ -44,51 +41,10 @@ export class OrganizationsController {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                           GET /edu/organizations                           */
-  /* -------------------------------------------------------------------------- */
-
-  @Get(Routes().edu.org.find())
-  @ApiOperation({
-    summary: 'Returns a list of organizations',
-    description: 'Returns list of organizations that the user has access to.',
-    operationId: 'organizations::find',
-  })
-  @ApiOkResponse({
-    type: GetOrganizationsResponse,
-    description: 'List of organizations.',
-  })
-  async getOrganizations(
-    @UserWithPermissions() userPermissions: UserPermissions,
-  ): Promise<GetOrganizationsResponse> {
-    const orgs = await this.organizationsService
-      .scopedBy(userPermissions)
-      .findAll({});
-    return {
-      items: this.mapper.mapArray(
-        orgs,
-        entities.Organization,
-        dto.OrganizationSummary,
-      ),
-    };
-  }
-
-  /* -------------------------------------------------------------------------- */
   /*                         GET /edu/organizations/:id                         */
   /* -------------------------------------------------------------------------- */
 
-  @Get(Routes().edu.org.get(':id'))
-  @ApiOperation({
-    summary: 'Get an organization by Id',
-    description: 'Returns an organization by Id if the user has access to it.',
-    operationId: 'organizations::get',
-  })
-  @ApiOkResponse({
-    type: dto.GetOrganizationResponse,
-    description: 'Organization details.',
-  })
-  @ApiNotFoundResponse({
-    description: 'Organization not found',
-  })
+  @OrganizationsCrudDecorators.GetOne(Routes().edu.org.get(':id'))
   async getOrganization(
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -107,14 +63,30 @@ export class OrganizationsController {
   }
 
   /* -------------------------------------------------------------------------- */
+  /*                           GET /edu/organizations                           */
+  /* -------------------------------------------------------------------------- */
+
+  @OrganizationsCrudDecorators.GetMany(Routes().edu.org.find())
+  async getOrganizations(
+    @UserWithPermissions() userPermissions: UserPermissions,
+  ): Promise<GetOrganizationsResponse> {
+    const orgs = await this.organizationsService
+      .scopedBy(userPermissions)
+      .findAll({});
+    return {
+      items: this.mapper.mapArray(
+        orgs,
+        entities.Organization,
+        dto.OrganizationSummary,
+      ),
+    };
+  }
+
+  /* -------------------------------------------------------------------------- */
   /*                          POST /edu/organizations                           */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().edu.org.create())
-  @ApiOperation({
-    summary: 'Create a new organization',
-    operationId: 'organizations::create',
-  })
+  @OrganizationsCrudDecorators.CreateOne(Routes().edu.org.create())
   async createOrganization(
     @Body() request: dto.CreateOrganizationRequest,
     @UserWithPermissions() userPermissions: UserPermissions,
@@ -139,14 +111,7 @@ export class OrganizationsController {
   /*                         PATCH /edu/organizations/:id                       */
   /* -------------------------------------------------------------------------- */
 
-  @Patch(Routes().edu.org.update(':id'))
-  @ApiOperation({
-    summary: 'Update an organization',
-    operationId: 'organizations::update',
-  })
-  @ApiNotFoundResponse({
-    description: 'Organization not found',
-  })
+  @OrganizationsCrudDecorators.UpdateOne(Routes().edu.org.update(':id'))
   async updateOrganization(
     @Body() request: dto.UpdateOrganizationRequest,
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
@@ -165,14 +130,7 @@ export class OrganizationsController {
   /*                        DELETE /edu/organizations/:id                       */
   /* -------------------------------------------------------------------------- */
 
-  @Delete(Routes().edu.org.delete(':id'))
-  @ApiOperation({
-    summary: 'Delete an organization',
-    operationId: 'organizations::delete',
-  })
-  @ApiNotFoundResponse({
-    description: 'Organization not found',
-  })
+  @OrganizationsCrudDecorators.DeleteOne(Routes().edu.org.delete(':id'))
   async deleteOrganization(
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
