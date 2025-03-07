@@ -9,6 +9,12 @@ export const PermissionKeys = [
   'roles:read',
   'roles:update',
   'roles:delete',
+
+  // Schools
+  'schools:create',
+  'schools:read',
+  'schools:update',
+  'schools:delete',
 ] as const;
 
 export type PermissionKey = typeof PermissionKeys[number];

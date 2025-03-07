@@ -4,9 +4,13 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
 import { OtpService, RevokedTokensService } from '@vidya/api/auth/services';
 import { UserPermissions } from '@vidya/api/auth/utils';
-import { OrganizationsService, RolesService } from '@vidya/api/edu/services';
+import {
+  OrganizationsService,
+  RolesService,
+  SchoolsService,
+} from '@vidya/api/edu/services';
 import { inMemoryDataSource } from '@vidya/api/utils';
-import { Organization, Role } from '@vidya/entities';
+import { Organization, Role, School } from '@vidya/entities';
 import { useContainer } from 'class-validator';
 import { DataSource } from 'typeorm';
 
@@ -16,9 +20,13 @@ export type Context = {
     first: Organization;
     second: Organization;
   };
+  schools: {
+    one: School;
+  };
   roles: {
     orgOneAdmin: Role;
     orgTwoAdmin: Role;
+    orgOneScoolOneAdmin: Role;
   };
   permissions: {
     no: UserPermissions;
@@ -50,6 +58,7 @@ export const createModule = async () => {
 
 export const createContext = async (
   orgsService: OrganizationsService,
+  schoolsService: SchoolsService,
   rolesService: RolesService,
 ): Promise<Context> => {
   const orgFirst = await orgsService.create({
@@ -59,17 +68,29 @@ export const createContext = async (
     name: faker.company.name(),
   });
 
+  const schoolOne = await schoolsService.create({
+    name: faker.company.name(),
+    organizationId: orgFirst.id,
+  });
+
   const orgOneAdmin = await rolesService.create({
-    name: 'Admin',
-    description: 'Admin role',
+    name: 'Org One :: Admin',
+    description: 'Org One :: Admin role',
     permissions: ['orgs:read', 'orgs:update', 'orgs:delete'],
     organizationId: orgFirst.id,
   });
   const orgTwoAdmin = await rolesService.create({
-    name: 'Admin',
-    description: 'Admin role',
+    name: 'Org Two :: Admin',
+    description: 'Org Two :: Admin role',
     permissions: ['orgs:read', 'orgs:update', 'orgs:delete'],
     organizationId: orgSecond.id,
+  });
+  const orgOneScoolOneAdmin = await rolesService.create({
+    name: 'Org One :: School One :: Admin',
+    description: 'Org One :: School One :: Admin role',
+    permissions: ['roles:read'],
+    organizationId: orgFirst.id,
+    schoolId: schoolOne.id,
   });
 
   const permissions = {
@@ -105,9 +126,13 @@ export const createContext = async (
       first: orgFirst,
       second: orgSecond,
     },
+    schools: {
+      one: schoolOne,
+    },
     roles: {
       orgOneAdmin,
       orgTwoAdmin,
+      orgOneScoolOneAdmin,
     },
     permissions,
   };

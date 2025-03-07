@@ -3,7 +3,6 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
-  ForbiddenException,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -18,7 +17,6 @@ import * as dto from '@vidya/api/edu/dto';
 import { RoleExistsPipe } from '@vidya/api/edu/pipes';
 import { RolesService } from '@vidya/api/edu/services';
 import { CrudDecorators } from '@vidya/api/utils';
-import * as domain from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
@@ -49,7 +47,9 @@ export class RolesController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.GetRoleResponse> {
-    const roles = await this.rolesService.findPermittedBy(permissions, { id });
+    const roles = await this.rolesService
+      .scopedBy({ permissions })
+      .findAll({ where: { id } });
     if (roles.length === 0) {
       throw new NotFoundException(`Role with id ${id} not found`);
     }
@@ -65,10 +65,7 @@ export class RolesController {
     @Query() query: dto.GetRoleSummariesListQuery,
     @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.GetRolesResponse> {
-    const roles = await this.rolesService.findPermittedBy(permissions, {
-      organizationId: query.organizationId,
-      schoolId: query.schoolId,
-    });
+    const roles = await this.rolesService.scopedBy({ permissions }).findAll({});
     return new dto.GetRolesResponse({
       items: this.mapper.mapArray(roles, entities.Role, dto.RoleSummary),
     });
@@ -83,12 +80,10 @@ export class RolesController {
     @Body() request: dto.CreateRoleRequest,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.CreateRoleResponse> {
-    this.checkUserPermissions(
-      userPermissions,
-      ['roles:create'],
-      request.organizationId,
-      request.schoolId,
-    );
+    userPermissions.check(['roles:create'], {
+      organizationId: request.organizationId,
+      schoolId: request.schoolId,
+    });
 
     const entity = await this.rolesService.create(
       this.mapper.map(request, dto.CreateRoleRequest, entities.Role),
@@ -109,12 +104,10 @@ export class RolesController {
   ): Promise<dto.UpdateRoleResponse> {
     // Check if user has permission to update role
     let role = await this.rolesService.findOneBy({ id });
-    this.checkUserPermissions(
-      userPermissions,
-      ['roles:update'],
-      role.organizationId,
-      role.schoolId,
-    );
+    userPermissions.check(['roles:update'], {
+      organizationId: role.organizationId,
+      schoolId: role.schoolId,
+    });
 
     // User has permission to update role. Proceed with update.
     role = await this.rolesService.updateOneBy(
@@ -135,48 +128,13 @@ export class RolesController {
   ): Promise<dto.DeleteRoleResponse> {
     // Check if user has permission to delete role
     const role = await this.rolesService.findOneBy({ id });
-    this.checkUserPermissions(
-      userPermissions,
-      ['roles:delete'],
-      role.organizationId,
-      role.schoolId,
-    );
+    userPermissions.check(['roles:delete'], {
+      organizationId: role.organizationId,
+      schoolId: role.schoolId,
+    });
 
     // User has permission to delete role. Proceed with deletion.
     await this.rolesService.deleteOneBy({ id });
     return new dto.DeleteRoleResponse({ success: true });
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                               Private methods                              */
-  /* -------------------------------------------------------------------------- */
-
-  // TODO !HIGH Extract to base ProtectedCrud controller
-  private checkUserPermissions(
-    userPermissions: UserPermissions,
-    requiredPermissions: domain.PermissionKey[],
-    organizationId: string,
-    schoolId?: string,
-  ) {
-    // Check if user has permission to create roles
-    // on the organization level
-    const permittedOnOrgLevel = userPermissions
-      .getPermittedOrganizations(requiredPermissions)
-      .includes(organizationId);
-
-    // Check if user has permission to create roles
-    // on the school level
-    const permittedOnSchoolLevel = schoolId
-      ? userPermissions
-          .getPermittedSchools(requiredPermissions)
-          .includes(schoolId)
-      : true;
-
-    // If user does not have permission to create roles
-    // on either the organization or school level, throw an error
-    // indicating that the user does not have permission
-    if (!permittedOnOrgLevel || !permittedOnSchoolLevel) {
-      throw new ForbiddenException('User does not have permission');
-    }
   }
 }

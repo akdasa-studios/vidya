@@ -1,7 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { AuthService } from '@vidya/api/auth/services';
-import { OrganizationsService, RolesService } from '@vidya/api/edu/services';
+import {
+  OrganizationsService,
+  RolesService,
+  SchoolsService,
+} from '@vidya/api/edu/services';
 import { Routes } from '@vidya/protocol';
 import * as request from 'supertest';
 
@@ -24,6 +28,7 @@ describe('/edu/roles', () => {
     app = await createModule();
     ctx = await createContext(
       app.get(OrganizationsService),
+      app.get(SchoolsService),
       app.get(RolesService),
     );
     authService = app.get(AuthService);

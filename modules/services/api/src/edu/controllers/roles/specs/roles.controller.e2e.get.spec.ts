@@ -4,7 +4,11 @@ import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { AuthService } from '@vidya/api/auth/services';
 import * as dto from '@vidya/api/edu/dto';
-import { OrganizationsService, RolesService } from '@vidya/api/edu/services';
+import {
+  OrganizationsService,
+  RolesService,
+  SchoolsService,
+} from '@vidya/api/edu/services';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 import { instanceToPlain } from 'class-transformer';
@@ -22,6 +26,7 @@ describe('/edu/roles', () => {
   let mapper: Mapper;
   let ctx: Context;
   let authTokenForFirstOrg: string;
+  let authTokenForSchoolOne: string;
 
   /* -------------------------------------------------------------------------- */
   /*                                    Setup                                   */
@@ -31,6 +36,7 @@ describe('/edu/roles', () => {
     app = await createModule();
     ctx = await createContext(
       app.get(OrganizationsService),
+      app.get(SchoolsService),
       app.get(RolesService),
     );
     authService = app.get(AuthService);
@@ -38,6 +44,11 @@ describe('/edu/roles', () => {
     authTokenForFirstOrg = (
       await authService.generateTokens(faker.string.uuid(), [
         { oid: ctx.orgs.first.id, p: ['roles:read'] },
+      ])
+    ).accessToken;
+    authTokenForSchoolOne = (
+      await authService.generateTokens(faker.string.uuid(), [
+        { oid: ctx.orgs.first.id, sid: ctx.schools.one.id, p: ['roles:read'] },
       ])
     ).accessToken;
   });
@@ -64,7 +75,7 @@ describe('/edu/roles', () => {
   /*                               Positive Cases                               */
   /* -------------------------------------------------------------------------- */
 
-  it(`GET /edu/roles returns only permitted roles`, async () => {
+  it(`GET /edu/roles returns only permitted roles (org level)`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
       .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
@@ -72,7 +83,32 @@ describe('/edu/roles', () => {
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
-            [ctx.roles.orgOneAdmin],
+            [
+              // because user can read roles on org level
+              // it can read all roles on scool level as well
+              ctx.roles.orgOneAdmin,
+              ctx.roles.orgOneScoolOneAdmin,
+            ],
+            entities.Role,
+            dto.RoleSummary,
+          ),
+        ),
+      });
+  });
+
+  it(`GET /edu/roles returns only permitted roles (school level)`, async () => {
+    return request(app.getHttpServer())
+      .get(Routes().edu.roles.find())
+      .set('Authorization', `Bearer ${authTokenForSchoolOne}`)
+      .expect(200)
+      .expect({
+        items: instanceToPlain(
+          mapper.mapArray(
+            [
+              // because user can read roles on scool
+              // level only
+              ctx.roles.orgOneScoolOneAdmin,
+            ],
             entities.Role,
             dto.RoleSummary,
           ),
@@ -88,6 +124,16 @@ describe('/edu/roles', () => {
     const tokens = await authService.generateTokens(faker.string.uuid(), [
       { oid: faker.string.uuid(), p: ['roles:read'] },
     ]);
+
+    return request(app.getHttpServer())
+      .get(Routes().edu.roles.find())
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .expect(200)
+      .expect({ items: [] });
+  });
+
+  it(`GET /edu/roles returns nothing if user do not have any permissions`, async () => {
+    const tokens = await authService.generateTokens(faker.string.uuid(), []);
 
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
