@@ -4,9 +4,9 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
 import { OtpService, RevokedTokensService } from '@vidya/api/auth/services';
 import { UserPermissions } from '@vidya/api/auth/utils';
-import { OrganizationsService } from '@vidya/api/edu/services';
+import { OrganizationsService, RolesService } from '@vidya/api/edu/services';
 import { inMemoryDataSource } from '@vidya/api/utils';
-import { Organization } from '@vidya/entities';
+import { Organization, Role } from '@vidya/entities';
 import { useContainer } from 'class-validator';
 import { DataSource } from 'typeorm';
 
@@ -15,6 +15,10 @@ export type Context = {
   orgs: {
     first: Organization;
     second: Organization;
+  };
+  roles: {
+    orgOneAdmin: Role;
+    orgTwoAdmin: Role;
   };
   permissions: {
     no: UserPermissions;
@@ -46,12 +50,26 @@ export const createModule = async () => {
 
 export const createContext = async (
   orgsService: OrganizationsService,
+  rolesService: RolesService,
 ): Promise<Context> => {
   const orgFirst = await orgsService.create({
     name: faker.company.name(),
   });
   const orgSecond = await orgsService.create({
     name: faker.company.name(),
+  });
+
+  const orgOneAdmin = await rolesService.create({
+    name: 'Admin',
+    description: 'Admin role',
+    permissions: ['orgs:read', 'orgs:update', 'orgs:delete'],
+    organizationId: orgFirst.id,
+  });
+  const orgTwoAdmin = await rolesService.create({
+    name: 'Admin',
+    description: 'Admin role',
+    permissions: ['orgs:read', 'orgs:update', 'orgs:delete'],
+    organizationId: orgSecond.id,
   });
 
   const permissions = {
@@ -86,6 +104,10 @@ export const createContext = async (
     orgs: {
       first: orgFirst,
       second: orgSecond,
+    },
+    roles: {
+      orgOneAdmin,
+      orgTwoAdmin,
     },
     permissions,
   };

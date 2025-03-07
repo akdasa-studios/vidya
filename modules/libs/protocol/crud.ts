@@ -44,7 +44,7 @@ export type UpdateItemRequest<TItemType> = Partial<TItemType>;
 /**
  * Response to updating an item.
  */
-export type UpdateItemResponse<TItemType> = Partial<TItemType>;
+export type UpdateItemResponse<TItemType> = TItemType;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Delete                                   */

@@ -1,12 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import * as domain from '@vidya/domain';
 import * as protocol from '@vidya/protocol';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Models                                   */
 /* -------------------------------------------------------------------------- */
 
-export class Role implements protocol.Role {
+export class RoleDetails implements protocol.RoleDetails {
   @ApiProperty({ example: 'id' })
   id: string;
 
@@ -43,11 +53,9 @@ export class RoleSummary implements protocol.RoleSummary {
 /*                                     Get                                    */
 /* -------------------------------------------------------------------------- */
 
-export class GetRoleRequest implements protocol.GetRoleRequest {}
-export class GetRoleResponse extends Role implements protocol.GetRoleResponse {
-  organizationId: string;
-  schoolId?: string;
-}
+export class GetRoleResponse
+  extends RoleDetails
+  implements protocol.GetRoleResponse {}
 
 export class GetRoleSummariesListQuery
   implements protocol.GetRoleSummariesListQuery
@@ -63,11 +71,9 @@ export class GetRoleSummariesListQuery
   schoolId?: string;
 }
 
-export class GetRoleSummariesListResponse
-  implements protocol.GetRoleSummariesListResponse
-{
-  constructor(options: { roles: Array<RoleSummary> }) {
-    this.roles = options.roles ?? [];
+export class GetRolesResponse implements protocol.GetRolesResponse {
+  constructor(options: { items: Array<RoleSummary> }) {
+    this.items = options.items ?? [];
   }
 
   @ApiProperty({
@@ -79,7 +85,7 @@ export class GetRoleSummariesListResponse
       },
     ],
   })
-  roles: RoleSummary[];
+  items: RoleSummary[];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -89,14 +95,20 @@ export class GetRoleSummariesListResponse
 export class CreateRoleRequest implements protocol.CreateRoleRequest {
   @ApiProperty({ example: 'name' })
   @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  @MaxLength(32)
   name: string;
 
   @ApiProperty({ example: 'description' })
   @IsString()
+  @IsNotEmpty()
+  @MaxLength(128)
   description: string;
 
   @ApiProperty({ example: ['permissions'] })
   @IsString({ each: true })
+  @IsEnum(domain.PermissionEnum, { each: true })
   permissions: string[];
 
   @ApiProperty({ example: 'organizationId' })
@@ -109,12 +121,11 @@ export class CreateRoleRequest implements protocol.CreateRoleRequest {
 }
 
 export class CreateRoleResponse implements protocol.CreateRoleResponse {
-  constructor(id: string) {
-    this.id = id;
+  constructor(options: { id: string }) {
+    this.id = options.id;
   }
 
   @ApiProperty({ example: 'd66c9ffa-1d94-4d52-8399-0df211d578f6' })
-  @IsString()
   id: string;
 }
 
@@ -126,41 +137,40 @@ export class UpdateRoleRequest implements protocol.UpdateRoleRequest {
   @ApiPropertyOptional({ example: 'name' })
   @IsString()
   @IsOptional()
+  @Matches(/[^ ]+/, {
+    message: 'name should not be empty',
+  })
+  @MaxLength(32)
   name?: string;
 
   @ApiPropertyOptional({ example: 'description' })
   @IsString()
   @IsOptional()
+  @Matches(/[^ ]+/, {
+    message: 'description should not be empty',
+  })
+  @MaxLength(256)
   description?: string;
 
   @ApiPropertyOptional({ example: ['permissions'] })
   @IsString({ each: true })
+  @IsEnum(domain.PermissionEnum, { each: true })
   @IsOptional()
   permissions?: string[];
 }
 
-export class UpdateRoleResponse implements protocol.UpdateRoleResponse {
-  constructor(id: string) {
-    this.id = id;
-  }
-
-  @ApiProperty({ example: 'd66c9ffa-1d94-4d52-8399-0df211d578f6' })
-  @IsString()
-  id: string;
-}
+export class UpdateRoleResponse
+  extends RoleDetails
+  implements protocol.UpdateRoleResponse {}
 
 /* -------------------------------------------------------------------------- */
 /*                                   Delete                                   */
 /* -------------------------------------------------------------------------- */
 
-export class DeleteRoleRequest implements protocol.DeleteRoleRequest {}
-
 export class DeleteRoleResponse implements protocol.DeleteRoleResponse {
-  constructor(id: string) {
-    this.id = id;
+  constructor(options?: { success: boolean }) {
+    this.success = options?.success ?? true;
   }
-
-  @ApiProperty({ example: 'd66c9ffa-1d94-4d52-8399-0df211d578f6' })
-  @IsString()
-  id: string;
+  @ApiProperty({ example: true })
+  success: boolean;
 }
