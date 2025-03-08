@@ -1,9 +1,9 @@
 name: Api :: Coverage Report
 
 on:
-  pull_request:
+  push:
     paths:
-      - "modules/services/api/**" 
+      - "modules/services/api/**"
 
 jobs:
   test:
