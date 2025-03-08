@@ -18,13 +18,13 @@ jobs:
         run: npm ci
 
       - name: Run Jest Tests with Coverage
-        run: npm run test:cov | tee ./coverage/coverage.txt
+        run: npm run test:cov | tee ./coverage.txt
         working-directory: modules/services/api/
 
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          coverage-path: ./modules/services/api/coverage/coverage.txt
+          coverage-path: ./modules/services/api/coverage.txt
           coverage-summary-path: ./modules/services/api/coverage/coverage-summary.json
-          junitxml-path: ./modules/services/api/coverage/junit.xml
+          junitxml-path: ./modules/services/api/junit.xml
