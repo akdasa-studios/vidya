@@ -11,7 +11,7 @@ async function bootstrap() {
 
   // TODO: Use on development environment only
   const config = new DocumentBuilder()
-    .setTitle('Vidya')
+    .setTitle(AppName)
     .setDescription(`The ${AppName} API`)
     .setVersion('1.0')
     .addBearerAuth()
