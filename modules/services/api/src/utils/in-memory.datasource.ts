@@ -31,7 +31,7 @@ export const inMemoryDataSource = async () => {
   const ds: DataSource = await db.adapters.createTypeormDataSource({
     type: 'postgres',
     entities: Entities,
-    migrations: ['/workspaces/vidya/modules/services/database/migrations/*.ts'],
+    migrations: ['../database/migrations/*.ts'],
   });
 
   await ds.initialize();
