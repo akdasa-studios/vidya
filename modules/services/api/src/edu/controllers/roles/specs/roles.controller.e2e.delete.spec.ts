@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { createTestingApp } from '@vidya/api/utils';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import { Routes } from '@vidya/protocol';
 import * as request from 'supertest';
 

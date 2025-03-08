@@ -2,7 +2,7 @@ import { Mapper } from '@automapper/core';
 import { DEFAULT_MAPPER_TOKEN } from '@automapper/nestjs';
 import { INestApplication } from '@nestjs/common';
 import * as dto from '@vidya/api/edu/dto';
-import { createTestingApp } from '@vidya/api/utils';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 import { instanceToPlain } from 'class-transformer';

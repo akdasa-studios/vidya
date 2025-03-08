@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { OrganizationsController } from '@vidya/api/edu/controllers';
-import { createTestingApp } from '@vidya/api/utils';
+import { createTestingApp } from '@vidya/api/edu/shared';
 
 import { Context, createContext } from './context';
 
