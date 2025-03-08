@@ -9,7 +9,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // TODO: Use on development environment only
+  // TODO Use on development environment only
   const config = new DocumentBuilder()
     .setTitle(AppName)
     .setDescription(`The ${AppName} API`)
