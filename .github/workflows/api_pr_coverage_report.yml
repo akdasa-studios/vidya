@@ -1,4 +1,4 @@
-name: Api :: Coverage Report
+name: Api // Coverage Report
 
 on:
   push:
