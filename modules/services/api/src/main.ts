@@ -26,6 +26,8 @@ async function bootstrap() {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+
+  // TODO Change environment variable to VIDYA_PORT
   await app.listen(process.env.PORT ?? 8001);
 }
 bootstrap();
