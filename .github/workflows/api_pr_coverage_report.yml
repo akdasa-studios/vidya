@@ -26,5 +26,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           coverage-path: ./modules/services/api/coverage.txt
-          coverage-summary-path: ./modules/services/api/coverage/coverage-summary.json
           junitxml-path: ./modules/services/api/junit.xml
