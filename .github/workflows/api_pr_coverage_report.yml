@@ -20,7 +20,7 @@ jobs:
         run: npm run test:cov
         working-directory: modules/services/api/
 
-      - name: Comment PR with Jest Coverage
-        uses: MishaKav/jest-coverage-commenter-action@v1.0.8
+      - name: Jest Coverage Comment
+        uses: MishaKav/jest-coverage-comment@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
