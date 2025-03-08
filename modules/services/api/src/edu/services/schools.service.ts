@@ -9,8 +9,8 @@ import { Scope, ScopedEntitiesService } from './entities.service';
 export class SchoolsService extends ScopedEntitiesService<School, Scope> {
   constructor(@InjectRepository(School) repository: Repository<School>) {
     super(repository, (query, scope) => {
-      const orgIds = scope.permissions.getPermittedOrganizations(['orgs:read']);
-      const schoolIds = scope.permissions.getPermittedSchools(['schools:read']);
+      const orgIds = scope.permissions.getOrganizations(['orgs:read']);
+      const schoolIds = scope.permissions.getSchools(['schools:read']);
       return {
         where: {
           ...query?.where,

@@ -1,38 +1,18 @@
-import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { AuthService } from '@vidya/api/auth/services';
-import {
-  OrganizationsService,
-  RolesService,
-  SchoolsService,
-} from '@vidya/api/edu/services';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import * as domain from '@vidya/domain';
 import { Routes } from '@vidya/protocol';
 import * as request from 'supertest';
 
-import { Context, createContext, createModule } from './context';
+import { Context, createContext } from './context';
 
 describe('/edu/roles', () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Context                                  */
-  /* -------------------------------------------------------------------------- */
-
   let app: INestApplication;
-  let authService: AuthService;
   let ctx: Context;
 
-  /* -------------------------------------------------------------------------- */
-  /*                                   Setup                                    */
-  /* -------------------------------------------------------------------------- */
-
   beforeEach(async () => {
-    app = await createModule();
-    ctx = await createContext(
-      app.get(OrganizationsService),
-      app.get(SchoolsService),
-      app.get(RolesService),
-    );
-    authService = app.get(AuthService);
+    app = await createTestingApp();
+    ctx = await createContext(app);
   });
 
   afterAll(async () => {
@@ -55,20 +35,35 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`POST /edu/roles returns 403 for missing permissions`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: ctx.orgs.first.id, p: ['roles:read'] }, // Missing 'roles:create' permission
-    ]);
-
     const payload = {
       name: 'New Role',
       description: 'Role description',
       permissions: ['orgs:read', 'orgs:update'],
-      organizationId: ctx.orgs.first.id,
+      organizationId: ctx.one.org.id,
     };
 
     return request(app.getHttpServer())
       .post(Routes().edu.roles.create())
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.readOnly}`)
+      .send(payload)
+      .expect(403)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toBe('User does not have permission');
+      });
+  });
+
+  it(`POST /edu/roles returns 403 for unauthorized organization`, async () => {
+    const payload = {
+      name: 'New Role',
+      description: 'Role description',
+      permissions: ['orgs:read', 'orgs:update'],
+      organizationId: ctx.one.org.id,
+    };
+
+    return request(app.getHttpServer())
+      .post(Routes().edu.roles.create())
+      .set('Authorization', `Bearer ${ctx.two.tokens.admin}`)
       .send(payload)
       .expect(403)
       .expect((res) => {
@@ -112,13 +107,9 @@ describe('/edu/roles', () => {
   ])(
     `POST /edu/roles 400 if payload is invalid`,
     async ({ payload, errors }) => {
-      const tokens = await authService.generateTokens(faker.string.uuid(), [
-        { oid: ctx.orgs.first.id, p: ['roles:create'] },
-      ]);
-
       return request(app.getHttpServer())
         .post(Routes().edu.roles.create())
-        .set('Authorization', `Bearer ${tokens.accessToken}`)
+        .set('Authorization', `Bearer ${ctx.two.tokens.admin}`)
         .send(payload)
         .expect(400)
         .expect((res) => {
@@ -133,20 +124,16 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`POST /edu/roles creates a new role`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: ctx.orgs.first.id, p: ['roles:create'] },
-    ]);
-
     const payload = {
       name: 'New Role',
       description: 'Role description',
       permissions: ['orgs:read', 'orgs:update'],
-      organizationId: ctx.orgs.first.id,
+      organizationId: ctx.one.org.id,
     };
 
     request(app.getHttpServer())
       .post(Routes().edu.roles.create())
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .send(payload)
       .expect(201)
       .expect((res) => {

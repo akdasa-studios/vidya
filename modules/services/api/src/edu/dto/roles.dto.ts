@@ -121,10 +121,6 @@ export class CreateRoleRequest implements protocol.CreateRoleRequest {
 }
 
 export class CreateRoleResponse implements protocol.CreateRoleResponse {
-  constructor(options: { id: string }) {
-    this.id = options.id;
-  }
-
   @ApiProperty({ example: 'd66c9ffa-1d94-4d52-8399-0df211d578f6' })
   id: string;
 }

@@ -1,38 +1,19 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { AuthService } from '@vidya/api/auth/services';
-import {
-  OrganizationsService,
-  RolesService,
-  SchoolsService,
-} from '@vidya/api/edu/services';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import * as domain from '@vidya/domain';
 import { Routes } from '@vidya/protocol';
 import * as request from 'supertest';
 
-import { Context, createContext, createModule } from './context';
+import { Context, createContext } from './context';
 
 describe('/edu/roles', () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Context                                  */
-  /* -------------------------------------------------------------------------- */
-
   let app: INestApplication;
-  let authService: AuthService;
   let ctx: Context;
 
-  /* -------------------------------------------------------------------------- */
-  /*                                   Setup                                    */
-  /* -------------------------------------------------------------------------- */
-
   beforeEach(async () => {
-    app = await createModule();
-    ctx = await createContext(
-      app.get(OrganizationsService),
-      app.get(SchoolsService),
-      app.get(RolesService),
-    );
-    authService = app.get(AuthService);
+    app = await createTestingApp();
+    ctx = await createContext(app);
   });
 
   afterAll(async () => {
@@ -44,13 +25,9 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`PATCH /edu/roles/:id 400 if id is invalid format`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: ctx.orgs.first.id, p: ['roles:read'] }, // Missing 'roles:update' permission
-    ]);
-
     return request(app.getHttpServer())
       .patch(Routes().edu.roles.update('invalid-uuid'))
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.readOnly}`)
       .expect(400)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -64,7 +41,7 @@ describe('/edu/roles', () => {
 
   it(`PATCH /edu/roles/:id returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.roles.orgOneAdmin.id))
+      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
       .expect(401);
   });
 
@@ -73,15 +50,25 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`PATCH /edu/roles/:id returns 403 for missing permissions`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: ctx.orgs.first.id, p: ['roles:read'] }, // Missing 'roles:update' permission
-    ]);
-
     const updatedRole = { name: 'Updated Role' };
 
     return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.roles.orgOneAdmin.id))
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.readOnly}`)
+      .send(updatedRole)
+      .expect(403)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toBe('User does not have permission');
+      });
+  });
+
+  it(`PATCH /edu/roles/:id returns 403 if user has no access to org level role`, async () => {
+    const updatedRole = { name: 'Updated Role' };
+
+    return request(app.getHttpServer())
+      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.schoolLevelAdmin}`)
       .send(updatedRole)
       .expect(403)
       .expect((res) => {
@@ -126,13 +113,9 @@ describe('/edu/roles', () => {
   ])(
     `PATCH /edu/roles/:id 400 if payload is invalid`,
     async ({ payload, errors }) => {
-      const tokens = await authService.generateTokens(faker.string.uuid(), [
-        { oid: ctx.orgs.first.id, p: ['roles:update'] },
-      ]);
-
       return request(app.getHttpServer())
-        .patch(Routes().edu.roles.update(ctx.roles.orgOneAdmin.id))
-        .set('Authorization', `Bearer ${tokens.accessToken}`)
+        .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
+        .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
         .send(payload)
         .expect(400)
         .expect((res) => {
@@ -151,13 +134,9 @@ describe('/edu/roles', () => {
     { name: 'Updated Role' },
     { name: '#$#$#$%$#%^' },
   ])(`PATCH /edu/roles/:id updates an existing role`, async (payload) => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: ctx.orgs.first.id, p: ['roles:update'] },
-    ]);
-
     return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.roles.orgOneAdmin.id))
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .send(payload)
       .expect(200)
       .expect((res) => {

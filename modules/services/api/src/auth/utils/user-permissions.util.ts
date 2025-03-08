@@ -18,13 +18,13 @@ export class UserPermissions {
     scope: { organizationId: string; schoolId?: string },
   ) {
     // Check if user has permission on the organization level
-    const permittedOnOrgLevel = this.getPermittedOrganizations(
-      permissions,
-    ).includes(scope.organizationId);
+    const permittedOnOrgLevel = this.getOrganizations(permissions).includes(
+      scope.organizationId,
+    );
 
     // Check if user has permission on the school level
     const permittedOnSchoolLevel = scope.schoolId
-      ? this.getPermittedSchools(permissions).includes(scope.schoolId)
+      ? this.getSchools(permissions).includes(scope.schoolId)
       : true;
 
     // If user does not have permission on either the organization
@@ -37,20 +37,21 @@ export class UserPermissions {
 
   /**
    * Returns list of organization ids that user has access to
-   * based on the provided permissions. It retunrs organization
-   * even if permission is granted on the school level only.
+   * based on the provided permissions.
    * @param permissions List of permissions to check
    * @returns List of organization ids that user has access to
    */
-  // TODO rename to getOrganizations
-  public getPermittedOrganizations(
-    permissions: domain.PermissionKey[],
-  ): string[] {
-    return this.userPermissions
-      .filter((p) =>
-        permissions.every((permission) => p.p.includes(permission)),
-      )
-      .map((p) => p.oid);
+  public getOrganizations(permissions: domain.PermissionKey[]): string[] {
+    return (
+      this.userPermissions
+        // organization level permissions
+        .filter((p) => p.oid && !p.sid)
+        // check if user has all required permissions
+        .filter((p) =>
+          permissions.every((permission) => p.p.includes(permission)),
+        )
+        .map((p) => p.oid)
+    );
   }
 
   /**
@@ -59,8 +60,7 @@ export class UserPermissions {
    * @param permissions List of permissions to check
    * @returns List of school ids that user has access to
    */
-  // TODO rename to getSchools
-  public getPermittedSchools(permissions: domain.PermissionKey[]): string[] {
+  public getSchools(permissions: domain.PermissionKey[]): string[] {
     return this.userPermissions
       .filter(
         (userPermission) =>

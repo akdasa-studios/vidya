@@ -84,11 +84,9 @@ export class RolesController {
       organizationId: request.organizationId,
       schoolId: request.schoolId,
     });
-
     const entity = await this.rolesService.create(
       this.mapper.map(request, dto.CreateRoleRequest, entities.Role),
     );
-
     return this.mapper.map(entity, entities.Role, dto.CreateRoleResponse);
   }
 

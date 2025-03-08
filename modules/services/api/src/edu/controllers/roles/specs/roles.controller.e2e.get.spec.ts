@@ -1,56 +1,24 @@
 import { Mapper } from '@automapper/core';
 import { DEFAULT_MAPPER_TOKEN } from '@automapper/nestjs';
-import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { AuthService } from '@vidya/api/auth/services';
 import * as dto from '@vidya/api/edu/dto';
-import {
-  OrganizationsService,
-  RolesService,
-  SchoolsService,
-} from '@vidya/api/edu/services';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 import { instanceToPlain } from 'class-transformer';
 import * as request from 'supertest';
 
-import { Context, createContext, createModule } from './context';
+import { Context, createContext } from './context';
 
 describe('/edu/roles', () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Context                                  */
-  /* -------------------------------------------------------------------------- */
-
   let app: INestApplication;
-  let authService: AuthService;
-  let mapper: Mapper;
   let ctx: Context;
-  let authTokenForFirstOrg: string;
-  let authTokenForSchoolOne: string;
-
-  /* -------------------------------------------------------------------------- */
-  /*                                    Setup                                   */
-  /* -------------------------------------------------------------------------- */
+  let mapper: Mapper;
 
   beforeEach(async () => {
-    app = await createModule();
-    ctx = await createContext(
-      app.get(OrganizationsService),
-      app.get(SchoolsService),
-      app.get(RolesService),
-    );
-    authService = app.get(AuthService);
+    app = await createTestingApp();
+    ctx = await createContext(app);
     mapper = app.get(DEFAULT_MAPPER_TOKEN);
-    authTokenForFirstOrg = (
-      await authService.generateTokens(faker.string.uuid(), [
-        { oid: ctx.orgs.first.id, p: ['roles:read'] },
-      ])
-    ).accessToken;
-    authTokenForSchoolOne = (
-      await authService.generateTokens(faker.string.uuid(), [
-        { oid: ctx.orgs.first.id, sid: ctx.schools.one.id, p: ['roles:read'] },
-      ])
-    ).accessToken;
   });
 
   afterAll(async () => {
@@ -78,16 +46,17 @@ describe('/edu/roles', () => {
   it(`GET /edu/roles returns only permitted roles (org level)`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(200)
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
             [
               // because user can read roles on org level
-              // it can read all roles on scool level as well
-              ctx.roles.orgOneAdmin,
-              ctx.roles.orgOneScoolOneAdmin,
+              // it can read all roles on school level as well
+              ctx.one.roles.admin,
+              ctx.one.roles.readonly,
+              ctx.one.roles.schoolLevelReadonly,
             ],
             entities.Role,
             dto.RoleSummary,
@@ -99,7 +68,7 @@ describe('/edu/roles', () => {
   it(`GET /edu/roles returns only permitted roles (school level)`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
-      .set('Authorization', `Bearer ${authTokenForSchoolOne}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.schoolLevelReadonly}`)
       .expect(200)
       .expect({
         items: instanceToPlain(
@@ -107,7 +76,7 @@ describe('/edu/roles', () => {
             [
               // because user can read roles on scool
               // level only
-              ctx.roles.orgOneScoolOneAdmin,
+              ctx.one.roles.schoolLevelReadonly,
             ],
             entities.Role,
             dto.RoleSummary,
@@ -121,23 +90,17 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`GET /edu/roles returns nothing if user do not have permissions`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), [
-      { oid: faker.string.uuid(), p: ['roles:read'] },
-    ]);
-
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .set('Authorization', `Bearer ${ctx.three.tokens.admin}`)
       .expect(200)
       .expect({ items: [] });
   });
 
   it(`GET /edu/roles returns nothing if user do not have any permissions`, async () => {
-    const tokens = await authService.generateTokens(faker.string.uuid(), []);
-
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
-      .set('Authorization', `Bearer ${tokens.accessToken}`)
+      .set('Authorization', `Bearer ${ctx.empty.tokens.noPermissions}`)
       .expect(200)
       .expect({ items: [] });
   });

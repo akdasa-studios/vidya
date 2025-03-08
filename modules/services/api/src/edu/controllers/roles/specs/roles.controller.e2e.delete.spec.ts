@@ -1,42 +1,22 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { AuthService } from '@vidya/api/auth/services';
-import {
-  OrganizationsService,
-  RolesService,
-  SchoolsService,
-} from '@vidya/api/edu/services';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import { Routes } from '@vidya/protocol';
 import * as request from 'supertest';
 
-import { Context, createContext, createModule } from './context';
+import { Context, createContext } from './context';
 
 describe('/edu/roles', () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Context                                  */
-  /* -------------------------------------------------------------------------- */
   let app: INestApplication;
-  let authService: AuthService;
   let ctx: Context;
-  let authTokenForFirstOrg: string;
-
-  /* -------------------------------------------------------------------------- */
-  /*                                    Setup                                   */
-  /* -------------------------------------------------------------------------- */
 
   beforeEach(async () => {
-    app = await createModule();
-    ctx = await createContext(
-      app.get(OrganizationsService),
-      app.get(SchoolsService),
-      app.get(RolesService),
-    );
-    authService = app.get(AuthService);
-    authTokenForFirstOrg = (
-      await authService.generateTokens(faker.string.uuid(), [
-        { oid: ctx.orgs.first.id, p: ['roles:delete'] },
-      ])
-    ).accessToken;
+    app = await createTestingApp();
+    ctx = await createContext(app);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   afterAll(async () => {
@@ -50,7 +30,7 @@ describe('/edu/roles', () => {
   it(`DELETE /edu/roles/:id 400 if id is invalid format`, async () => {
     return request(app.getHttpServer())
       .delete(Routes().edu.roles.delete('invalid-uuid'))
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(400)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -64,7 +44,7 @@ describe('/edu/roles', () => {
 
   it(`DELETE /edu/roles/:id returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.roles.delete(ctx.roles.orgOneAdmin.id))
+      .delete(Routes().edu.roles.delete(ctx.one.roles.admin.id))
       .expect(401);
   });
 
@@ -74,8 +54,8 @@ describe('/edu/roles', () => {
 
   it('DELETE /edu/roles/:id returns 403 for unauthorized user', async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.roles.delete(ctx.roles.orgTwoAdmin.id))
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .delete(Routes().edu.roles.delete(ctx.two.roles.admin.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(403)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -89,8 +69,8 @@ describe('/edu/roles', () => {
 
   it(`DELETE /edu/roles/:id deletes an existing role`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.roles.delete(ctx.roles.orgOneAdmin.id))
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .delete(Routes().edu.roles.delete(ctx.one.roles.admin.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(200)
       .expect((res) => {
         expect(res.body).toHaveProperty('success');
@@ -105,8 +85,8 @@ describe('/edu/roles', () => {
   it(`DELETE /edu/roles/:id returns 404 for non-existent role`, async () => {
     const nonExistentId = faker.string.uuid();
     return request(app.getHttpServer())
-      .delete(Routes().edu.roles.delete(nonExistentId)) // Non-existent ID
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .delete(Routes().edu.roles.delete(nonExistentId))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(404)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');

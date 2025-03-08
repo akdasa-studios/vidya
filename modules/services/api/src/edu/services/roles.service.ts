@@ -12,14 +12,12 @@ export class RolesService extends ScopedEntitiesService<Role, Scope> {
     @InjectRepository(UserRole) private userRolesRepo: Repository<UserRole>,
   ) {
     super(repository, (query, scope) => {
-      const orgIds = scope.permissions.getPermittedOrganizations([
-        'roles:read',
-      ]);
-      const schoolIds = scope.permissions.getPermittedSchools(['roles:read']);
+      const orgIds = scope.permissions.getOrganizations(['roles:read']);
+      const schoolIds = scope.permissions.getSchools(['roles:read']);
       return {
         where: {
           ...query?.where,
-          organizationId: In(orgIds),
+          organizationId: schoolIds.length == 0 ? In(orgIds) : undefined,
           schoolId: schoolIds.length > 0 ? In(schoolIds) : undefined,
         },
       };

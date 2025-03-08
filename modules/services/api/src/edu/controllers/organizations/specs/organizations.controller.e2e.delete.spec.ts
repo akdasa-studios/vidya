@@ -1,34 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { AuthService } from '@vidya/api/auth/services';
-import { OrganizationsService } from '@vidya/api/edu/services';
+import { createTestingApp } from '@vidya/api/edu/shared';
 import { Routes } from '@vidya/protocol';
 import * as request from 'supertest';
 
-import { Context, createContext, createModule } from './context';
+import { Context, createContext } from './context';
 
 describe('/edu/orgs', () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Context                                  */
-  /* -------------------------------------------------------------------------- */
   let app: INestApplication;
-  let authService: AuthService;
   let ctx: Context;
-  let authTokenForFirstOrg: string;
-
-  /* -------------------------------------------------------------------------- */
-  /*                                    Setup                                   */
-  /* -------------------------------------------------------------------------- */
 
   beforeEach(async () => {
-    app = await createModule();
-    ctx = await createContext(app.get(OrganizationsService));
-    authService = app.get(AuthService);
-    authTokenForFirstOrg = (
-      await authService.generateTokens(faker.string.uuid(), [
-        { oid: ctx.orgs.first.id, p: ['orgs:delete'] },
-      ])
-    ).accessToken;
+    app = await createTestingApp();
+    ctx = await createContext(app);
   });
 
   afterAll(async () => {
@@ -42,7 +26,7 @@ describe('/edu/orgs', () => {
   it(`DELETE /edu/orgs/:id 400 if id is invalid format`, async () => {
     return request(app.getHttpServer())
       .delete(Routes().edu.org.delete('invalid-uuid'))
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(400)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -56,7 +40,7 @@ describe('/edu/orgs', () => {
 
   it(`DELETE /edu/orgs/:id returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(ctx.orgs.first.id))
+      .delete(Routes().edu.org.delete(ctx.one.org.id))
       .expect(401);
   });
 
@@ -66,8 +50,8 @@ describe('/edu/orgs', () => {
 
   it('DELETE /edu/orgs/:id returns 403 for unauthorized user', async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(ctx.orgs.second.id))
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .delete(Routes().edu.org.delete(ctx.two.org.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(403)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -81,8 +65,8 @@ describe('/edu/orgs', () => {
 
   it(`DELETE /edu/orgs/:id deletes an existing organization`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(ctx.orgs.first.id))
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .delete(Routes().edu.org.delete(ctx.one.org.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(200)
       .expect((res) => {
         expect(res.body).toHaveProperty('success');
@@ -97,8 +81,8 @@ describe('/edu/orgs', () => {
   it(`DELETE /edu/orgs/:id returns 404 for non-existent organization`, async () => {
     const nonExistentId = faker.string.uuid();
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(nonExistentId)) // Non-existent ID
-      .set('Authorization', `Bearer ${authTokenForFirstOrg}`)
+      .delete(Routes().edu.org.delete(nonExistentId))
+      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(404)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
