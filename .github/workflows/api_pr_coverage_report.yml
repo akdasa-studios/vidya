@@ -27,3 +27,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           coverage-path: ./modules/services/api/coverage.txt
           junitxml-path: ./modules/services/api/junit.xml
+          title: Coverage Report
+          hide-comment: false
+          create-new-comment: false
+          hide-summary: false

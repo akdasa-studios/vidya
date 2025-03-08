@@ -13,7 +13,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle(AppName)
     .setDescription(`The ${AppName} API`)
-    .setVersion('1.0')
+    .setVersion('1.0') // TODO Use version from package.json
     .addBearerAuth()
     .addTag('Authentication', 'Endpoints for authentication', {
       description: 'Docs',
