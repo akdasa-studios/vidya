@@ -22,9 +22,7 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
-
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
   // TODO Change environment variable to VIDYA_PORT
