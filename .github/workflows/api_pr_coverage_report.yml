@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    name: Api // Tests
+    name: Jest
     runs-on: ubuntu-latest
 
     steps:
@@ -23,5 +23,6 @@ jobs:
 
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
+        working-directory: modules/services/api/
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
