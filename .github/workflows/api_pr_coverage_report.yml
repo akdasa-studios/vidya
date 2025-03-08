@@ -23,6 +23,6 @@ jobs:
 
       - name: Jest Coverage Comment
         uses: MishaKav/jest-coverage-comment@main
-        coverage-summary-path: ./modules/services/api/coverage/coverage-summary.json
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          coverage-summary-path: ./modules/services/api/coverage/coverage-summary.json

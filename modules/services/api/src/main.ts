@@ -21,7 +21,7 @@ async function bootstrap() {
     })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('doc', app, documentFactory);
+  SwaggerModule.setup('swagger', app, documentFactory);
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
