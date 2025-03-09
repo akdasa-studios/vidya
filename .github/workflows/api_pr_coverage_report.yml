@@ -1,4 +1,4 @@
-name: Api // Tests
+name: Api / Tests
 
 on:
   push:
@@ -18,16 +18,5 @@ jobs:
         run: npm ci
 
       - name: Run Jest Tests with Coverage
-        run: npm run test:cov | tee ./coverage.txt
+        run: npm run test
         working-directory: modules/services/api/
-
-      - name: Jest Coverage Comment
-        uses: MishaKav/jest-coverage-comment@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          coverage-path: ./modules/services/api/coverage.txt
-          junitxml-path: ./modules/services/api/junit.xml
-          title: Coverage Report
-          hide-comment: false
-          create-new-comment: false
-          hide-summary: false
