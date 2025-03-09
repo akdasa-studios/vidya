@@ -18,9 +18,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  /**
+   * Generates access and refresh tokens for the user.
+   * @param userId User ID
+   * @param permissions Permissions to save in the token (optional)
+   * @returns Access and refresh tokens
+   */
   async generateTokens(
     userId: string,
-    permissions: UserPermission[],
+    permissions?: UserPermission[],
   ): Promise<Tokens> {
     const accessToken = await this.jwtService.signAsync(
       {
@@ -50,6 +56,11 @@ export class AuthService {
     };
   }
 
+  /**
+   * Verifies token and returns its payload.
+   * @param token Token to verify
+   * @returns Token payload if the token is valid, otherwise undefined
+   */
   async verifyToken(token: string): Promise<RefreshToken | undefined> {
     try {
       const payload = await this.jwtService.verifyAsync<RefreshToken>(token, {
