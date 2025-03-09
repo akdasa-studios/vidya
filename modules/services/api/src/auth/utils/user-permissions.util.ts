@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common';
 import * as domain from '@vidya/domain';
 import * as protocol from '@vidya/protocol';
 
@@ -5,27 +6,42 @@ export class UserPermissions {
   constructor(private readonly userPermissions: protocol.UserPermission[]) {}
 
   /**
-   * Returns true if user has all provided permissions
-   *
-   * @param permissions Permissions to check
-   * @returns True if user has all provided permissions
+   * Checks if user has permission to perform an action
+   * on the provided organization and school. Throws an error
+   * if user does not have permission.
+   * @param permissions Required permissions to check
+   * @param organizationId Organization id to check
+   * @param schoolId School id to check
    */
-  public hasPermissions(permissions: domain.PermissionKey[]): boolean {
-    return this.userPermissions.some((p) =>
-      permissions.every((permission) => p.p.includes(permission)),
+  public check(
+    permissions: domain.PermissionKey[],
+    scope: { organizationId: string; schoolId?: string },
+  ) {
+    // Check if user has permission on the organization level
+    const permittedOnOrgLevel = this.getOrganizations(permissions).includes(
+      scope.organizationId,
     );
+
+    // Check if user has permission on the school level
+    const permittedOnSchoolLevel = scope.schoolId
+      ? this.getSchools(permissions).includes(scope.schoolId)
+      : true;
+
+    // If user does not have permission on either the organization
+    // or school level, throw an error indicating that the user
+    // does not have permission
+    if (!permittedOnOrgLevel || !permittedOnSchoolLevel) {
+      throw new ForbiddenException('User does not have permission');
+    }
   }
 
   /**
    * Returns list of organization ids that user has access to
-   * based on the provided permissions
-   *
+   * based on the provided permissions.
    * @param permissions List of permissions to check
    * @returns List of organization ids that user has access to
    */
-  public getPermittedOrganizations(
-    permissions: domain.PermissionKey[],
-  ): string[] {
+  public getOrganizations(permissions: domain.PermissionKey[]): string[] {
     return (
       this.userPermissions
         // organization level permissions
@@ -41,11 +57,10 @@ export class UserPermissions {
   /**
    * Returns list of school ids that user has access to
    * based on the provided permissions
-   *
    * @param permissions List of permissions to check
    * @returns List of school ids that user has access to
    */
-  public getPermittedSchools(permissions: domain.PermissionKey[]): string[] {
+  public getSchools(permissions: domain.PermissionKey[]): string[] {
     return this.userPermissions
       .filter(
         (userPermission) =>

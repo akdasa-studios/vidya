@@ -6,7 +6,7 @@ import * as request from 'supertest';
 
 import { Context, createContext } from './context';
 
-describe('/edu/orgs', () => {
+describe('/edu/roles', () => {
   let app: INestApplication;
   let ctx: Context;
 
@@ -19,13 +19,17 @@ describe('/edu/orgs', () => {
     await app.close();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   /* -------------------------------------------------------------------------- */
   /*                              Params Validation                             */
   /* -------------------------------------------------------------------------- */
 
-  it(`DELETE /edu/orgs/:id 400 if id is invalid format`, async () => {
+  it(`DELETE /edu/roles/:id 400 if id is invalid format`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete('invalid-uuid'))
+      .delete(Routes().edu.roles.delete('invalid-uuid'))
       .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(400)
       .expect((res) => {
@@ -38,9 +42,9 @@ describe('/edu/orgs', () => {
   /*                          Authentication Validation                         */
   /* -------------------------------------------------------------------------- */
 
-  it(`DELETE /edu/orgs/:id returns 401 for unauthorized user`, async () => {
+  it(`DELETE /edu/roles/:id returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(ctx.one.org.id))
+      .delete(Routes().edu.roles.delete(ctx.one.roles.admin.id))
       .expect(401);
   });
 
@@ -48,9 +52,9 @@ describe('/edu/orgs', () => {
   /*                          Authorization Validation                          */
   /* -------------------------------------------------------------------------- */
 
-  it('DELETE /edu/orgs/:id returns 403 for unauthorized user', async () => {
+  it('DELETE /edu/roles/:id returns 403 for unauthorized user', async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(ctx.two.org.id))
+      .delete(Routes().edu.roles.delete(ctx.two.roles.admin.id))
       .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(403)
       .expect((res) => {
@@ -63,9 +67,9 @@ describe('/edu/orgs', () => {
   /*                               Positive Cases                               */
   /* -------------------------------------------------------------------------- */
 
-  it(`DELETE /edu/orgs/:id deletes an existing organization`, async () => {
+  it(`DELETE /edu/roles/:id deletes an existing role`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(ctx.one.org.id))
+      .delete(Routes().edu.roles.delete(ctx.one.roles.admin.id))
       .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(200)
       .expect((res) => {
@@ -78,16 +82,16 @@ describe('/edu/orgs', () => {
   /*                               Negative Cases                               */
   /* -------------------------------------------------------------------------- */
 
-  it(`DELETE /edu/orgs/:id returns 404 for non-existent organization`, async () => {
+  it(`DELETE /edu/roles/:id returns 404 for non-existent role`, async () => {
     const nonExistentId = faker.string.uuid();
     return request(app.getHttpServer())
-      .delete(Routes().edu.org.delete(nonExistentId))
+      .delete(Routes().edu.roles.delete(nonExistentId))
       .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .expect(404)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
         expect(res.body.message).toBe(
-          `Organization with ID ${nonExistentId} not found`,
+          `Role with ID ${nonExistentId} not found`,
         );
       });
   });

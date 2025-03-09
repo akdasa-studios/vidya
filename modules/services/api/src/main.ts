@@ -9,11 +9,11 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // TODO: Use on development environment only
+  // TODO Use on development environment only
   const config = new DocumentBuilder()
-    .setTitle('Vidya')
+    .setTitle(AppName)
     .setDescription(`The ${AppName} API`)
-    .setVersion('1.0')
+    .setVersion('1.0') // TODO Use version from package.json
     .addBearerAuth()
     .addTag('Authentication', 'Endpoints for authentication', {
       description: 'Docs',
@@ -21,11 +21,11 @@ async function bootstrap() {
     })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('doc', app, documentFactory);
-
+  SwaggerModule.setup('swagger', app, documentFactory);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+
+  // TODO Change environment variable to VIDYA_PORT
   await app.listen(process.env.PORT ?? 8001);
 }
 bootstrap();

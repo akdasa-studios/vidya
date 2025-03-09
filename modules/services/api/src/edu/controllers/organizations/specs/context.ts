@@ -1,91 +1,117 @@
 import { faker } from '@faker-js/faker';
-import { ValidationPipe } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '@vidya/api/app.module';
-import { OtpService, RevokedTokensService } from '@vidya/api/auth/services';
+import { INestApplication } from '@nestjs/common';
+import { AuthService } from '@vidya/api/auth/services';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import { OrganizationsService } from '@vidya/api/edu/services';
-import { inMemoryDataSource } from '@vidya/api/utils';
 import { Organization } from '@vidya/entities';
-import { useContainer } from 'class-validator';
-import { DataSource } from 'typeorm';
 
 export type Context = {
-  orgs: {
-    first: Organization;
-    second: Organization;
+  one: {
+    org: Organization;
+    permissions: {
+      admin: UserPermissions;
+    };
+    tokens: {
+      admin: string;
+      readOnly: string;
+    };
   };
-  permissions: {
-    no: UserPermissions;
-    readFirst: UserPermissions;
-    readSecond: UserPermissions;
-    updateFirst: UserPermissions;
-    deleteFirst: UserPermissions;
+  two: {
+    org: Organization;
+    tokens: {
+      admin: string;
+    };
   };
-};
-
-export const createModule = async () => {
-  const module = await Test.createTestingModule({
-    imports: [AppModule],
-  })
-    .overrideProvider(DataSource)
-    .useValue(await inMemoryDataSource())
-    .overrideProvider(OtpService)
-    .useValue({ validate: jest.fn() })
-    .overrideProvider(RevokedTokensService)
-    .useValue({ isRevoked: jest.fn() })
-    .compile();
-
-  const app = module.createNestApplication();
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  await app.init();
-  return app;
+  empty: {
+    permissions: {
+      no: UserPermissions;
+    };
+    tokens: {
+      noPermissions: string;
+    };
+  };
 };
 
 export const createContext = async (
-  orgsService: OrganizationsService,
+  app: INestApplication,
 ): Promise<Context> => {
-  const orgFirst = await orgsService.create({
-    name: faker.company.name(),
-  });
-  const orgSecond = await orgsService.create({
+  const orgsService = app.get(OrganizationsService);
+  const authService = app.get(AuthService);
+
+  /* -------------------------------------------------------------------------- */
+  /*                                Organizations                               */
+  /* -------------------------------------------------------------------------- */
+
+  const orgsOne = await orgsService.create({
     name: faker.company.name(),
   });
 
-  const permissions = {
-    no: new UserPermissions([]),
-    readFirst: new UserPermissions([
-      {
-        oid: orgFirst.id,
-        p: ['orgs:read'],
-      },
-    ]),
-    readSecond: new UserPermissions([
-      {
-        oid: orgSecond.id,
-        p: ['orgs:read'],
-      },
-    ]),
-    updateFirst: new UserPermissions([
-      {
-        oid: orgFirst.id,
-        p: ['orgs:update'],
-      },
-    ]),
-    deleteFirst: new UserPermissions([
-      {
-        oid: orgFirst.id,
-        p: ['orgs:delete'],
-      },
-    ]),
-  };
+  const orgsTwo = await orgsService.create({
+    name: faker.company.name(),
+  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                                 Permissions                                */
+  /* -------------------------------------------------------------------------- */
+
+  const orgOnePermissionsAdmin = new UserPermissions([
+    { oid: orgsOne.id, p: ['orgs:delete', 'orgs:read', 'orgs:update'] },
+  ]);
+
+  const emptyPermissionsNo = new UserPermissions([]);
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   Tokens                                   */
+  /* -------------------------------------------------------------------------- */
+
+  const orgOneTokenAdmin = await authService.generateTokens(
+    faker.string.uuid(),
+    [{ oid: orgsOne.id, p: ['orgs:delete', 'orgs:read', 'orgs:update'] }],
+  );
+
+  const orgOneTokenReadonly = await authService.generateTokens(
+    faker.string.uuid(),
+    [{ oid: orgsOne.id, p: ['orgs:read'] }],
+  );
+
+  const orgTwoTokenAdmin = await authService.generateTokens(
+    faker.string.uuid(),
+    [{ oid: orgsTwo.id, p: ['orgs:delete', 'orgs:read', 'orgs:update'] }],
+  );
+
+  const emptyTokenNoPermissions = await authService.generateTokens(
+    faker.string.uuid(),
+    [],
+  );
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   Result                                   */
+  /* -------------------------------------------------------------------------- */
 
   return {
-    orgs: {
-      first: orgFirst,
-      second: orgSecond,
+    one: {
+      org: orgsOne,
+      permissions: {
+        admin: orgOnePermissionsAdmin,
+      },
+      tokens: {
+        admin: orgOneTokenAdmin.accessToken,
+        readOnly: orgOneTokenReadonly.accessToken,
+      },
     },
-    permissions,
+    two: {
+      org: orgsTwo,
+      tokens: {
+        admin: orgTwoTokenAdmin.accessToken,
+      },
+    },
+    empty: {
+      permissions: {
+        no: emptyPermissionsNo,
+      },
+      tokens: {
+        noPermissions: emptyTokenNoPermissions.accessToken,
+      },
+    },
   };
 };

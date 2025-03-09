@@ -1,8 +1,10 @@
+import * as crud from './crud'
+
 /* -------------------------------------------------------------------------- */
 /*                                   Models                                   */
 /* -------------------------------------------------------------------------- */
 
-export type Role = {
+export type RoleDetails = {
   id: string;
   name: string;
   organizationId: string;
@@ -11,43 +13,43 @@ export type Role = {
   permissions: string[];
 }
 
-export type RoleSummary = Pick<Role, 'id' | 'name' | 'description'>;
-
-/* -------------------------------------------------------------------------- */
-/*                                     Get                                    */
-/* -------------------------------------------------------------------------- */
-
-export interface GetRoleRequest {}
-export interface GetRoleResponse extends Role {}
-
-export interface GetRoleSummariesListQuery {
-  organizationId?: string;
-  schoolId?: string;
-}
-
-export interface GetRoleSummariesListResponse {
-  roles: RoleSummary[];
-}
+export type RoleSummary = Pick<RoleDetails, 'id' | 'name' | 'description'>;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Create                                   */
 /* -------------------------------------------------------------------------- */
 
-export interface CreateRoleRequest extends Omit<Role, 'id'> {}
-export interface CreateRoleResponse {
-  id: string;
+export type CreateRoleRequest = crud.CreateItemRequest<Omit<RoleDetails, 'id'>>;
+export type CreateRoleResponse = crud.CreateItemResponse<RoleDetails['id']>;
+
+/* -------------------------------------------------------------------------- */
+/*                                    Read                                    */
+/* -------------------------------------------------------------------------- */
+
+export type GetRoleSummariesListQuery = {
+  organizationId?: string;
+  schoolId?: string;
 }
+
+export type GetRolesResponse = 
+  crud.GetItemsListResponse<RoleSummary>;
+
+export type GetRoleResponse = 
+  crud.GetItemResponse<RoleDetails>;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Update                                   */
 /* -------------------------------------------------------------------------- */
 
-export interface UpdateRoleRequest extends Partial<Omit<Role, 'id'>> {}
-export interface UpdateRoleResponse {
-  id: string;
-}
+export type UpdateRoleRequest = 
+  crud.UpdateItemRequest<Omit<RoleDetails, 'id'>>; 
 
-export interface DeleteRoleRequest {}
-export interface DeleteRoleResponse {
-  id: string;
-}
+export type UpdateRoleResponse = 
+  crud.UpdateItemResponse<RoleDetails>;
+
+/* -------------------------------------------------------------------------- */
+/*                                   Delete                                   */
+/* -------------------------------------------------------------------------- */
+
+export type DeleteRoleResponse = 
+  crud.DeleteItemResponse;

@@ -12,8 +12,12 @@ export class RolesMappingProfile extends AutomapperProfile {
 
   override get profile() {
     return (mapper: Mapper) => {
+      /* -------------------------------------------------------------------------- */
+      /*                               Entities -> Dto                              */
+      /* -------------------------------------------------------------------------- */
+
       createMap(
-        mapper, entities.Role, dto.Role,
+        mapper, entities.Role, dto.RoleDetails,
         forMember((d) => d.id,          mapFrom((s) => s.id),),
         forMember((d) => d.name,        mapFrom((s) => s.name)),
         forMember((d) => d.description, mapFrom((s) => s.description)),
@@ -32,6 +36,10 @@ export class RolesMappingProfile extends AutomapperProfile {
         forMember((d) => d.roleId,      mapFrom((s) => s.id)),
       );
 
+      /* -------------------------------------------------------------------------- */
+      /*                            Requests -> Entities                            */
+      /* -------------------------------------------------------------------------- */
+
       createMap(
         mapper, dto.CreateRoleRequest, entities.Role,
         forMember((d) => d.name,           mapFrom((s) => s.name)),
@@ -47,6 +55,23 @@ export class RolesMappingProfile extends AutomapperProfile {
         forMember((d) => d.description, mapFrom((s) => s.description)),
         forMember((d) => d.permissions, mapFrom((s) => s.permissions)),
       );
+
+      /* -------------------------------------------------------------------------- */
+      /*                             Entity -> Response                             */
+      /* -------------------------------------------------------------------------- */
+
+      createMap(
+        mapper, entities.Role, dto.UpdateRoleResponse,
+        forMember((d) => d.id, mapFrom((s) => s.id)),
+        forMember((d) => d.name, mapFrom((s) => s.name)),
+        forMember((d) => d.description, mapFrom((s) => s.description)),
+        forMember((d) => d.permissions, mapFrom((s) => s.permissions)),
+      );
+
+      createMap(
+        mapper, entities.Role, dto.CreateRoleResponse,
+        forMember((d) => d.id, mapFrom((s) => s.id)),
+      )
     };
   }
 }

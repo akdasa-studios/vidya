@@ -3,7 +3,6 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
-  ForbiddenException,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -18,7 +17,6 @@ import { GetOrganizationsResponse } from '@vidya/api/edu/dto';
 import { OrganizationExistsPipe } from '@vidya/api/edu/pipes';
 import { OrganizationsService } from '@vidya/api/edu/services';
 import { CrudDecorators } from '@vidya/api/utils';
-import * as domain from '@vidya/domain';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
@@ -91,7 +89,7 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.UpdateOrganizationResponse> {
-    this.checkUserPermissions(userPermissions, ['orgs:update'], id);
+    userPermissions.check(['orgs:update'], { organizationId: id });
     const org = await this.organizationsService.updateOneBy({ id }, request);
     return this.mapper.map(
       org,
@@ -109,26 +107,8 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe(), OrganizationExistsPipe) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.DeleteOrganizationResponse> {
-    this.checkUserPermissions(userPermissions, ['orgs:delete'], id);
+    userPermissions.check(['orgs:delete'], { organizationId: id });
     await this.organizationsService.deleteOneBy({ id });
     return new dto.DeleteOrganizationResponse({ success: true });
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                               Private methods                              */
-  /* -------------------------------------------------------------------------- */
-
-  private checkUserPermissions(
-    userPermissions: UserPermissions,
-    requiredPermissions: domain.PermissionKey[],
-    id: string,
-  ) {
-    if (
-      !userPermissions
-        .getPermittedOrganizations(requiredPermissions)
-        .includes(id)
-    ) {
-      throw new ForbiddenException('User does not have permission');
-    }
   }
 }

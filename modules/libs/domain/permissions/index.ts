@@ -1,6 +1,5 @@
 export const PermissionKeys = [
   // Organizations
-  'orgs:create',
   'orgs:read',
   'orgs:update',
   'orgs:delete',
@@ -10,6 +9,19 @@ export const PermissionKeys = [
   'roles:read',
   'roles:update',
   'roles:delete',
+
+  // Schools
+  'schools:create',
+  'schools:read',
+  'schools:update',
+  'schools:delete',
 ] as const;
 
 export type PermissionKey = typeof PermissionKeys[number];
+
+export const PermissionEnum = Object.freeze(
+  PermissionKeys.reduce((acc, key) => {
+    acc[key] = key;
+    return acc;
+  }, {} as Record<string, string>)
+);

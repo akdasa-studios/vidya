@@ -1,25 +1,17 @@
 import { faker } from '@faker-js/faker';
 import { OrganizationsController } from '@vidya/api/edu/controllers';
-import { OrganizationsService } from '@vidya/api/edu/services';
+import { createTestingApp } from '@vidya/api/edu/shared';
 
-import { Context, createContext, createModule } from './context';
+import { Context, createContext } from './context';
 
 describe('OrganizationsController', () => {
-  /* -------------------------------------------------------------------------- */
-  /*                                   Context                                  */
-  /* -------------------------------------------------------------------------- */
-
   let ctx: Context;
   let ctr: OrganizationsController;
 
-  /* -------------------------------------------------------------------------- */
-  /*                                 Before Each                                */
-  /* -------------------------------------------------------------------------- */
-
   beforeEach(async () => {
-    const module = await createModule();
-    ctr = module.get(OrganizationsController);
-    ctx = await createContext(module.get(OrganizationsService));
+    const app = await createTestingApp();
+    ctr = app.get(OrganizationsController);
+    ctx = await createContext(app);
   });
 
   /* -------------------------------------------------------------------------- */
@@ -31,8 +23,8 @@ describe('OrganizationsController', () => {
       const updatedName = faker.company.name() + ' Updated';
       const response = await ctr.updateOne(
         { name: updatedName },
-        ctx.orgs.first.id,
-        ctx.permissions.updateFirst,
+        ctx.one.org.id,
+        ctx.one.permissions.admin,
       );
 
       // assert
@@ -45,7 +37,7 @@ describe('OrganizationsController', () => {
           await ctr.updateOne(
             { name: 'Updated Org 1' },
             faker.string.uuid(),
-            ctx.permissions.updateFirst,
+            ctx.one.permissions.admin,
           ),
       ).rejects.toThrow();
     });
@@ -55,8 +47,8 @@ describe('OrganizationsController', () => {
         async () =>
           await ctr.updateOne(
             { name: 'Updated Org 1' },
-            ctx.orgs.second.id,
-            ctx.permissions.updateFirst,
+            ctx.two.org.id,
+            ctx.one.permissions.admin,
           ),
       ).rejects.toThrow();
     });
