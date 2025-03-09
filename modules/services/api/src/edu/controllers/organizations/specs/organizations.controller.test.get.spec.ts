@@ -20,8 +20,9 @@ describe('OrganizationsController', () => {
 
   describe('getOrganizations', () => {
     it('should return an empty array if no permissions granted', async () => {
-      const res = await ctr.getMany(ctx.empty.permissions.no);
-      expect(res.items).toEqual([]);
+      await expect(
+        async () => await ctr.getMany(ctx.empty.permissions.no),
+      ).rejects.toThrow();
     });
 
     it('should return all permitted organizations', async () => {

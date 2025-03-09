@@ -67,7 +67,6 @@ describe('/edu/orgs', () => {
     return request(app.getHttpServer())
       .get(Routes().edu.org.find())
       .set('Authorization', `Bearer ${ctx.empty.tokens.noPermissions}`)
-      .expect(200)
-      .expect({ items: [] });
+      .expect(403);
   });
 });

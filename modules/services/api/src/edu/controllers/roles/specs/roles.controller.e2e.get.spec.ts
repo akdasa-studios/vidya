@@ -101,7 +101,6 @@ describe('/edu/roles', () => {
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
       .set('Authorization', `Bearer ${ctx.empty.tokens.noPermissions}`)
-      .expect(200)
-      .expect({ items: [] });
+      .expect(403);
   });
 });

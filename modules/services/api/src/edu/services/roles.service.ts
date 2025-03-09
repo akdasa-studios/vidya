@@ -12,15 +12,33 @@ export class RolesService extends ScopedEntitiesService<Role, Scope> {
     @InjectRepository(UserRole) private userRolesRepo: Repository<UserRole>,
   ) {
     super(repository, (query, scope) => {
-      const orgIds = scope.permissions.getOrganizations(['roles:read']);
-      const schoolIds = scope.permissions.getSchools(['roles:read']);
-      return {
-        where: {
-          ...query?.where,
-          organizationId: schoolIds.length == 0 ? In(orgIds) : undefined,
-          schoolId: schoolIds.length > 0 ? In(schoolIds) : undefined,
-        },
-      };
+      // HACK: For some reason FindOptionsWhere<Organization> doesn't
+      //       work here, so we have to cast it to any. It doesn't contain
+      //       any fields like id, name, etc. But it should.
+      const { organizationId, schoolId } = query?.where as any;
+
+      // Get all scopes that have the required permission
+      // and match the organization and school ids in the query
+      // if they are provided
+      const scopes = scope.permissions
+        .getScopes(['roles:read'])
+        .filter(
+          (s) =>
+            (!organizationId || s.organizationId === organizationId) &&
+            (!schoolId || s.schoolId === schoolId),
+        );
+
+      // Return the query with the scopes applied or an empty query
+      // if no scopes were found for the user permissions
+      return scopes.length > 0
+        ? {
+            where: scopes.map((s) => ({
+              ...query?.where,
+              organizationId: s.organizationId,
+              schoolId: s.schoolId,
+            })),
+          }
+        : { where: { organizationId: In([]) } };
     });
   }
 

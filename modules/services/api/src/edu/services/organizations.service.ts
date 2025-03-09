@@ -18,20 +18,23 @@ export class OrganizationsService extends ScopedEntitiesService<
       //       work here, so we have to cast it to any. It doesn't contain
       //       any fields like id, name, etc. But it should.
       const where = query?.where as any;
-      let orgIds = scope.permissions.getOrganizations(['orgs:read']);
 
-      // If the query has an id, so check if it is in the list of
-      // organization ids that the user has access to.
-      if (where?.id) {
-        orgIds = [where.id].filter((id) => orgIds.includes(id));
-      }
+      // Get all scopes that have the required permission and match the
+      // organization id in the query if it is provided
+      const scopes = scope.permissions
+        .getScopes(['orgs:read'])
+        .filter((s) => !where?.id || s.organizationId === where?.id);
 
-      return {
-        where: {
-          ...query?.where,
-          id: In(orgIds),
-        },
-      };
+      // Return the query with the scopes applied or an empty query
+      // if no scopes were found for the user permissions
+      return scopes.length > 0
+        ? {
+            where: scopes.map((s) => ({
+              ...query?.where,
+              id: s.organizationId,
+            })),
+          }
+        : { where: { id: In([]) } };
     });
   }
 }
