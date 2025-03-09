@@ -1,17 +1,23 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as dto from '@vidya/api/auth/dto';
+import { AuthConfig, RedisConfig } from '@vidya/api/configs';
 import { Role, User } from '@vidya/entities';
 import * as entities from '@vidya/entities';
-import { UserPermission } from '@vidya/protocol';
+import { UserPermission, UserPermissionsStorageKey } from '@vidya/protocol';
+import Redis from 'ioredis';
 import { Repository } from 'typeorm';
 
 export type LoginField = 'email' | 'phone';
 
 @Injectable()
 export class AuthUsersService {
+  private readonly redis: Redis;
+  private readonly logger = new Logger(AuthUsersService.name);
+
   /**
    * Creates an instance of AuthUsersService.
    * @param users Users repository
@@ -22,7 +28,16 @@ export class AuthUsersService {
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Role) private readonly roles: Repository<Role>,
     @InjectMapper() private readonly mapper: Mapper,
-  ) {}
+    @Inject(RedisConfig.KEY)
+    private readonly redisConfig: ConfigType<typeof RedisConfig>,
+    @Inject(AuthConfig.KEY)
+    private readonly authConfig: ConfigType<typeof AuthConfig>,
+  ) {
+    this.redis = new Redis({
+      host: redisConfig.host,
+      port: redisConfig.port,
+    });
+  }
 
   /**
    * Finds a user by id.
@@ -74,7 +89,37 @@ export class AuthUsersService {
    * @returns User permissions
    */
   async getUserPermissions(userId: string): Promise<UserPermission[]> {
-    const userRoles = await this.getRolesOfUser(userId);
-    return this.mapper.mapArray(userRoles, entities.Role, dto.UserPermission);
+    // Get permissions from cache if available
+    const permissions = await this.redis.get(UserPermissionsStorageKey(userId));
+
+    if (permissions) {
+      // Permissions are cached. Parse and return them.
+      return JSON.parse(permissions);
+    } else {
+      this.logger.verbose(`Fetching '${userId}' permissions from DB`);
+
+      // Permissions are not cached. Fetch them from the database.
+      const userRoles = await this.getRolesOfUser(userId);
+      const permissions = this.mapper.mapArray(
+        userRoles,
+        entities.Role,
+        dto.UserPermission,
+      );
+
+      // Cache the permissions if cache TTL is set to a positive value
+      // otherwise, users permissions will be fetched from the database
+      // on every request (which is good for development only)
+      if (this.authConfig.userPermissionsCacheTtl > 0) {
+        await this.redis.set(
+          UserPermissionsStorageKey(userId),
+          JSON.stringify(permissions),
+          'EX',
+          this.authConfig.userPermissionsCacheTtl,
+        );
+      }
+
+      // Return the permissions
+      return permissions;
+    }
   }
 }

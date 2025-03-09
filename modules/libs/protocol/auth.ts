@@ -1,6 +1,8 @@
 import * as domain from '@vidya/domain';
 import { OtpType } from "./otp";
 
+export const UserPermissionsStorageKey = (userId: string) => `users:permissions:${userId}`;
+
 /* -------------------------------------------------------------------------- */
 /*                              One Time Password                             */
 /* -------------------------------------------------------------------------- */
