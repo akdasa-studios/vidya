@@ -1,12 +1,12 @@
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
+  Inject,
   Post,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -21,22 +21,23 @@ import * as dto from '@vidya/api/auth/dto';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import {
   AuthService,
+  AuthUsersService,
   OtpService,
   RevokedTokensService,
-  UsersService,
 } from '@vidya/api/auth/services';
-import * as entities from '@vidya/entities';
+import { AuthConfig } from '@vidya/api/configs';
 import { JwtToken, OtpType, Routes } from '@vidya/protocol';
 
 @Controller()
 @ApiTags('Authentication')
 export class LoginController {
   constructor(
+    @Inject(AuthConfig.KEY)
+    private readonly authConfig: ConfigType<typeof AuthConfig>,
     private readonly otpService: OtpService,
-    private readonly usersService: UsersService,
+    private readonly usersService: AuthUsersService,
     private readonly authService: AuthService,
     private readonly revokedTokensService: RevokedTokensService,
-    @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
   /* -------------------------------------------------------------------------- */
@@ -66,7 +67,7 @@ export class LoginController {
   async loginWithOtp(
     @Body() request: dto.OtpLogInRequest,
   ): Promise<dto.OtpLogInResponse> {
-    // TODO: rate limit login attempts
+    // TODO rate limit login attempts
 
     // validate OTP, if invalid send 401 Unauthorized response
     const otp = await this.otpService.validate(request.login, request.otp);
@@ -85,7 +86,9 @@ export class LoginController {
     );
     const tokens = await this.authService.generateTokens(
       user.id,
-      this.mapper.mapArray(user.roles, entities.Role, dto.UserPermission),
+      this.authConfig.savePermissionsInJwtToken
+        ? await this.usersService.getUserPermissions(user.id)
+        : undefined,
     );
 
     return new dto.OtpLogInResponse({

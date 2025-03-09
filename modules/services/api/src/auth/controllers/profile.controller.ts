@@ -14,13 +14,13 @@ import {
 import { UserId } from '@vidya/api/auth/decorators';
 import * as dto from '@vidya/api/auth/dto';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
-import { UsersService } from '@vidya/api/auth/services';
+import { AuthUsersService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
 @ApiTags('User')
 export class ProfileController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: AuthUsersService) {}
 
   /* -------------------------------------------------------------------------- */
   /*                              GET /auth/profile                             */

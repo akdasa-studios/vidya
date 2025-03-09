@@ -1,19 +1,11 @@
-import {
-  createParamDecorator,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { UserPermissions } from '@vidya/api/auth/utils';
-import { AccessToken } from '@vidya/protocol';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { UserPermissions, VidyaRequest } from '@vidya/api/auth/utils';
 
 export const UserWithPermissions = createParamDecorator(
   (data, ctx: ExecutionContext) => {
-    const accessToken: AccessToken = ctx
+    const userPermissions = ctx
       .switchToHttp()
-      .getRequest().accessToken;
-    if (!accessToken) {
-      throw new UnauthorizedException('Access token not found');
-    }
-    return new UserPermissions(accessToken.permissions);
+      .getRequest<VidyaRequest>().userPermissions;
+    return new UserPermissions(userPermissions);
   },
 );

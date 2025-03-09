@@ -39,7 +39,14 @@ export interface JwtToken {
 }
 
 export interface AccessToken extends JwtToken {
-  permissions: UserPermission[];
+  /**
+   * User permissions.
+   * @remarks This is an optional field. If not provided, service
+   *          should check the user's permissions from the database.
+   *          This is useful during development to avoid unnecessary
+   *          token refreshes.
+   */
+  permissions?: UserPermission[];
 }
 
 export interface RefreshToken extends JwtToken {
@@ -99,7 +106,6 @@ export interface LogOutResponse {
 
 /**
  * Permission object. Contains the organization ID, school ID, and permission.
- * 
  * @remarks Used short names for the properties to reduce the size of a JWT token.
  */
 export type UserPermission = {

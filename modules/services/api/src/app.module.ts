@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
+  AuthConfig,
   DbConfig,
   JwtConfig,
   OtpConfig,
@@ -19,7 +20,7 @@ import { OrganizationsService } from './edu/services/organizations.service';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [DbConfig, OtpConfig, RedisConfig, JwtConfig],
+      load: [DbConfig, OtpConfig, RedisConfig, JwtConfig, AuthConfig],
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),

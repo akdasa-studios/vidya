@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RevokedTokensService } from '@vidya/api/auth/services';
+import { AuthUsersService } from '@vidya/api/auth/services';
 import {
   RolesService,
   SchoolsService,
@@ -25,6 +26,7 @@ import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
   ],
   controllers: [RolesController, UserRolesController, OrganizationsController],
   providers: [
+    AuthUsersService,
     RolesService,
     UsersService,
     SchoolsService,
