@@ -47,6 +47,7 @@ export class RolesController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.GetRoleResponse> {
+    permissions.check(['roles:read']);
     const roles = await this.rolesService
       .scopedBy({ permissions })
       .findAll({ where: { id } });
@@ -65,7 +66,13 @@ export class RolesController {
     @Query() query: dto.GetRoleSummariesListQuery,
     @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.GetRolesResponse> {
-    const roles = await this.rolesService.scopedBy({ permissions }).findAll({});
+    permissions.check(['roles:read']);
+    const roles = await this.rolesService.scopedBy({ permissions }).findAll({
+      where: {
+        organizationId: query.organizationId,
+        schoolId: query.schoolId,
+      },
+    });
     return new dto.GetRolesResponse({
       items: this.mapper.mapArray(roles, entities.Role, dto.RoleSummary),
     });

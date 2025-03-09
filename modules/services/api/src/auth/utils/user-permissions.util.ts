@@ -15,58 +15,38 @@ export class UserPermissions {
    */
   public check(
     permissions: domain.PermissionKey[],
-    scope: { organizationId: string; schoolId?: string },
+    scope?: { organizationId: string; schoolId?: string },
   ) {
-    // Check if user has permission on the organization level
-    const permittedOnOrgLevel = this.getOrganizations(permissions).includes(
-      scope.organizationId,
+    const scopes = this.getScopes(permissions);
+    if (!scopes.length) {
+      throw new ForbiddenException('User does not have permission');
+    }
+
+    if (!scope) {
+      return;
+    }
+
+    const permitted = scopes.some(
+      (s) =>
+        s.organizationId == scope?.organizationId &&
+        s.schoolId == scope?.schoolId,
     );
 
-    // Check if user has permission on the school level
-    const permittedOnSchoolLevel = scope.schoolId
-      ? this.getSchools(permissions).includes(scope.schoolId)
-      : true;
-
-    // If user does not have permission on either the organization
-    // or school level, throw an error indicating that the user
-    // does not have permission
-    if (!permittedOnOrgLevel || !permittedOnSchoolLevel) {
+    if (!permitted) {
       throw new ForbiddenException('User does not have permission');
     }
   }
 
-  /**
-   * Returns list of organization ids that user has access to
-   * based on the provided permissions.
-   * @param permissions List of permissions to check
-   * @returns List of organization ids that user has access to
-   */
-  public getOrganizations(permissions: domain.PermissionKey[]): string[] {
-    return (
-      this.userPermissions
-        // organization level permissions
-        .filter((p) => p.oid && !p.sid)
-        // check if user has all required permissions
-        .filter((p) =>
-          permissions.every((permission) => p.p.includes(permission)),
-        )
-        .map((p) => p.oid)
-    );
-  }
-
-  /**
-   * Returns list of school ids that user has access to
-   * based on the provided permissions
-   * @param permissions List of permissions to check
-   * @returns List of school ids that user has access to
-   */
-  public getSchools(permissions: domain.PermissionKey[]): string[] {
+  public getScopes(
+    permissions: domain.PermissionKey[],
+  ): { organizationId: string; schoolId?: string }[] {
     return this.userPermissions
-      .filter(
-        (userPermission) =>
-          userPermission.sid &&
-          permissions.every((p) => userPermission.p.includes(p)),
+      .filter((p) =>
+        permissions.every((permission) => p.p.includes(permission)),
       )
-      .map((p) => p.sid);
+      .map((p) => ({
+        organizationId: p.oid,
+        schoolId: p.sid,
+      }));
   }
 }

@@ -46,6 +46,7 @@ export class OrganizationsController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.GetOrganizationResponse> {
+    userPermissions.check(['orgs:read']);
     const orgs = await this.organizationsService
       .scopedBy({ permissions: userPermissions })
       .findAll({ where: { id } });
@@ -67,6 +68,7 @@ export class OrganizationsController {
   async getMany(
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<GetOrganizationsResponse> {
+    userPermissions.check(['orgs:read']);
     const orgs = await this.organizationsService
       .scopedBy({ permissions: userPermissions })
       .findAll({});
