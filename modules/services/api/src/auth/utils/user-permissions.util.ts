@@ -9,14 +9,16 @@ export class UserPermissions {
    * Checks if user has permission to perform an action.
    * Throws an error if user does not have permission.
    * @param permissions Required permissions to check
-   * @param scope Optional scope to check
+   * @param scope Scope (or scopes) to check permissions for
    */
   public check(
     permissions: domain.PermissionKey[],
-    scope?: { schoolId: string },
+    scope?: { schoolId?: string } | { schoolId?: string }[],
   ) {
-    const scopes = this.getScopes(permissions);
-    if (!scopes.length) {
+    // get user and resource scopes
+    const resourceScopes = Array.isArray(scope) ? scope : [scope];
+    const userScopes = this.getScopes(permissions);
+    if (!userScopes.length) {
       throw new ForbiddenException('User does not have permission');
     }
 
@@ -24,7 +26,9 @@ export class UserPermissions {
       return;
     }
 
-    const permitted = scopes.some((s) => s.schoolId == scope?.schoolId);
+    const permitted = userScopes.some((us) =>
+      resourceScopes.some((rs) => us.schoolId == rs.schoolId),
+    );
 
     if (!permitted) {
       throw new ForbiddenException('User does not have permission');

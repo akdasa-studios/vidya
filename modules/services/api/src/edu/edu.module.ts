@@ -10,13 +10,18 @@ import {
 import { School, User, UserRole } from '@vidya/entities';
 import { Role } from '@vidya/entities';
 
-import { RolesController, UserRolesController } from './controllers';
+import {
+  RolesController,
+  UserRolesController,
+  UsersController,
+} from './controllers';
 import { RolesMappingProfile } from './mappers/roles.mapper';
+import { UsersMappingProfile } from './mappers/users.mapper';
 import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Role, UserRole, School])],
-  controllers: [RolesController, UserRolesController],
+  controllers: [RolesController, UserRolesController, UsersController],
   providers: [
     AuthUsersService,
     RolesService,
@@ -26,6 +31,7 @@ import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
     IsRoleExistConstraint,
     IsUserExistConstraint,
     RevokedTokensService,
+    UsersMappingProfile,
   ],
 })
 export class EduModule {}
