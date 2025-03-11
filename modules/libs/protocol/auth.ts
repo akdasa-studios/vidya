@@ -107,17 +107,12 @@ export interface LogOutResponse {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Permission object. Contains the organization ID, school ID, and permission.
+ * Permission object. Contains the school ID and the permissions.
  * @remarks Used short names for the properties to reduce the size of a JWT token.
  */
 export type UserPermission = {
-  /**
-   * Organization ID
-   */
-  oid: string, 
-
   /* School ID */
-  sid?: string,
+  sid: string,
   
   /* Permissions */
   p: domain.PermissionKey[]

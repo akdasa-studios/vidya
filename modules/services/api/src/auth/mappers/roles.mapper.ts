@@ -14,7 +14,6 @@ export class AuthRolesMappingProfile extends AutomapperProfile {
     return (mapper: Mapper) => {
       createMap(
         mapper, entities.Role, dto.UserPermission,
-        forMember((d) => d.oid, mapFrom((s) => s.organizationId)),
         forMember((d) => d.sid, mapFrom((s) => s.schoolId)),
         forMember((d) => d.p,   mapFrom((s) => s.permissions)),
       );

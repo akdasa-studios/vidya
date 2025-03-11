@@ -10,13 +10,8 @@ export class AddRolesTable1739697202479 implements MigrationInterface {
         "name" character varying NOT NULL,
         "description" character varying NOT NULL,
         "permissions" character varying array, 
-        "organizationId" uuid NOT NULL,
         "schoolId" uuid NULL,
         CONSTRAINT "pk_roles_id" PRIMARY KEY ("id"),
-        CONSTRAINT "fk_roles_organization_id"
-          FOREIGN KEY ("organizationId")
-          REFERENCES "organizations"("id")
-          ON DELETE NO ACTION ON UPDATE NO ACTION,
         CONSTRAINT "fk_roles_school_id"
           FOREIGN KEY ("schoolId")
           REFERENCES "schools"("id")

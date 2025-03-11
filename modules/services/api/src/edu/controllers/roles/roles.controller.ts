@@ -69,7 +69,6 @@ export class RolesController {
     permissions.check(['roles:read']);
     const roles = await this.rolesService.scopedBy({ permissions }).findAll({
       where: {
-        organizationId: query.organizationId,
         schoolId: query.schoolId,
       },
     });
@@ -88,7 +87,6 @@ export class RolesController {
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<dto.CreateRoleResponse> {
     userPermissions.check(['roles:create'], {
-      organizationId: request.organizationId,
       schoolId: request.schoolId,
     });
     const entity = await this.rolesService.create(
@@ -110,7 +108,6 @@ export class RolesController {
     // Check if user has permission to update role
     let role = await this.rolesService.findOneBy({ id });
     userPermissions.check(['roles:update'], {
-      organizationId: role.organizationId,
       schoolId: role.schoolId,
     });
 
@@ -134,7 +131,6 @@ export class RolesController {
     // Check if user has permission to delete role
     const role = await this.rolesService.findOneBy({ id });
     userPermissions.check(['roles:delete'], {
-      organizationId: role.organizationId,
       schoolId: role.schoolId,
     });
 

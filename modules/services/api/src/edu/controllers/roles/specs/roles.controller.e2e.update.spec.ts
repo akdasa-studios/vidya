@@ -63,20 +63,6 @@ describe('/edu/roles', () => {
       });
   });
 
-  it(`PATCH /edu/roles/:id returns 403 if user has no access to org level role`, async () => {
-    const updatedRole = { name: 'Updated Role' };
-
-    return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
-      .set('Authorization', `Bearer ${ctx.one.tokens.schoolLevelAdmin}`)
-      .send(updatedRole)
-      .expect(403)
-      .expect((res) => {
-        expect(res.body).toHaveProperty('message');
-        expect(res.body.message).toBe('User does not have permission');
-      });
-  });
-
   /* -------------------------------------------------------------------------- */
   /*                             Payload Validation                             */
   /* -------------------------------------------------------------------------- */

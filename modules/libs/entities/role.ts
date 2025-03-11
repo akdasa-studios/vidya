@@ -2,7 +2,6 @@ import * as domain from '@vidya/domain';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
 import { UserRole } from './userRole';
 import { School } from './school';
-import { Organization } from './organization';
 
 @Entity({ name: 'roles' })
 export class Role {
@@ -16,13 +15,7 @@ export class Role {
   description: string;
 
   @Column({ nullable: false })
-  organizationId: string;
-
-  @Column({ nullable: true })
   schoolId: string;
-
-  @OneToOne(() => Organization)
-  organization: Organization;
 
   @OneToOne(() => School)
   school: School;

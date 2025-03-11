@@ -29,13 +29,9 @@ export class RoleDetails implements protocol.RoleDetails {
   @ApiProperty({ example: ['permissions'] })
   permissions: string[];
 
-  @ApiProperty({ example: 'organizationId' })
+  @ApiProperty({ example: 'schoolId' })
   @IsUUID()
-  organizationId: string;
-
-  @ApiPropertyOptional({ example: 'schoolId' })
-  @IsOptional()
-  schoolId?: string;
+  schoolId: string;
 }
 
 export class RoleSummary implements protocol.RoleSummary {
@@ -60,11 +56,6 @@ export class GetRoleResponse
 export class GetRoleSummariesListQuery
   implements protocol.GetRoleSummariesListQuery
 {
-  @ApiPropertyOptional()
-  @IsUUID()
-  @IsOptional()
-  organizationId?: string;
-
   @ApiPropertyOptional()
   @IsUUID()
   @IsOptional()
@@ -111,13 +102,9 @@ export class CreateRoleRequest implements protocol.CreateRoleRequest {
   @IsEnum(domain.PermissionEnum, { each: true })
   permissions: string[];
 
-  @ApiProperty({ example: 'organizationId' })
+  @ApiProperty({ example: 'schoolId' })
   @IsUUID()
-  organizationId: string;
-
-  @ApiPropertyOptional({ example: 'schoolId' })
-  @IsOptional()
-  schoolId?: string;
+  schoolId: string;
 }
 
 export class CreateRoleResponse implements protocol.CreateRoleResponse {

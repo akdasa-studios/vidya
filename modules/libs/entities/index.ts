@@ -1,4 +1,3 @@
-import { Organization } from './organization';
 import { School } from './school';
 import { Course, LearningType } from './course';
 import { Group, GroupStatus } from './group';
@@ -13,7 +12,6 @@ export {
   GroupStatus,
   LearningType,
   Lesson,
-  Organization,
   School,
   User,
   Role,
@@ -24,7 +22,6 @@ export const Entities = [
   Course,
   Group,
   Lesson,
-  Organization,
   School,
   User,
   Role,

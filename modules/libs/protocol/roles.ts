@@ -7,8 +7,7 @@ import * as crud from './crud'
 export type RoleDetails = {
   id: string;
   name: string;
-  organizationId: string;
-  schoolId?: string;
+  schoolId: string;
   description: string;
   permissions: string[];
 }
@@ -27,7 +26,6 @@ export type CreateRoleResponse = crud.CreateItemResponse<RoleDetails['id']>;
 /* -------------------------------------------------------------------------- */
 
 export type GetRoleSummariesListQuery = {
-  organizationId?: string;
   schoolId?: string;
 }
 

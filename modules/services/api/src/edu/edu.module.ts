@@ -8,23 +8,15 @@ import {
   UsersService,
 } from '@vidya/api/edu/services';
 import { School, User, UserRole } from '@vidya/entities';
-import { Organization, Role } from '@vidya/entities';
+import { Role } from '@vidya/entities';
 
-import {
-  OrganizationsController,
-  RolesController,
-  UserRolesController,
-} from './controllers';
-import { OrganizationsMapperProfile } from './mappers/organizations.mapper';
+import { RolesController, UserRolesController } from './controllers';
 import { RolesMappingProfile } from './mappers/roles.mapper';
-import { OrganizationsService } from './services/organizations.service';
 import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Role, UserRole, Organization, School]),
-  ],
-  controllers: [RolesController, UserRolesController, OrganizationsController],
+  imports: [TypeOrmModule.forFeature([User, Role, UserRole, School])],
+  controllers: [RolesController, UserRolesController],
   providers: [
     AuthUsersService,
     RolesService,
@@ -34,8 +26,6 @@ import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
     IsRoleExistConstraint,
     IsUserExistConstraint,
     RevokedTokensService,
-    OrganizationsMapperProfile,
-    OrganizationsService,
   ],
 })
 export class EduModule {}

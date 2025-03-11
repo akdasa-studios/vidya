@@ -10,11 +10,10 @@ import {
   OtpConfig,
   RedisConfig,
 } from '@vidya/api/configs';
-import { Entities, Organization } from '@vidya/entities';
+import { Entities } from '@vidya/entities';
 
 import { AuthModule } from './auth/auth.module';
 import { EduModule } from './edu/edu.module';
-import { OrganizationsService } from './edu/services/organizations.service';
 
 @Module({
   imports: [
@@ -41,11 +40,11 @@ import { OrganizationsService } from './edu/services/organizations.service';
       }),
       inject: [DbConfig.KEY],
     }),
-    TypeOrmModule.forFeature([Organization]),
+    TypeOrmModule.forFeature([]),
     AuthModule,
     EduModule,
   ],
   controllers: [],
-  providers: [OrganizationsService],
+  providers: [],
 })
 export class AppModule {}

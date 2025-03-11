@@ -1,9 +1,4 @@
 export const PermissionKeys = [
-  // Organizations
-  'orgs:read',
-  'orgs:update',
-  'orgs:delete',
-
   // Roles
   'roles:create',
   'roles:read',
