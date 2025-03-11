@@ -17,7 +17,11 @@ import {
 } from './controllers';
 import { RolesMappingProfile } from './mappers/roles.mapper';
 import { UsersMappingProfile } from './mappers/users.mapper';
-import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
+import {
+  IsRoleExistConstraint,
+  IsSchoolExistConstraint,
+  IsUserExistConstraint,
+} from './validations';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Role, UserRole, School])],
@@ -30,6 +34,7 @@ import { IsRoleExistConstraint, IsUserExistConstraint } from './validations';
     RolesMappingProfile,
     IsRoleExistConstraint,
     IsUserExistConstraint,
+    IsSchoolExistConstraint,
     RevokedTokensService,
     UsersMappingProfile,
   ],

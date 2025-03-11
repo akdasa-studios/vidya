@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@vidya/entities';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { Scope, ScopedEntitiesService } from './entities.service';
 
@@ -22,16 +22,19 @@ export class UsersService extends ScopedEntitiesService<User, Scope> {
         .filter((s) => !schoolId || s.schoolId === schoolId);
 
       // Create a scoped query for the user
-      const scopedQuery = {
-        where: [
-          ...userScopes.map((s) => ({
-            id: userId,
-            roles: {
-              schoolId: s.schoolId,
-            },
-          })),
-        ],
-      };
+      const scopedQuery =
+        userScopes.length > 0
+          ? {
+              where: [
+                ...userScopes.map((s) => ({
+                  id: userId,
+                  roles: {
+                    schoolId: s.schoolId,
+                  },
+                })),
+              ],
+            }
+          : { where: { id: In([]) } };
       this.logger.debug(`Scoped Query: ${JSON.stringify(scopedQuery)}`);
       return scopedQuery;
     });

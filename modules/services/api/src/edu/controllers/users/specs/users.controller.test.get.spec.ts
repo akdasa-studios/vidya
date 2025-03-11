@@ -4,7 +4,6 @@ import { INestApplication } from '@nestjs/common';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import { UsersController } from '@vidya/api/edu/controllers';
 import * as dto from '@vidya/api/edu/dto';
-import { UsersService } from '@vidya/api/edu/services';
 import { createTestingApp } from '@vidya/api/edu/shared';
 import { Role } from '@vidya/entities';
 import * as entities from '@vidya/entities';
@@ -42,6 +41,10 @@ describe('UsersController', () => {
       ),
     );
   }
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   Get One                                  */
+  /* -------------------------------------------------------------------------- */
 
   describe('getOne', () => {
     it('returns user by Id', async () => {
@@ -97,40 +100,6 @@ describe('UsersController', () => {
         getPermissions([ctx.one.roles.oneAdmin, ctx.two.roles.twoAdmin]),
       );
       expectUsers(res, [ctx.one.users.oneAdmin]);
-    });
-  });
-
-  /* -------------------------------------------------------------------------- */
-  /*                                 Update One                                 */
-  /* -------------------------------------------------------------------------- */
-
-  describe('updateOne', () => {
-    it('updates user by Id', async () => {
-      const res = await ctr.updateOne(
-        new dto.UpdateUserRequest({ name: 'Updated Name' }),
-        ctx.one.users.oneAdmin.id,
-        getPermissions([ctx.one.roles.oneAdmin]),
-      );
-
-      expect(res).toEqual(
-        mapper.map(
-          await app
-            .get(UsersService)
-            .findOneBy({ id: ctx.one.users.oneAdmin.id }),
-          entities.User,
-          dto.UpdateUserResponse,
-        ),
-      );
-    });
-
-    it('throws if user do not have permission', async () => {
-      await expect(async () => {
-        await ctr.updateOne(
-          new dto.UpdateUserRequest({ name: 'Updated Name' }),
-          ctx.one.users.oneAdmin.id,
-          getPermissions([ctx.two.roles.twoAdmin]),
-        );
-      }).rejects.toThrow(`User does not have permission`);
     });
   });
 });

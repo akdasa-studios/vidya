@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
+import { AuthService } from '@vidya/api/auth/services';
 import {
   RolesService,
   SchoolsService,
@@ -16,6 +17,9 @@ export type Context = {
     users: {
       oneAdmin: User;
     };
+    tokens: {
+      oneAdmin: string;
+    };
   };
   two: {
     school: School;
@@ -26,6 +30,12 @@ export type Context = {
       twoAdmin: User;
     };
   };
+  empty: {
+    tokens: {
+      dummy: string;
+      empty: string;
+    };
+  };
 };
 
 export const createContext = async (
@@ -34,6 +44,7 @@ export const createContext = async (
   const rolesService = app.get(RolesService);
   const schoolsService = app.get(SchoolsService);
   const usersService = app.get(UsersService);
+  const authService = app.get(AuthService);
 
   /* -------------------------------------------------------------------------- */
   /*                                Organizations                               */
@@ -82,6 +93,20 @@ export const createContext = async (
   });
 
   /* -------------------------------------------------------------------------- */
+  /*                                   Tokens                                   */
+  /* -------------------------------------------------------------------------- */
+
+  const oneAdminToken = await authService.generateTokens(orgAdminUser.id, [
+    { sid: one.id, p: orgAdmin.permissions },
+  ]);
+
+  const dummyToken = await authService.generateTokens(faker.string.uuid(), [
+    { sid: faker.string.uuid(), p: ['users:read'] },
+  ]);
+
+  const emptyToken = await authService.generateTokens(faker.string.uuid(), []);
+
+  /* -------------------------------------------------------------------------- */
   /*                                   Return                                   */
   /* -------------------------------------------------------------------------- */
 
@@ -94,6 +119,9 @@ export const createContext = async (
       users: {
         oneAdmin: orgAdminUser,
       },
+      tokens: {
+        oneAdmin: oneAdminToken.accessToken,
+      },
     },
     two: {
       school: two,
@@ -102,6 +130,12 @@ export const createContext = async (
       },
       users: {
         twoAdmin: twoAdminUser,
+      },
+    },
+    empty: {
+      tokens: {
+        dummy: dummyToken.accessToken,
+        empty: emptyToken.accessToken,
       },
     },
   };

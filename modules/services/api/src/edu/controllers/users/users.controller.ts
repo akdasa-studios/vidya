@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Param,
   ParseUUIDPipe,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -63,7 +64,7 @@ export class UsersController {
 
   @Crud.GetMany(Routes().edu.user(':id').find())
   async getMany(
-    @Body() request: dto.GetUsersQuery,
+    @Query() query: dto.GetUsersQuery,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<GetUsersResponse> {
     userPermissions.check(['users:read']);
@@ -72,10 +73,9 @@ export class UsersController {
       .findAll({
         where: {
           roles: {
-            schoolId: request.schoolId,
+            schoolId: query.schoolId,
           },
         },
-        relations: ['roles'],
       });
     return new dto.GetUsersResponse({
       items: this.mapper.mapArray(users, entities.User, dto.UserSummary),

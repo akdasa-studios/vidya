@@ -19,7 +19,7 @@ export const Routes = (baseUrl: string = '') => ({
       update: (id: string) => `${baseUrl}/edu/roles/${id}`,
       delete: (id: string) => `${baseUrl}/edu/roles/${id}`,
     },
-    user: (userId: string) => ({
+    user: (userId?: string) => ({
       get: () => `${baseUrl}/edu/users/${userId}`,
       find: () => `${baseUrl}/edu/users`,
       update: () => `${baseUrl}/edu/users/${userId}`,
