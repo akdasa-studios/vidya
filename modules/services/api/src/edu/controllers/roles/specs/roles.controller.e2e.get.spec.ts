@@ -67,7 +67,7 @@ describe('/edu/roles', () => {
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
-            [ctx.one.roles.admin, ctx.one.roles.readonly, ctx.two.roles],
+            [ctx.one.roles.admin, ctx.one.roles.readonly, ctx.two.roles.admin],
             entities.Role,
             dto.RoleSummary,
           ),
