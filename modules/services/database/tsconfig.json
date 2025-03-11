@@ -13,7 +13,8 @@
     "baseUrl": "./",
     "rootDirs": [
       ".",
-      "../../libs/entities"
+      "../../libs/entities",
+      "../../libs/domain",
     ],
     "incremental": true,
     "skipLibCheck": true,
@@ -23,7 +24,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@vidya/entities": ["../../libs/entities"]
+      "@vidya/entities": ["../../libs/entities"],
+      "@vidya/domain": ["../../libs/domain"],
     }
   }
 }

@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { createTestingApp } from '@vidya/api/edu/shared';
 import * as domain from '@vidya/domain';
-import { Routes } from '@vidya/protocol';
+import * as protocol from '@vidya/protocol';
 import * as request from 'supertest';
 
 import { Context, createContext } from './context';
@@ -25,7 +25,7 @@ describe('/edu/roles', () => {
 
   it(`POST /edu/roles returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .post(Routes().edu.roles.create())
+      .post(protocol.Routes().edu.roles.create())
       .send({})
       .expect(401);
   });
@@ -35,15 +35,15 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`POST /edu/roles returns 403 for missing permissions`, async () => {
-    const payload = {
+    const payload: protocol.CreateRoleRequest = {
       name: 'New Role',
       description: 'Role description',
-      permissions: ['orgs:read', 'orgs:update'],
-      organizationId: ctx.one.org.id,
+      permissions: ['schools:read', 'schools:update'],
+      schoolId: ctx.one.school.id,
     };
 
     return request(app.getHttpServer())
-      .post(Routes().edu.roles.create())
+      .post(protocol.Routes().edu.roles.create())
       .set('Authorization', `Bearer ${ctx.one.tokens.readOnly}`)
       .send(payload)
       .expect(403)
@@ -53,16 +53,16 @@ describe('/edu/roles', () => {
       });
   });
 
-  it(`POST /edu/roles returns 403 for unauthorized organization`, async () => {
-    const payload = {
+  it(`POST /edu/roles returns 403 for unauthorized school`, async () => {
+    const payload: protocol.CreateRoleRequest = {
       name: 'New Role',
       description: 'Role description',
-      permissions: ['orgs:read', 'orgs:update'],
-      organizationId: ctx.one.org.id,
+      permissions: ['schools:read', 'schools:update'],
+      schoolId: ctx.one.school.id,
     };
 
     return request(app.getHttpServer())
-      .post(Routes().edu.roles.create())
+      .post(protocol.Routes().edu.roles.create())
       .set('Authorization', `Bearer ${ctx.two.tokens.admin}`)
       .send(payload)
       .expect(403)
@@ -91,24 +91,24 @@ describe('/edu/roles', () => {
         'each value in permissions must be one of the following values: ' +
           domain.PermissionKeys.join(', '),
         'each value in permissions must be a string',
-        'organizationId must be a UUID',
+        'schoolId must be a UUID',
       ],
     },
-    // Missing organizationId.
-    // Role must be associated with an organization
+    // Missing schoolId.
+    // Role must be associated with an school.
     {
       payload: {
         name: 'New Role',
         description: 'Role description',
-        permissions: ['orgs:read', 'orgs:update'],
+        permissions: ['schools:read', 'schools:update'],
       },
-      errors: ['organizationId must be a UUID'],
+      errors: ['schoolId must be a UUID'],
     },
   ])(
     `POST /edu/roles 400 if payload is invalid`,
     async ({ payload, errors }) => {
       return request(app.getHttpServer())
-        .post(Routes().edu.roles.create())
+        .post(protocol.Routes().edu.roles.create())
         .set('Authorization', `Bearer ${ctx.two.tokens.admin}`)
         .send(payload)
         .expect(400)
@@ -124,15 +124,15 @@ describe('/edu/roles', () => {
   /* -------------------------------------------------------------------------- */
 
   it(`POST /edu/roles creates a new role`, async () => {
-    const payload = {
+    const payload: protocol.CreateRoleRequest = {
       name: 'New Role',
       description: 'Role description',
-      permissions: ['orgs:read', 'orgs:update'],
-      organizationId: ctx.one.org.id,
+      permissions: ['roles:read', 'roles:update'],
+      schoolId: ctx.one.school.id,
     };
 
     request(app.getHttpServer())
-      .post(Routes().edu.roles.create())
+      .post(protocol.Routes().edu.roles.create())
       .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
       .send(payload)
       .expect(201)

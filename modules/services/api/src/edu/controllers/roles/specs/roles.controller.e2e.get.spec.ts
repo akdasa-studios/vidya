@@ -43,7 +43,7 @@ describe('/edu/roles', () => {
   /*                               Positive Cases                               */
   /* -------------------------------------------------------------------------- */
 
-  it(`GET /edu/roles returns only permitted roles (org level)`, async () => {
+  it(`GET /edu/roles returns only permitted roles`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
       .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
@@ -51,33 +51,7 @@ describe('/edu/roles', () => {
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
-            [
-              // because user can read roles on org level
-              // it can read all roles on school level as well
-              ctx.one.roles.admin,
-              ctx.one.roles.readonly,
-              ctx.one.roles.schoolLevelReadonly,
-            ],
-            entities.Role,
-            dto.RoleSummary,
-          ),
-        ),
-      });
-  });
-
-  it(`GET /edu/roles returns only permitted roles (school level)`, async () => {
-    return request(app.getHttpServer())
-      .get(Routes().edu.roles.find())
-      .set('Authorization', `Bearer ${ctx.one.tokens.schoolLevelReadonly}`)
-      .expect(200)
-      .expect({
-        items: instanceToPlain(
-          mapper.mapArray(
-            [
-              // because user can read roles on scool
-              // level only
-              ctx.one.roles.schoolLevelReadonly,
-            ],
+            [ctx.one.roles.admin, ctx.one.roles.readonly],
             entities.Role,
             dto.RoleSummary,
           ),

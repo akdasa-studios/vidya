@@ -1,36 +1,27 @@
 # Entity Relationship Diagram
 
-Here are the entity relationship diagrams for the Viraha project. The diagrams are created using the [Mermaid](https://mermaid-js.github.io/mermaid/#/) library.
+Here are the entity relationship diagrams for the Vidya project. The diagrams are created using the [Mermaid](https://mermaid-js.github.io/mermaid/#/) library.
 
-## Organization and Permission Management
+## School and Permission Management
 
-*Organization* is the top-level entity that represents a company. Each organization can have multiple schools. For example "Bhaktilata" and "Archana" can be two schools under the same organization "Prabhupada School".
+*School* is the top-level entity representing an educational institution. Each school can have multiple *Courses*, *Groups*, and other related entities.
 
-*School* is a sub-entity of Organization. School belongs to one organization. Each school can have multiple *Courses** *Groups* and so on.
+*Role* is a set of permissions that can be assigned to a user. Each role can have multiple permissions, for example: "create courses", "create groups", "edit lessons" etc. Roles can be defined at the school level. Users can have multiple roles in different schools.
 
-*Role* is a set of permissions that can be assigned to a user. Each role can have multiple permissions, for example: "create coures", "create groups", "edit lessons" etc. Roles can be defined at the organization level or at the school level. Roles can be assigned to users. A user can have multiple roles. For example, a user can have a "teacher" role in one school and a "student" role in another school.
-
-*User* is a person who can log in to the system. A user can be assigned to one or more roles. A user can be a member of one or more schools. A user can have different roles in different schools.
+*User* is a person who can log in to the system. A user can be assigned to one or more roles and can be a member of one or more schools.
 
 ```mermaid
 erDiagram
-    Organization {
-        uuid id PK
-        string name
-    }
-
     School {
         uuid id PK
         string name
-        string organizationId FK
     }
 
     Role {
         uuid id PK
         string name
         string description
-        string organizationId
-        opt[string] schoolId
+        string schoolId FK
         string[] permissions
     }
 
@@ -42,19 +33,15 @@ erDiagram
         string avatarUrl
     }
 
-
     UserRole {
         uuid id PK
         string userId FK
         string roleId FK
     }
 
-    Organization ||--o{ School : ""
-    Organization ||--o{ Role : ""
     School ||--o{ Role : ""
     User }o--o{ UserRole : ""
     Role }o--o{ UserRole : ""
-
 ```
 
 ## School Management
@@ -63,9 +50,9 @@ erDiagram
 
 *Group* is a set of students who are studying the same course. Each *Course* can have multiple *Groups*.
 
-*Lession* is a part of a course. Each course can have multiple lessons. For example, "Chapter 1", "Chapter 2" etc can be lessons in the "Bhagavad Gita" course. Each lesson can have a title and content.
+*Lesson* is a part of a course. Each course can have multiple lessons. For example, "Chapter 1", "Chapter 2" etc., can be lessons in the "Bhagavad Gita" course. Each lesson can have a title and content.
 
-*Enrollment* is a record that links a user to a group and a rele. Each enrollment can have a status like "active", "inactive", "graduated" etc. Each enrollment can have a number of lessons opened.
+*Enrollment* is a record that links a user to a group and a role. Each enrollment can have a status like "active", "inactive", "graduated", etc. Each enrollment can have a number of lessons opened.
 
 ```mermaid
 erDiagram
@@ -111,3 +98,4 @@ erDiagram
     Enrollment }|--o| Course : ""
     Enrollment }|--|| Role : ""
 ```
+

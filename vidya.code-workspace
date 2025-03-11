@@ -33,14 +33,6 @@
       "path": "./modules/services/gateway"
     },
     {
-      "name": "🧪 Tests :: Unit :: Database",
-      "path": "./modules/tests/unit/database"
-    },
-    {
-      "name": "🧪 Tests :: Integration :: Api",
-      "path": "./modules/tests/integration/api"
-    },
-    {
       "name": "📚 Docs",
       "path": "./docs"
     },

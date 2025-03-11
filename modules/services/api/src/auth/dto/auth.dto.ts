@@ -71,11 +71,8 @@ export class RefreshTokensResponse implements protocol.RefreshTokensResponse {
 }
 
 export class UserPermission implements protocol.UserPermission {
-  @ApiProperty({ example: 'organizationId' })
-  oid: string;
-
   @ApiProperty({ example: 'schoolId' })
-  sid?: string;
+  sid: string;
 
   @ApiProperty({ example: ['permissions'] })
   p: domain.PermissionKey[];
