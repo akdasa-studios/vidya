@@ -14,6 +14,7 @@ export type Context = {
     tokens: {
       admin: string;
       readOnly: string;
+      oneAndTwoAdmin: string;
     };
   };
   two: {
@@ -23,6 +24,7 @@ export type Context = {
     };
     tokens: {
       admin: string;
+      oneAndTwoAdmin: string;
     };
   };
   three: {
@@ -110,6 +112,11 @@ export const createContext = async (
     [{ sid: schoolThree.id, p: ['roles:create', 'roles:read'] }],
   );
 
+  const oneAndTwoAdmin = await authService.generateTokens(faker.string.uuid(), [
+    { sid: schoolOne.id, p: oneAdminRole.permissions },
+    { sid: schoolTwo.id, p: twoAdminRole.permissions },
+  ]);
+
   const emptyTokenNoPermissions = await authService.generateTokens(
     faker.string.uuid(),
     [],
@@ -129,6 +136,7 @@ export const createContext = async (
       tokens: {
         admin: oneTokenAdmin.accessToken,
         readOnly: oneTokenReadonly.accessToken,
+        oneAndTwoAdmin: oneAndTwoAdmin.accessToken,
       },
     },
     two: {
@@ -138,6 +146,7 @@ export const createContext = async (
       },
       tokens: {
         admin: twoTokenAdmin.accessToken,
+        oneAndTwoAdmin: oneAndTwoAdmin.accessToken,
       },
     },
     three: {

@@ -59,6 +59,22 @@ describe('/edu/roles', () => {
       });
   });
 
+  it(`GET /edu/roles returns only permitted roles (multiple schools)`, async () => {
+    return request(app.getHttpServer())
+      .get(Routes().edu.roles.find())
+      .set('Authorization', `Bearer ${ctx.one.tokens.oneAndTwoAdmin}`)
+      .expect(200)
+      .expect({
+        items: instanceToPlain(
+          mapper.mapArray(
+            [ctx.one.roles.admin, ctx.one.roles.readonly, ctx.two.roles],
+            entities.Role,
+            dto.RoleSummary,
+          ),
+        ),
+      });
+  });
+
   /* -------------------------------------------------------------------------- */
   /*                               Negative Cases                               */
   /* -------------------------------------------------------------------------- */
