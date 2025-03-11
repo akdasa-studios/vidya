@@ -64,12 +64,20 @@ export class UsersController {
 
   @Crud.GetMany(Routes().edu.user(':id').find())
   async getMany(
+    @Body() request: dto.GetUsersQuery,
     @UserWithPermissions() userPermissions: UserPermissions,
   ): Promise<GetUsersResponse> {
     userPermissions.check(['users:read']);
     const users = await this.usersService
       .scopedBy({ permissions: userPermissions })
-      .findAll({});
+      .findAll({
+        where: {
+          roles: {
+            schoolId: request.schoolId,
+          },
+        },
+        relations: ['roles'],
+      });
     return new dto.GetUsersResponse({
       items: this.mapper.mapArray(users, entities.User, dto.UserSummary),
     });

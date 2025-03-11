@@ -1,10 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsSchoolExist } from '@vidya/api/edu/validations';
 import * as protocol from '@vidya/protocol';
 import {
   IsEmail,
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsUUID,
   Matches,
   MaxLength,
 } from 'class-validator';
@@ -49,6 +51,18 @@ export class UserDetails implements protocol.UserDetails {
 /* -------------------------------------------------------------------------- */
 /*                                    Read                                    */
 /* -------------------------------------------------------------------------- */
+
+export class GetUsersQuery implements protocol.GetUsersQuery {
+  constructor(options?: { schoolId?: string }) {
+    this.schoolId = options?.schoolId;
+  }
+
+  @ApiPropertyOptional({ example: 'id' })
+  @IsUUID()
+  @IsOptional()
+  @IsSchoolExist()
+  schoolId?: string;
+}
 
 export class GetUserResponse
   extends UserDetails

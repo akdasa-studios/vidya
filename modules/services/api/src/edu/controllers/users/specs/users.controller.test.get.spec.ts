@@ -48,15 +48,27 @@ describe('UsersController', () => {
 
   describe('getMany', () => {
     it('user can see all users in school', async () => {
-      const res = await ctr.getMany(getPermissions([ctx.one.roles.oneAdmin]));
+      const res = await ctr.getMany(
+        new dto.GetUsersQuery(),
+        getPermissions([ctx.one.roles.oneAdmin]),
+      );
       expectUsers(res, [ctx.one.users.oneAdmin]);
     });
 
-    it('user can see all users in multiplse schools', async () => {
+    it('user can see all users in multiple schools', async () => {
       const res = await ctr.getMany(
+        new dto.GetUsersQuery(),
         getPermissions([ctx.one.roles.oneAdmin, ctx.two.roles.twoAdmin]),
       );
       expectUsers(res, [ctx.one.users.oneAdmin, ctx.two.users.twoAdmin]);
+    });
+
+    it('should filter by schoolId', async () => {
+      const res = await ctr.getMany(
+        new dto.GetUsersQuery({ schoolId: ctx.one.school.id }),
+        getPermissions([ctx.one.roles.oneAdmin, ctx.two.roles.twoAdmin]),
+      );
+      expectUsers(res, [ctx.one.users.oneAdmin]);
     });
   });
 });

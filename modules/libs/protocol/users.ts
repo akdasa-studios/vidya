@@ -24,6 +24,10 @@ export type UserDetails = UserSummary & {
 /*                                    Read                                    */
 /* -------------------------------------------------------------------------- */
 
+export type GetUsersQuery = {
+  schoolId?: string;
+}
+
 export type GetUserResponse =
   crud.GetItemResponse<UserDetails>;
 
