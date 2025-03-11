@@ -82,6 +82,12 @@ export class GetUsersResponse implements protocol.GetUsersResponse {
 /* -------------------------------------------------------------------------- */
 
 export class UpdateUserRequest implements protocol.UpdateUserRequest {
+  constructor(options?: { name?: string; email?: string; phone?: string }) {
+    this.name = options?.name;
+    this.email = options?.email;
+    this.phone = options?.phone;
+  }
+
   @ApiPropertyOptional({ example: 'User' })
   @IsString()
   @IsOptional()
@@ -106,15 +112,3 @@ export class UpdateUserRequest implements protocol.UpdateUserRequest {
 export class UpdateUserResponse
   extends UserDetails
   implements protocol.UpdateUserResponse {}
-
-/* -------------------------------------------------------------------------- */
-/*                                   Delete                                   */
-/* -------------------------------------------------------------------------- */
-
-export class DeleteUserResponse {
-  constructor(options?: { success: boolean }) {
-    this.success = options.success;
-  }
-  @ApiProperty({ example: 'success' })
-  success: boolean;
-}

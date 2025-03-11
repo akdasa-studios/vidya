@@ -22,6 +22,21 @@ export class UsersMappingProfile extends AutomapperProfile {
         forMember((d) => d.name, mapFrom((s) => s.name)),
       );
 
+      createMap(
+        mapper, entities.User, dto.GetUserResponse,
+        forMember((d) => d.id,   mapFrom((s) => s.id)),
+        forMember((d) => d.name, mapFrom((s) => s.name)),
+        forMember((d) => d.email, mapFrom((s) => s.email)),
+        forMember((d) => d.phone, mapFrom((s) => s.phone))
+      );
+
+      createMap(
+        mapper, entities.User, dto.UpdateUserResponse,
+        forMember((d) => d.id,   mapFrom((s) => s.id)),
+        forMember((d) => d.name, mapFrom((s) => s.name)),
+        forMember((d) => d.email, mapFrom((s) => s.email)),
+        forMember((d) => d.phone, mapFrom((s) => s.phone))
+      );
     };
   }
 }

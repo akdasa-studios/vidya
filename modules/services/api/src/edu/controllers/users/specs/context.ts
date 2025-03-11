@@ -55,14 +55,14 @@ export const createContext = async (
     name: 'Org Admin',
     description: 'Organization Admin',
     schoolId: one.id,
-    permissions: ['users:read'],
+    permissions: ['users:read', 'users:update', 'users:delete'],
   });
 
   const twoAdmin = await rolesService.create({
     name: 'Org Two Admin',
     description: 'Organization Two Admin',
     schoolId: two.id,
-    permissions: ['users:read'],
+    permissions: ['users:read', 'users:update', 'users:delete'],
   });
 
   /* -------------------------------------------------------------------------- */

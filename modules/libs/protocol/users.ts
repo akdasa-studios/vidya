@@ -43,10 +43,3 @@ export type UpdateUserRequest =
 
 export type UpdateUserResponse =
   crud.UpdateItemResponse<UserDetails>;
-
-/* -------------------------------------------------------------------------- */
-/*                                   Delete                                   */
-/* -------------------------------------------------------------------------- */
-
-export type DeleteUserResponse =
-  crud.DeleteItemResponse;

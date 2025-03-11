@@ -12,9 +12,9 @@ export class UsersService extends ScopedEntitiesService<User, Scope> {
   constructor(@InjectRepository(User) repository: Repository<User>) {
     super(repository, (query, scope) => {
       // TODO add support for query.where as array
-      const {
-        roles: { schoolId },
-      } = query?.where ?? ({} as any);
+      const q = query?.where as any;
+      const userId = q?.id;
+      const schoolId = q?.roles?.schoolId;
 
       // Get all user scopes and filter whem by query params if provided
       const userScopes = scope.permissions
@@ -25,6 +25,7 @@ export class UsersService extends ScopedEntitiesService<User, Scope> {
       const scopedQuery = {
         where: [
           ...userScopes.map((s) => ({
+            id: userId,
             roles: {
               schoolId: s.schoolId,
             },

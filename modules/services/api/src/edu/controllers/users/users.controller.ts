@@ -25,7 +25,6 @@ const Crud = CrudDecorators({
   getOneResponseDto: dto.GetUserResponse,
   getManyResponseDto: dto.GetUsersResponse,
   updateOneResponseDto: dto.UpdateUserResponse,
-  deleteOneResponseDto: dto.DeleteUserResponse,
 });
 
 @Controller()
@@ -103,19 +102,5 @@ export class UsersController {
 
     const user = await this.usersService.updateOneBy({ id }, request);
     return this.mapper.map(user, entities.User, dto.UpdateUserResponse);
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                          DELETE /edu/users/:id                             */
-  /* -------------------------------------------------------------------------- */
-
-  @Crud.DeleteOne(Routes().edu.user(':id').delete())
-  async deleteOne(
-    @Param('id', new ParseUUIDPipe(), UserExistsPipe) id: string,
-    @UserWithPermissions() userPermissions: UserPermissions,
-  ): Promise<dto.DeleteUserResponse> {
-    // userPermissions.check(['users:delete'], { userId: id });
-    await this.usersService.deleteOneBy({ id });
-    return new dto.DeleteUserResponse({ success: true });
   }
 }
