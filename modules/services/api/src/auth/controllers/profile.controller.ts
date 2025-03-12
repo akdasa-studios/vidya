@@ -18,7 +18,7 @@ import { AuthUsersService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('User')
+@ApiTags('Authentication')
 export class ProfileController {
   constructor(private readonly usersService: AuthUsersService) {}
 

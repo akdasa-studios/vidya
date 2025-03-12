@@ -9,8 +9,11 @@ import { CrudDecorators } from '@vidya/api/utils';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
+// TODO Add documentation configurations, to change doc:
+//      Get many UserRoles    -> Get all roles of a user
+//      Create a new UserRole -> Set roles for a user
 const Crud = CrudDecorators({
-  entityName: 'Role',
+  entityName: 'UserRole',
   getManyResponseDto: dto.GetUserRolesListResponse,
   createOneResponseDto: dto.SetUserRolesResponse,
 });
