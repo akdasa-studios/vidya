@@ -96,7 +96,7 @@ export class AuthUsersService {
       // Permissions are cached. Parse and return them.
       return JSON.parse(permissions);
     } else {
-      this.logger.verbose(`Fetching '${userId}' permissions from DB`);
+      this.logger.debug(`Fetching '${userId}' permissions from DB`);
 
       // Permissions are not cached. Fetch them from the database.
       const userRoles = await this.getRolesOfUser(userId);
