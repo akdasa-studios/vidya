@@ -11,30 +11,29 @@ export class UsersService extends ScopedEntitiesService<User, Scope> {
 
   constructor(@InjectRepository(User) repository: Repository<User>) {
     super(repository, (query, scope) => {
-      // TODO add support for query.where as array
-      const q = query?.where as any;
-      const userId = q?.id;
-      const schoolId = q?.roles?.schoolId;
+      if (query?.where instanceof Array) {
+        // TODO add support for query.where as array
+        throw new Error('Array where clauses are not supported');
+      }
 
-      // Get all user scopes and filter whem by query params if provided
-      const userScopes = scope.permissions
+      const where = query?.where as any;
+      const schoolId = where?.roles?.schoolId;
+
+      // Get all schools permitted for user
+      const schoolIds = scope.permissions
         .getScopes(['users:read'])
-        .filter((s) => !schoolId || s.schoolId === schoolId);
+        .filter((s) => !schoolId || s.schoolId === schoolId)
+        .map((s) => s.schoolId);
 
       // Create a scoped query for the user
-      const scopedQuery =
-        userScopes.length > 0
-          ? {
-              where: [
-                ...userScopes.map((s) => ({
-                  id: userId,
-                  roles: {
-                    schoolId: s.schoolId,
-                  },
-                })),
-              ],
-            }
-          : { where: { id: In([]) } };
+      const scopedQuery = {
+        where: {
+          id: where?.id,
+          roles: {
+            schoolId: In(schoolIds),
+          },
+        },
+      };
       this.logger.debug(`Scoped Query: ${JSON.stringify(scopedQuery)}`);
       return scopedQuery;
     });
