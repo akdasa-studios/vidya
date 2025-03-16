@@ -9,12 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserWithPermissions } from '@vidya/api/auth/decorators';
+import { UserId, UserWithPermissions } from '@vidya/api/auth/decorators';
 import { AuthenticatedUser } from '@vidya/api/auth/guards';
 import { UserPermissions } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/edu/dto';
 import { SchoolExistsPipe } from '@vidya/api/edu/pipes';
-import { SchoolsService } from '@vidya/api/edu/services';
+import { SchoolCreationService, SchoolsService } from '@vidya/api/edu/services';
 import { CrudDecorators } from '@vidya/api/utils';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
@@ -35,6 +35,7 @@ const Crud = CrudDecorators({
 export class SchoolsController {
   constructor(
     private readonly schoolsService: SchoolsService,
+    private readonly schoolCreationService: SchoolCreationService,
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
   /* -------------------------------------------------------------------------- */
@@ -80,12 +81,13 @@ export class SchoolsController {
   @Crud.CreateOne(Routes().edu.schools.create())
   async createOne(
     @Body() request: dto.CreateSchoolRequest,
+    @UserId() userId: string,
     @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.CreateSchoolResponse> {
     permissions.check(['schools:create']);
-    const entity = await this.schoolsService.create(
-      this.mapper.map(request, dto.CreateSchoolRequest, entities.School),
-    );
+    const entity = await this.schoolCreationService.createNewSchool(userId, {
+      name: request.name,
+    });
     return this.mapper.map(entity, entities.School, dto.CreateSchoolResponse);
   }
 

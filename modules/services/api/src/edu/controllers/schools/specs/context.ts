@@ -1,11 +1,18 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { RolesService, SchoolsService } from '@vidya/api/edu/services';
-import { Role, School } from '@vidya/entities';
+import {
+  RolesService,
+  SchoolsService,
+  UsersService,
+} from '@vidya/api/edu/services';
+import { Role, School, User } from '@vidya/entities';
 
 export type Context = {
   one: {
     school: School;
+    users: {
+      admin: User;
+    };
     roles: {
       admin: Role;
       readonly: Role;
@@ -17,6 +24,9 @@ export type Context = {
       admin: Role;
     };
   };
+  empty: {
+    user: User;
+  };
 };
 
 export const createContext = async (
@@ -24,6 +34,7 @@ export const createContext = async (
 ): Promise<Context> => {
   const rolesService = app.get(RolesService);
   const schoolsService = app.get(SchoolsService);
+  const usersService = app.get(UsersService);
 
   /* -------------------------------------------------------------------------- */
   /*                                   Schools                                  */
@@ -73,12 +84,28 @@ export const createContext = async (
   });
 
   /* -------------------------------------------------------------------------- */
+  /*                                    Users                                   */
+  /* -------------------------------------------------------------------------- */
+
+  const oneAdminUser = await usersService.create({
+    email: faker.internet.email(),
+    roles: [oneAdminRole],
+  });
+
+  const emptyUser = await usersService.create({
+    email: faker.internet.email(),
+  });
+
+  /* -------------------------------------------------------------------------- */
   /*                                   Result                                   */
   /* -------------------------------------------------------------------------- */
 
   return {
     one: {
       school: schoolOne,
+      users: {
+        admin: oneAdminUser,
+      },
       roles: {
         admin: oneAdminRole,
         readonly: oneReadonlyRole,
@@ -89,6 +116,9 @@ export const createContext = async (
       roles: {
         admin: twoAdminRole,
       },
+    },
+    empty: {
+      user: emptyUser,
     },
   };
 };

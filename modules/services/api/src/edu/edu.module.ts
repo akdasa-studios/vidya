@@ -4,6 +4,7 @@ import { RevokedTokensService } from '@vidya/api/auth/services';
 import { AuthUsersService } from '@vidya/api/auth/services';
 import {
   RolesService,
+  SchoolCreationService,
   SchoolsService,
   UsersService,
 } from '@vidya/api/edu/services';
@@ -39,6 +40,7 @@ import {
     RolesService,
     UsersService,
     SchoolsService,
+    SchoolCreationService,
     RevokedTokensService,
     // Constraints
     IsRoleExistConstraint,
