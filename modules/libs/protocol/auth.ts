@@ -65,7 +65,7 @@ export const RevokedTokenStorageKey = (token: JwtToken) => `tokens:revoked:${tok
 /*                               Authentication                               */
 /* -------------------------------------------------------------------------- */
 
-export interface OtpLogInRequest {
+export interface OtpSignInRequest {
   /** Login to sign up with */
   login: string;
 
@@ -73,7 +73,7 @@ export interface OtpLogInRequest {
   otp: string;
 }
 
-export interface OtpLogInResponse {
+export interface OtpSignInResponse {
   /** Access token to authenticate user */
   accessToken: string;
 
@@ -94,12 +94,12 @@ export interface RefreshTokensResponse {
   refreshToken: string;
 }
 
-export interface LogOutRequest {
+export interface SignOutRequest {
   /** Refresh token */
   refreshToken: string;
 }
 
-export interface LogOutResponse {
+export interface SignOutResponse {
 }
 
 /* -------------------------------------------------------------------------- */

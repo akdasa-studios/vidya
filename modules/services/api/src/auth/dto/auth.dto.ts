@@ -7,7 +7,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 /*                                Authentcation                               */
 /* -------------------------------------------------------------------------- */
 
-export class OtpLogInRequest implements protocol.OtpLogInRequest {
+export class OtpSignInRequest implements protocol.OtpSignInRequest {
   @ApiProperty({ example: 'example@example.com' })
   @IsNotEmpty()
   login: string;
@@ -18,7 +18,7 @@ export class OtpLogInRequest implements protocol.OtpLogInRequest {
   otp: string;
 }
 
-export class OtpLogInResponse implements protocol.OtpLogInResponse {
+export class OtpSignInResponse implements protocol.OtpSignInResponse {
   constructor(options: { accessToken: string; refreshToken: string }) {
     this.accessToken = options.accessToken;
     this.refreshToken = options.refreshToken;
@@ -40,14 +40,14 @@ export class RefreshTokensRequest implements protocol.RefreshTokensRequest {
   refreshToken: string;
 }
 
-export class LogOutRequest implements protocol.LogOutRequest {
+export class SignOutRequest implements protocol.SignOutRequest {
   @ApiProperty({ example: 'refreshToken' })
   @IsString()
   @IsNotEmpty()
   refreshToken: string;
 }
 
-export class LogOutResponse implements protocol.LogOutResponse {}
+export class SignOutResponse implements protocol.SignOutResponse {}
 
 /* -------------------------------------------------------------------------- */
 /*                                   Tokens                                   */

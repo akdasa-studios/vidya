@@ -1,0 +1,10 @@
+{
+  "name": "vidya",
+  "private": true,
+  "workspaces": [
+    "libs/*",
+    "services/*",
+    "tests/unit/*",
+    "tests/integration/*"
+  ]
+}

@@ -19,6 +19,9 @@ async function bootstrap() {
       description: 'Docs',
       url: 'https://github.com/akdasa-studios/vidya/blob/main/docs/adr/001%20OTP%20Authentication.md',
     })
+    .addTag('Authentication :: One-Time Password')
+    .addTag('Education :: Roles', 'Roles management')
+    .addTag('Education :: Users', 'Users management')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
