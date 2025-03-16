@@ -1,10 +1,12 @@
 export const Routes = (baseUrl: string = '') => ({
   auth: {
     root: () => `${baseUrl}/auth`,
-    login: (method: string) => `${baseUrl}/auth/login/${method}`,
-    logout: () => `${baseUrl}/auth/logout`,
+    signIn:  (method: string) => `${baseUrl}/auth/signin/${method}`,
+    signOut: ()               => `${baseUrl}/auth/signout`,
+
+    signup: (method: string) => `${baseUrl}/auth/signup/${method}`,
     tokens: {
-      refresh: () => `${baseUrl}/auth/tokens/refresh`,
+      refresh: () => `${baseUrl}/auth/refresh`,
     },
     profile: () => `${baseUrl}/auth/profile`,
   },

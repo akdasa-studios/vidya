@@ -30,7 +30,7 @@ import { JwtToken, OtpType, Routes } from '@vidya/protocol';
 
 @Controller()
 @ApiTags('Authentication')
-export class LoginController {
+export class UserAuthenticationController {
   constructor(
     @Inject(AuthConfig.KEY)
     private readonly authConfig: ConfigType<typeof AuthConfig>,
@@ -41,20 +41,20 @@ export class LoginController {
   ) {}
 
   /* -------------------------------------------------------------------------- */
-  /*                            POST /auth/login/otp                            */
+  /*                            POST /auth/signin/otp                           */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().auth.login('otp'))
+  @Post(Routes().auth.signIn('otp'))
   @ApiOperation({
-    summary: 'Authorizes user',
-    operationId: 'auth::login',
+    summary: 'Signs user in with OTP',
+    operationId: 'auth::signIn',
     description:
-      `Authorizes user by OTP.\n\n` +
-      `Returns access and refresh tokens if the user has been authorized.`,
+      `Signs user in with one-time password.\n\n` +
+      `Returns access and refresh tokens if the user has been authenticated.`,
   })
   @ApiOkResponse({
-    type: dto.OtpLogInRequest,
-    description: 'User has been authorized.',
+    type: dto.OtpSignInRequest,
+    description: 'User has been authenticated.',
   })
   @ApiUnauthorizedResponse({
     type: dto.ErrorResponse,
@@ -64,10 +64,10 @@ export class LoginController {
     type: dto.ErrorResponse,
     description: 'Too many requests',
   })
-  async loginWithOtp(
-    @Body() request: dto.OtpLogInRequest,
-  ): Promise<dto.OtpLogInResponse> {
-    // TODO rate limit login attempts
+  async signinWithOtp(
+    @Body() request: dto.OtpSignInRequest,
+  ): Promise<dto.OtpSignInResponse> {
+    // TODO rate limit login attempts by login
 
     // validate OTP, if invalid send 401 Unauthorized response
     const otp = await this.otpService.validate(request.login, request.otp);
@@ -91,7 +91,7 @@ export class LoginController {
         : undefined,
     );
 
-    return new dto.OtpLogInResponse({
+    return new dto.OtpSignInResponse({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     });
@@ -101,17 +101,18 @@ export class LoginController {
   /*                              POST /auth/logout                             */
   /* -------------------------------------------------------------------------- */
 
-  @Post(Routes().auth.logout())
+  @Post(Routes().auth.signOut())
   @UseGuards(AuthenticatedUser)
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Log out user',
-    operationId: 'auth::logout',
+    summary: 'Signs user out',
+    operationId: 'auth::signOut',
     description:
-      `Log out user.\n\n` + `Revokes the refresh token and logs out the user.`,
+      `Signs user out.\n\n` +
+      `Revokes the refresh token and signs the user out.`,
   })
   @ApiOkResponse({
-    type: dto.LogOutResponse,
+    type: dto.SignOutResponse,
     description: 'User has been logged out.',
   })
   @ApiBadRequestResponse({
@@ -123,9 +124,9 @@ export class LoginController {
     description: 'Unauthorized request.',
   })
   async logoutUser(
-    @Body() request: dto.LogOutRequest,
+    @Body() request: dto.SignOutRequest,
     @UserAccessToken() userAccessToken: JwtToken,
-  ): Promise<dto.LogOutResponse> {
+  ): Promise<dto.SignOutResponse> {
     // revoke access token to prevent reusing it
     await this.revokedTokensService.revoke(userAccessToken);
 
@@ -136,6 +137,6 @@ export class LoginController {
     }
 
     // user logged out
-    return new dto.LogOutResponse();
+    return new dto.SignOutResponse();
   }
 }
