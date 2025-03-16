@@ -103,7 +103,6 @@ export class SchoolsController {
     let school = await this.schoolsService
       .scopedBy({ permissions })
       .findOne({ where: { id } });
-    console.log(school, permissions);
     if (!school) {
       throw new NotFoundException(`School with id ${id} not found`);
     }
@@ -123,11 +122,16 @@ export class SchoolsController {
   @Crud.DeleteOne(Routes().edu.schools.delete(':id'))
   async deleteOne(
     @Param('id', new ParseUUIDPipe(), SchoolExistsPipe) id: string,
-    // @UserWithPermissions() permissions: UserPermissions,
+    @UserWithPermissions() permissions: UserPermissions,
   ): Promise<dto.DeleteSchoolResponse> {
     // Check if user has permission to delete school
-    // const school = await this.schoolsService.findOneBy({ id });
-    // permissions.check(['schools:delete']);
+    permissions.check(['schools:delete']);
+    const school = await this.schoolsService
+      .scopedBy({ permissions })
+      .findOne({ where: { id } });
+    if (!school) {
+      throw new NotFoundException(`School with id ${id} not found`);
+    }
 
     // User has permission to delete school. Proceed with deletion.
     await this.schoolsService.deleteOneBy({ id });

@@ -58,18 +58,16 @@ export class GetSchoolsResponse implements protocol.GetSchoolsResponse {
 /* -------------------------------------------------------------------------- */
 
 export class CreateSchoolRequest implements protocol.CreateSchoolRequest {
+  constructor(options?: { name?: string }) {
+    this.name = options.name;
+  }
+
   @ApiProperty({ example: 'name' })
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   @MaxLength(32)
   name: string;
-
-  @ApiProperty({ example: 'description' })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(128)
-  description: string;
 }
 
 export class CreateSchoolResponse implements protocol.CreateSchoolResponse {
@@ -82,6 +80,10 @@ export class CreateSchoolResponse implements protocol.CreateSchoolResponse {
 /* -------------------------------------------------------------------------- */
 
 export class UpdateSchoolRequest implements protocol.UpdateSchoolRequest {
+  constructor(options?: { name?: string }) {
+    this.name = options?.name;
+  }
+
   @ApiPropertyOptional({ example: 'name' })
   @IsString()
   @IsOptional()

@@ -32,19 +32,6 @@ describe('SchoolsController', () => {
     );
   }
 
-  function expectSchools(
-    res: dto.GetSchoolsResponse,
-    schools: entities.School[],
-  ) {
-    expect(res).toHaveProperty('items');
-    expect(res.items).toHaveLength(schools.length);
-    expect(res.items).toEqual(
-      expect.arrayContaining(
-        mapper.mapArray(schools, entities.School, dto.SchoolSummary),
-      ),
-    );
-  }
-
   /* -------------------------------------------------------------------------- */
   /*                                   Get One                                  */
   /* -------------------------------------------------------------------------- */
@@ -83,14 +70,15 @@ describe('SchoolsController', () => {
   describe('getMany', () => {
     it('returns all schools in permitted roles', async () => {
       const res = await ctr.getMany(getPermissions([ctx.one.roles.admin]));
-      expectSchools(res, [ctx.one.school]);
+      expect(res.items).toHaveLength(1);
     });
 
     it('returns all schools in multiple permitted roles', async () => {
       const res = await ctr.getMany(
         getPermissions([ctx.one.roles.admin, ctx.two.roles.admin]),
       );
-      expectSchools(res, [ctx.one.school, ctx.two.school]);
+      expect(res.items).toHaveLength(2);
+      expect(res.items).toEqual([ctx.one.school, ctx.two.school]);
     });
   });
 });

@@ -44,7 +44,12 @@ export const createContext = async (
   const oneAdminRole = await rolesService.create({
     name: 'One :: Admin',
     description: 'Admin role for school one',
-    permissions: ['schools:read', 'schools:update'],
+    permissions: [
+      'schools:create',
+      'schools:read',
+      'schools:update',
+      'schools:delete',
+    ],
     schoolId: schoolOne.id,
   });
 
@@ -58,7 +63,12 @@ export const createContext = async (
   const twoAdminRole = await rolesService.create({
     name: 'Two :: Admin',
     description: 'Admin role for school two',
-    permissions: ['schools:read', 'schools:update'],
+    permissions: [
+      'schools:create',
+      'schools:read',
+      'schools:update',
+      'schools:delete',
+    ],
     schoolId: schoolTwo.id,
   });
 
