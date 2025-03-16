@@ -15,13 +15,14 @@ async function bootstrap() {
     .setDescription(`The ${AppName} API`)
     .setVersion('1.0') // TODO Use version from package.json
     .addBearerAuth()
-    .addTag('Authentication', 'Endpoints for authentication', {
+    .addTag('🔐 Authentication', 'Endpoints for authentication', {
       description: 'Docs',
       url: 'https://github.com/akdasa-studios/vidya/blob/main/docs/adr/001%20OTP%20Authentication.md',
     })
-    .addTag('Authentication :: One-Time Password')
-    .addTag('Education :: Roles', 'Roles management')
-    .addTag('Education :: Users', 'Users management')
+    .addTag('🎟️ Authentication :: One-Time Password')
+    .addTag('🕵️‍♂️ Education :: Roles', 'Roles management')
+    .addTag('🧝 Education :: Users', 'Users management')
+    .addTag('🏫 Education :: Schools', 'Schools management')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);

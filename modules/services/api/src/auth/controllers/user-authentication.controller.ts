@@ -29,7 +29,7 @@ import { AuthConfig } from '@vidya/api/configs';
 import { JwtToken, OtpType, Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Authentication')
+@ApiTags('🔐 Authentication')
 export class UserAuthenticationController {
   constructor(
     @Inject(AuthConfig.KEY)

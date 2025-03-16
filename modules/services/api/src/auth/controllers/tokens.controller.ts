@@ -21,7 +21,7 @@ import {
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Authentication')
+@ApiTags('🔐 Authentication')
 export class TokensController {
   constructor(
     private readonly revokedTokensService: RevokedTokensService,

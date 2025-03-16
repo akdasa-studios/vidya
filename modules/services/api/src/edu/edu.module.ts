@@ -15,7 +15,9 @@ import {
   UserRolesController,
   UsersController,
 } from './controllers';
+import { SchoolsController } from './controllers/schools/schools.controller';
 import { RolesMappingProfile } from './mappers/roles.mapper';
+import { SchoolsMappingProfile } from './mappers/schools.mapper';
 import { UsersMappingProfile } from './mappers/users.mapper';
 import {
   IsRoleExistConstraint,
@@ -25,18 +27,27 @@ import {
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Role, UserRole, School])],
-  controllers: [RolesController, UserRolesController, UsersController],
+  controllers: [
+    RolesController,
+    UserRolesController,
+    UsersController,
+    SchoolsController,
+  ],
   providers: [
+    // Services
     AuthUsersService,
     RolesService,
     UsersService,
     SchoolsService,
-    RolesMappingProfile,
+    RevokedTokensService,
+    // Constraints
     IsRoleExistConstraint,
     IsUserExistConstraint,
     IsSchoolExistConstraint,
-    RevokedTokensService,
+    // Mappers
+    RolesMappingProfile,
     UsersMappingProfile,
+    SchoolsMappingProfile,
   ],
 })
 export class EduModule {}

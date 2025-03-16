@@ -18,7 +18,7 @@ import { OtpService } from '@vidya/api/auth/services';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
-@ApiTags('Authentication :: One-Time Password')
+@ApiTags('🎟️ Authentication :: One-Time Password')
 export class OtpController {
   constructor(private readonly otpService: OtpService) {}
 

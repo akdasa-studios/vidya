@@ -30,7 +30,7 @@ const Crud = CrudDecorators({
 
 @Controller()
 @ApiBearerAuth()
-@ApiTags('Education :: Users')
+@ApiTags('🧝 Education :: Users')
 @UseGuards(AuthenticatedUser)
 export class UsersController {
   constructor(
