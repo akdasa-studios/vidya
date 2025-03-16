@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddRolesTable1739697202479 implements MigrationInterface {
-  name = 'AddRolesTable1739697202479'
+export class CreateRolesTable1739697202479 implements MigrationInterface {
+  name = 'CreateRolesTable1739697202479'
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
@@ -15,7 +15,8 @@ export class AddRolesTable1739697202479 implements MigrationInterface {
         CONSTRAINT "fk_roles_school_id"
           FOREIGN KEY ("schoolId")
           REFERENCES "schools"("id")
-          ON DELETE NO ACTION ON UPDATE NO ACTION
+          ON DELETE CASCADE
+          ON UPDATE NO ACTION
         )
     `);
   }
