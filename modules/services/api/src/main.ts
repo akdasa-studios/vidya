@@ -14,14 +14,18 @@ async function bootstrap() {
     .setTitle(AppName)
     .setDescription(`The ${AppName} API`)
     .setVersion('1.0') // TODO Use version from package.json
+    .setContact('AKd Studios', 'https://github.com/akdasa-studios/', '')
     .addBearerAuth()
-    .addTag('Authentication', 'Endpoints for authentication', {
+    .addTag('🎟️ Authentication :: One-Time Password')
+    .addTag('🔐 Authentication', 'Endpoints for authentication', {
       description: 'Docs',
-      url: 'https://github.com/akdasa-studios/vidya/blob/main/docs/adr/001%20OTP%20Authentication.md',
+      url: 'https://github.com/akdasa-studios/vidya/blob/main/docs/adr/001%20Authentication%20and%20Authorization.md',
     })
-    .addTag('Authentication :: One-Time Password')
-    .addTag('Education :: Roles', 'Roles management')
-    .addTag('Education :: Users', 'Users management')
+    .addTag('🕵️‍♂️ Education :: Roles', 'Roles management')
+    .addTag('🧝 Education :: Users', 'Users management')
+    .addTag('🏫 Education :: Schools', 'Schools management')
+    .addServer('http://localhost:8001', 'Development server')
+    .addServer('https://api.vidya.com', 'Production server')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);

@@ -1,4 +1,7 @@
 export const PermissionKeys = [
+  // All permissions
+  '*',
+  
   // Roles
   'roles:create',
   'roles:read',

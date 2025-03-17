@@ -16,7 +16,7 @@ import { JwtConfig } from '@vidya/api/configs';
 import { AccessToken } from '@vidya/protocol';
 
 @Injectable()
-export class AuthenticatedUser implements CanActivate {
+export class AuthenticatedUserGuard implements CanActivate {
   constructor(
     @Inject(JwtConfig.KEY)
     private readonly jwtConfig: ConfigType<typeof JwtConfig>,
@@ -48,12 +48,15 @@ export class AuthenticatedUser implements CanActivate {
         throw new UnauthorizedException();
       }
 
-      // Attach the user id and permissions to the request object
-      request.userId = accessToken.sub;
-      request.accessToken = accessToken;
-      request.userPermissions = accessToken.permissions
+      // Create final access token object with user permissions
+      // (if not already present in the token)
+      const userPermissions = accessToken.permissions
         ? accessToken.permissions
         : await this.usersService.getUserPermissions(accessToken.sub);
+      request.accessToken = {
+        ...accessToken,
+        permissions: userPermissions,
+      };
     } catch {
       throw new UnauthorizedException();
     }

@@ -1,4 +1,4 @@
-import { UserPermissions } from '@vidya/api/auth/utils';
+import { AuthenticatedUserPermissions } from '@vidya/api/auth/utils';
 import { validate, ValidationError } from 'class-validator';
 import {
   DeepPartial,
@@ -141,8 +141,19 @@ export class ScopedEntitiesServiceRequest<TEntity extends object> {
   async findAll(query?: FindManyOptions<TEntity>): Promise<TEntity[]> {
     return await this.service.findAll(this.applyScope(query));
   }
+
+  async findOne(query: FindManyOptions<TEntity>): Promise<TEntity | null> {
+    const result = await this.findAll(query);
+    if (result.length === 0) {
+      return null;
+    }
+    if (result.length > 1) {
+      throw new Error('Multiple entities found');
+    }
+    return result[0];
+  }
 }
 
 export type Scope = {
-  permissions: UserPermissions;
+  permissions: AuthenticatedUserPermissions;
 };

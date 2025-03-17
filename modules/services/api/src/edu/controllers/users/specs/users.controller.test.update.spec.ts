@@ -1,12 +1,10 @@
 import { Mapper } from '@automapper/core';
 import { DEFAULT_MAPPER_TOKEN } from '@automapper/nestjs';
 import { INestApplication } from '@nestjs/common';
-import { UserPermissions } from '@vidya/api/auth/utils';
 import { UsersController } from '@vidya/api/edu/controllers';
 import * as dto from '@vidya/api/edu/dto';
 import { UsersService } from '@vidya/api/edu/services';
 import { createTestingApp } from '@vidya/api/edu/shared';
-import { Role } from '@vidya/entities';
 import * as entities from '@vidya/entities';
 
 import { Context, createContext } from './context';
@@ -24,15 +22,6 @@ describe('UsersController', () => {
     mapper = app.get(DEFAULT_MAPPER_TOKEN);
   });
 
-  function getPermissions(roles: Role[]): UserPermissions {
-    return new UserPermissions(
-      roles.map((r) => ({
-        sid: r.schoolId,
-        p: r.permissions,
-      })),
-    );
-  }
-
   /* -------------------------------------------------------------------------- */
   /*                                 Update One                                 */
   /* -------------------------------------------------------------------------- */
@@ -42,7 +31,7 @@ describe('UsersController', () => {
       const res = await ctr.updateOne(
         new dto.UpdateUserRequest({ name: 'Updated Name' }),
         ctx.one.users.oneAdmin.id,
-        getPermissions([ctx.one.roles.oneAdmin]),
+        await ctx.authenticate(ctx.one.users.oneAdmin),
       );
 
       expect(res).toEqual(
@@ -61,7 +50,7 @@ describe('UsersController', () => {
         await ctr.updateOne(
           new dto.UpdateUserRequest({ name: 'Updated Name' }),
           ctx.one.users.oneAdmin.id,
-          getPermissions([ctx.two.roles.twoAdmin]),
+          await ctx.authenticate(ctx.two.users.twoAdmin),
         );
       }).rejects.toThrow(`User does not have permission`);
     });

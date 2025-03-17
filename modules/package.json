@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "libs/*",
+    "utils/",
     "services/*",
     "tests/unit/*",
     "tests/integration/*"

@@ -3,6 +3,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -10,14 +11,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserWithPermissions } from '@vidya/api/auth/decorators';
-import { AuthenticatedUser } from '@vidya/api/auth/guards';
-import { UserPermissions } from '@vidya/api/auth/utils';
+import { Authentication } from '@vidya/api/auth/decorators';
+import { AuthenticatedUserGuard } from '@vidya/api/auth/guards';
+import { UserAuthentication } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/edu/dto';
 import { GetUsersResponse } from '@vidya/api/edu/dto';
 import { UserExistsPipe } from '@vidya/api/edu/pipes';
 import { RolesService, UsersService } from '@vidya/api/edu/services';
-import { CrudDecorators } from '@vidya/api/utils';
+import { CrudDecorators } from '@vidya/api/shared/decorators';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 
@@ -30,8 +31,8 @@ const Crud = CrudDecorators({
 
 @Controller()
 @ApiBearerAuth()
-@ApiTags('Education :: Users')
-@UseGuards(AuthenticatedUser)
+@ApiTags('🧝 Education :: Users')
+@UseGuards(AuthenticatedUserGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -46,16 +47,25 @@ export class UsersController {
   @Crud.GetOne(Routes().edu.user(':id').get())
   async getOne(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @UserWithPermissions() userPermissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.GetUserResponse> {
-    userPermissions.check(['users:read']);
-    const users = await this.usersService
-      .scopedBy({ permissions: userPermissions })
-      .findAll({ where: { id } });
-    if (users.length === 0) {
+    // Check if user has permission to read users
+    if (!auth.permissions.has(['users:read'])) {
+      throw new ForbiddenException('User does not have permission');
+    }
+
+    // Get user by Id with user permissions scope
+    const foundUser = await this.usersService
+      .scopedBy({ permissions: auth.permissions })
+      .findOne({ where: { id } });
+
+    // Throw an error if user is not found
+    if (!foundUser) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-    return this.mapper.map(users[0], entities.User, dto.GetUserResponse);
+
+    // Return user response
+    return this.mapper.map(foundUser, entities.User, dto.GetUserResponse);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -65,11 +75,16 @@ export class UsersController {
   @Crud.GetMany(Routes().edu.user(':id').find())
   async getMany(
     @Query() query: dto.GetUsersQuery,
-    @UserWithPermissions() userPermissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<GetUsersResponse> {
-    userPermissions.check(['users:read']);
+    // Check if user has permission to read users
+    if (!auth.permissions.has(['users:read'])) {
+      throw new ForbiddenException('User does not have permission');
+    }
+
+    // Get users with user permissions scope
     const users = await this.usersService
-      .scopedBy({ permissions: userPermissions })
+      .scopedBy({ permissions: auth.permissions })
       .findAll({
         where: {
           roles: {
@@ -77,6 +92,8 @@ export class UsersController {
           },
         },
       });
+
+    // Return users response
     return new dto.GetUsersResponse({
       items: this.mapper.mapArray(users, entities.User, dto.UserSummary),
     });
@@ -90,7 +107,7 @@ export class UsersController {
   async updateOne(
     @Body() request: dto.UpdateUserRequest,
     @Param('id', new ParseUUIDPipe(), UserExistsPipe) id: string,
-    @UserWithPermissions() userPermissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.UpdateUserResponse> {
     // TODO user can update himself without any permission
     const roles = await this.rolesService.getRolesOfUser(id);
@@ -98,9 +115,15 @@ export class UsersController {
       schoolId: role.schoolId,
     }));
 
-    userPermissions.check(['users:update'], scopes);
+    // Check if user has permission to update users
+    if (!auth.permissions.has(['users:update'], scopes)) {
+      throw new ForbiddenException('User does not have permission');
+    }
 
-    const user = await this.usersService.updateOneBy({ id }, request);
-    return this.mapper.map(user, entities.User, dto.UpdateUserResponse);
+    // Update user
+    const updatedUser = await this.usersService.updateOneBy({ id }, request);
+
+    // Return updated user response
+    return this.mapper.map(updatedUser, entities.User, dto.UpdateUserResponse);
   }
 }

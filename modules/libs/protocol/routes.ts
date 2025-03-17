@@ -32,5 +32,12 @@ export const Routes = (baseUrl: string = '') => ({
         delete: (roleId: string) => `${baseUrl}/edu/users/${userId}/roles/${roleId}`,
       }
     }),
+    schools: {
+      find: () => `${baseUrl}/edu/schools`,
+      get: (id: string) => `${baseUrl}/edu/schools/${id}`,
+      create: () => `${baseUrl}/edu/schools`,
+      update: (id: string) => `${baseUrl}/edu/schools/${id}`,
+      delete: (id: string) => `${baseUrl}/edu/schools/${id}`,
+    }
   }
 })

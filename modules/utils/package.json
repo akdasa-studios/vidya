@@ -1,0 +1,24 @@
+{
+  "name": "db-scripts",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc && tsc-alias",
+    "seed": "npm run build && node ./dist/utils/seed.js"
+  },
+  "dependencies": {
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.6.0",
+    "typescript": "^5.1.3",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "tsconfig-paths": "^4.2.0"
+  }
+}

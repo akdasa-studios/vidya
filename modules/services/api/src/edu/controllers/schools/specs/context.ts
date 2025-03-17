@@ -12,23 +12,22 @@ import { Role, School, User } from '@vidya/entities';
 export type Context = {
   one: {
     school: School;
-    roles: {
-      oneAdmin: Role;
-    };
     users: {
-      oneAdmin: User;
+      admin: User;
+      readonly: User;
     };
-    tokens: {
-      oneAdmin: string;
+    roles: {
+      admin: Role;
+      readonly: Role;
     };
   };
   two: {
     school: School;
-    roles: {
-      twoAdmin: Role;
-    };
     users: {
-      twoAdmin: User;
+      admin: User;
+    };
+    roles: {
+      admin: Role;
     };
   };
   misc: {
@@ -36,12 +35,9 @@ export type Context = {
       empty: User;
       adminOfOneAndTwo: User;
     };
-    tokens: {
-      dummy: string;
-      empty: string;
-    };
   };
   authenticate(user: User): Promise<UserAuthentication>;
+  getAuthTokenFor(user: User): Promise<string>;
 };
 
 export const createContext = async (
@@ -50,115 +46,113 @@ export const createContext = async (
   const rolesService = app.get(RolesService);
   const schoolsService = app.get(SchoolsService);
   const usersService = app.get(UsersService);
-  const authService = app.get(AuthService);
   const authUsersService = app.get(AuthUsersService);
+  const authService = app.get(AuthService);
 
   /* -------------------------------------------------------------------------- */
-  /*                                Organizations                               */
+  /*                                   Schools                                  */
   /* -------------------------------------------------------------------------- */
 
-  const one = await schoolsService.create({
-    name: 'Org One',
+  const schoolOne = await schoolsService.create({
+    name: faker.company.name(),
   });
 
-  const two = await schoolsService.create({
-    name: 'Org Two',
+  const schoolTwo = await schoolsService.create({
+    name: faker.company.name(),
   });
 
   /* -------------------------------------------------------------------------- */
   /*                                    Roles                                   */
   /* -------------------------------------------------------------------------- */
 
-  const orgAdmin = await rolesService.create({
-    name: 'Org Admin',
-    description: 'Organization Admin',
-    schoolId: one.id,
-    permissions: ['users:read', 'users:update', 'users:delete'],
+  const oneAdminRole = await rolesService.create({
+    name: 'One :: Admin',
+    description: 'Admin role for school one',
+    permissions: [
+      'schools:create',
+      'schools:read',
+      'schools:update',
+      'schools:delete',
+    ],
+    schoolId: schoolOne.id,
   });
 
-  const twoAdmin = await rolesService.create({
-    name: 'Org Two Admin',
-    description: 'Organization Two Admin',
-    schoolId: two.id,
-    permissions: ['users:read', 'users:update', 'users:delete'],
+  const oneReadonlyRole = await rolesService.create({
+    name: 'One :: Readonly',
+    description: 'Readonly role for school one',
+    permissions: ['schools:read'],
+    schoolId: schoolOne.id,
+  });
+
+  const twoAdminRole = await rolesService.create({
+    name: 'Two :: Admin',
+    description: 'Admin role for school two',
+    permissions: [
+      'schools:create',
+      'schools:read',
+      'schools:update',
+      'schools:delete',
+    ],
+    schoolId: schoolTwo.id,
   });
 
   /* -------------------------------------------------------------------------- */
   /*                                    Users                                   */
   /* -------------------------------------------------------------------------- */
 
-  const orgAdminUser = await usersService.create({
-    name: 'Org Admin',
+  const oneAdminUser = await usersService.create({
     email: faker.internet.email(),
-    roles: [orgAdmin],
+    roles: [oneAdminRole],
+  });
+
+  const oneReadonlyUser = await usersService.create({
+    email: faker.internet.email(),
+    roles: [oneReadonlyRole],
   });
 
   const twoAdminUser = await usersService.create({
-    name: 'Org Two Admin',
     email: faker.internet.email(),
-    roles: [twoAdmin],
+    roles: [twoAdminRole],
   });
 
   const adminOfOneAndTwoUser = await usersService.create({
-    name: 'Admin of One and Two',
     email: faker.internet.email(),
-    roles: [orgAdmin, twoAdmin],
+    roles: [oneAdminRole, twoAdminRole],
   });
 
   const emptyUser = await usersService.create({
-    name: 'Empty User',
     email: faker.internet.email(),
-    roles: [],
   });
 
   /* -------------------------------------------------------------------------- */
-  /*                                   Tokens                                   */
-  /* -------------------------------------------------------------------------- */
-
-  const oneAdminToken = await authService.generateTokens(orgAdminUser.id, [
-    { sid: one.id, p: orgAdmin.permissions },
-  ]);
-
-  const dummyToken = await authService.generateTokens(faker.string.uuid(), [
-    { sid: faker.string.uuid(), p: ['users:read'] },
-  ]);
-
-  const emptyToken = await authService.generateTokens(faker.string.uuid(), []);
-
-  /* -------------------------------------------------------------------------- */
-  /*                                   Return                                   */
+  /*                                   Result                                   */
   /* -------------------------------------------------------------------------- */
 
   return {
     one: {
-      school: one,
-      roles: {
-        oneAdmin: orgAdmin,
-      },
+      school: schoolOne,
       users: {
-        oneAdmin: orgAdminUser,
+        admin: oneAdminUser,
+        readonly: oneReadonlyUser,
       },
-      tokens: {
-        oneAdmin: oneAdminToken.accessToken,
+      roles: {
+        admin: oneAdminRole,
+        readonly: oneReadonlyRole,
       },
     },
     two: {
-      school: two,
-      roles: {
-        twoAdmin: twoAdmin,
-      },
+      school: schoolTwo,
       users: {
-        twoAdmin: twoAdminUser,
+        admin: twoAdminUser,
+      },
+      roles: {
+        admin: twoAdminRole,
       },
     },
     misc: {
       users: {
-        empty: emptyUser,
         adminOfOneAndTwo: adminOfOneAndTwoUser,
-      },
-      tokens: {
-        dummy: dummyToken.accessToken,
-        empty: emptyToken.accessToken,
+        empty: emptyUser,
       },
     },
     async authenticate(user) {
@@ -169,6 +163,13 @@ export const createContext = async (
         iat: Date.now(),
         permissions: await authUsersService.getUserPermissions(user.id),
       });
+    },
+    async getAuthTokenFor(user: User) {
+      const tokens = await authService.generateTokens(
+        user.id,
+        await authUsersService.getUserPermissions(user.id),
+      );
+      return `Bearer ${tokens.accessToken}`;
     },
   };
 };

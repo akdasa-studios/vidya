@@ -1,12 +1,8 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
-import {
-  AuthUsersService,
-  OtpService,
-  RevokedTokensService,
-} from '@vidya/api/auth/services';
-import { inMemoryDataSource } from '@vidya/api/utils';
+import { inMemoryDataSource } from '@vidya/api/shared/datasources';
+import { RedisService } from '@vidya/api/shared/services';
 import { useContainer } from 'class-validator';
 import { DataSource } from 'typeorm';
 
@@ -16,15 +12,13 @@ export const createTestingApp = async (): Promise<INestApplication> => {
   })
     .overrideProvider(DataSource)
     .useValue(await inMemoryDataSource())
-    // Mock the services with Redis client
-    // to avoid connecting to the actual Redis server
-    // and keeping connection open during the tests
-    .overrideProvider(OtpService)
-    .useValue({ validate: jest.fn() })
-    .overrideProvider(RevokedTokensService)
-    .useValue({ isRevoked: jest.fn() })
-    .overrideProvider(AuthUsersService)
-    .useValue({})
+    .overrideProvider(RedisService)
+    .useValue({
+      get: jest.fn(),
+      set: jest.fn(),
+      exists: jest.fn(),
+      del: jest.fn(),
+    })
     .compile();
 
   const app = module.createNestApplication();

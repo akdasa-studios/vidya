@@ -16,9 +16,8 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UserAccessToken } from '@vidya/api/auth/decorators';
 import * as dto from '@vidya/api/auth/dto';
-import { AuthenticatedUser } from '@vidya/api/auth/guards';
+import { AuthenticatedUserGuard } from '@vidya/api/auth/guards';
 import {
   AuthService,
   AuthUsersService,
@@ -26,10 +25,13 @@ import {
   RevokedTokensService,
 } from '@vidya/api/auth/services';
 import { AuthConfig } from '@vidya/api/configs';
-import { JwtToken, OtpType, Routes } from '@vidya/protocol';
+import { OtpType, Routes } from '@vidya/protocol';
+
+import { Authentication } from '../decorators';
+import { UserAuthentication } from '../utils';
 
 @Controller()
-@ApiTags('Authentication')
+@ApiTags('🔐 Authentication')
 export class UserAuthenticationController {
   constructor(
     @Inject(AuthConfig.KEY)
@@ -102,7 +104,7 @@ export class UserAuthenticationController {
   /* -------------------------------------------------------------------------- */
 
   @Post(Routes().auth.signOut())
-  @UseGuards(AuthenticatedUser)
+  @UseGuards(AuthenticatedUserGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Signs user out',
@@ -125,10 +127,10 @@ export class UserAuthenticationController {
   })
   async logoutUser(
     @Body() request: dto.SignOutRequest,
-    @UserAccessToken() userAccessToken: JwtToken,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.SignOutResponse> {
     // revoke access token to prevent reusing it
-    await this.revokedTokensService.revoke(userAccessToken);
+    await this.revokedTokensService.revoke(auth.accessToken);
 
     // revoke refresh token if still valid
     const token = await this.authService.verifyToken(request.refreshToken);

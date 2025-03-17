@@ -1,11 +1,9 @@
 import { Mapper } from '@automapper/core';
 import { DEFAULT_MAPPER_TOKEN } from '@automapper/nestjs';
 import { INestApplication } from '@nestjs/common';
-import { UserPermissions } from '@vidya/api/auth/utils';
 import { UsersController } from '@vidya/api/edu/controllers';
 import * as dto from '@vidya/api/edu/dto';
 import { createTestingApp } from '@vidya/api/edu/shared';
-import { Role } from '@vidya/entities';
 import * as entities from '@vidya/entities';
 
 import { Context, createContext } from './context';
@@ -22,15 +20,6 @@ describe('UsersController', () => {
     ctr = app.get(UsersController);
     mapper = app.get(DEFAULT_MAPPER_TOKEN);
   });
-
-  function getPermissions(roles: Role[]): UserPermissions {
-    return new UserPermissions(
-      roles.map((r) => ({
-        sid: r.schoolId,
-        p: r.permissions,
-      })),
-    );
-  }
 
   function expectUsers(res: dto.GetUsersResponse, users: entities.User[]) {
     expect(res).toHaveProperty('items');
@@ -50,7 +39,7 @@ describe('UsersController', () => {
     it('returns user by Id', async () => {
       const res = await ctr.getOne(
         ctx.one.users.oneAdmin.id,
-        getPermissions([ctx.one.roles.oneAdmin]),
+        await ctx.authenticate(ctx.one.users.oneAdmin),
       );
       expect(res).toEqual(
         mapper.map(ctx.one.users.oneAdmin, entities.User, dto.GetUserResponse),
@@ -61,14 +50,17 @@ describe('UsersController', () => {
       await expect(async () => {
         await ctr.getOne(
           ctx.one.users.oneAdmin.id,
-          getPermissions([ctx.two.roles.twoAdmin]),
+          await ctx.authenticate(ctx.two.users.twoAdmin),
         );
       }).rejects.toThrow(`User with id ${ctx.one.users.oneAdmin.id} not found`);
     });
 
     it('returns 403 for user without any permissions', async () => {
       await expect(async () => {
-        await ctr.getOne(ctx.one.users.oneAdmin.id, new UserPermissions([]));
+        await ctr.getOne(
+          ctx.one.users.oneAdmin.id,
+          await ctx.authenticate(ctx.misc.users.empty),
+        );
       }).rejects.toThrow(`User does not have permission`);
     });
   });
@@ -81,25 +73,35 @@ describe('UsersController', () => {
     it('returns all users in permitted school', async () => {
       const res = await ctr.getMany(
         new dto.GetUsersQuery(),
-        getPermissions([ctx.one.roles.oneAdmin]),
+        await ctx.authenticate(ctx.one.users.oneAdmin),
       );
-      expectUsers(res, [ctx.one.users.oneAdmin]);
+      expectUsers(res, [
+        ctx.one.users.oneAdmin,
+        ctx.misc.users.adminOfOneAndTwo,
+      ]);
     });
 
     it('returns all users in multiple permitted schools', async () => {
       const res = await ctr.getMany(
         new dto.GetUsersQuery(),
-        getPermissions([ctx.one.roles.oneAdmin, ctx.two.roles.twoAdmin]),
+        await ctx.authenticate(ctx.misc.users.adminOfOneAndTwo),
       );
-      expectUsers(res, [ctx.one.users.oneAdmin, ctx.two.users.twoAdmin]);
+      expectUsers(res, [
+        ctx.one.users.oneAdmin,
+        ctx.two.users.twoAdmin,
+        ctx.misc.users.adminOfOneAndTwo,
+      ]);
     });
 
     it('filters by schoolId', async () => {
       const res = await ctr.getMany(
         new dto.GetUsersQuery({ schoolId: ctx.one.school.id }),
-        getPermissions([ctx.one.roles.oneAdmin, ctx.two.roles.twoAdmin]),
+        await ctx.authenticate(ctx.misc.users.adminOfOneAndTwo),
       );
-      expectUsers(res, [ctx.one.users.oneAdmin]);
+      expectUsers(res, [
+        ctx.one.users.oneAdmin,
+        ctx.misc.users.adminOfOneAndTwo,
+      ]);
     });
   });
 });
