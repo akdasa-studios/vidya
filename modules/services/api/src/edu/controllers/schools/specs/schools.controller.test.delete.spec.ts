@@ -1,8 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import { UserPermissions } from '@vidya/api/auth/utils';
 import { SchoolsController } from '@vidya/api/edu/controllers';
 import { createTestingApp } from '@vidya/api/edu/shared';
-import { Role } from '@vidya/entities';
 
 import { Context, createContext } from './context';
 
@@ -17,15 +15,6 @@ describe('SchoolsController', () => {
     ctr = app.get(SchoolsController);
   });
 
-  function getPermissions(roles: Role[]): UserPermissions {
-    return new UserPermissions(
-      roles.map((r) => ({
-        sid: r.schoolId,
-        p: r.permissions,
-      })),
-    );
-  }
-
   /* -------------------------------------------------------------------------- */
   /*                                   Delete                                   */
   /* -------------------------------------------------------------------------- */
@@ -34,7 +23,7 @@ describe('SchoolsController', () => {
     it('deletes a school by Id', async () => {
       const res = await ctr.deleteOne(
         ctx.one.school.id,
-        getPermissions([ctx.one.roles.admin]),
+        await ctx.authenticate(ctx.one.users.admin),
       );
       expect(res.success).toBe(true);
     });
@@ -43,14 +32,17 @@ describe('SchoolsController', () => {
       await expect(async () => {
         await ctr.deleteOne(
           ctx.one.school.id,
-          getPermissions([ctx.two.roles.admin]),
+          await ctx.authenticate(ctx.two.users.admin),
         );
       }).rejects.toThrow(`School with id ${ctx.one.school.id} not found`);
     });
 
     it('throws error for user without any permissions', async () => {
       await expect(async () => {
-        await ctr.deleteOne(ctx.one.school.id, new UserPermissions([]));
+        await ctr.deleteOne(
+          ctx.one.school.id,
+          await ctx.authenticate(ctx.misc.users.empty),
+        );
       }).rejects.toThrow(`User does not have permission`);
     });
   });

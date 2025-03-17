@@ -1,11 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { UserPermissions } from '@vidya/api/auth/utils';
 import { SchoolsController } from '@vidya/api/edu/controllers';
 import * as dto from '@vidya/api/edu/dto';
 import { RolesService, SchoolsService } from '@vidya/api/edu/services';
 import { createTestingApp } from '@vidya/api/edu/shared';
-import { Role } from '@vidya/entities';
 
 import { Context, createContext } from './context';
 
@@ -20,15 +18,6 @@ describe('SchoolsController', () => {
     ctr = app.get(SchoolsController);
   });
 
-  function getPermissions(roles: Role[]): UserPermissions {
-    return new UserPermissions(
-      roles.map((r) => ({
-        sid: r.schoolId,
-        p: r.permissions,
-      })),
-    );
-  }
-
   /* -------------------------------------------------------------------------- */
   /*                                  Create One                                */
   /* -------------------------------------------------------------------------- */
@@ -38,8 +27,7 @@ describe('SchoolsController', () => {
       const name = faker.company.name();
       const res = await ctr.createOne(
         new dto.CreateSchoolRequest({ name }),
-        ctx.empty.user.id,
-        getPermissions([ctx.one.roles.admin]),
+        await ctx.authenticate(ctx.one.users.admin),
       );
 
       // assert: school is created
@@ -62,16 +50,15 @@ describe('SchoolsController', () => {
       // assert: user has the new owner role
       const userRoles = await app
         .get(RolesService)
-        .getRolesOfUser(ctx.empty.user.id);
+        .getRolesOfUser(ctx.one.users.admin.id);
 
-      expect(userRoles).toContainEqual(createdAdminRole);
+      expect(userRoles).toEqual([ctx.one.roles.admin, createdAdminRole]);
     });
 
     it('creates a new school for user from another school', async () => {
       const res = await ctr.createOne(
         new dto.CreateSchoolRequest({ name: faker.company.name() }),
-        ctx.one.users.admin.id,
-        getPermissions([ctx.one.roles.admin]),
+        await ctx.authenticate(ctx.one.users.admin),
       );
 
       // assert: new owner role is created
@@ -87,12 +74,11 @@ describe('SchoolsController', () => {
       expect(userRoles).toEqual([ctx.one.roles.admin, createdAdminRole]);
     });
 
-    it('throws an error if user does not have permissions', async () => {
+    it('throws an error if user does not have required permissions', async () => {
       await expect(async () => {
         await ctr.createOne(
           new dto.CreateSchoolRequest({ name: faker.company.name() }),
-          ctx.empty.user.id,
-          new UserPermissions([]),
+          await ctx.authenticate(ctx.misc.users.empty),
         );
       }).rejects.toThrow(`User does not have permission`);
     });

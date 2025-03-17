@@ -2,7 +2,7 @@ import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import { Body, Controller, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthenticatedUser } from '@vidya/api/auth/guards';
+import { AuthenticatedUserGuard } from '@vidya/api/auth/guards';
 import * as dto from '@vidya/api/edu/dto';
 import { RolesService } from '@vidya/api/edu/services';
 import { CrudDecorators } from '@vidya/api/utils';
@@ -20,7 +20,7 @@ const Crud = CrudDecorators({
 
 @Controller()
 @ApiTags('🧝 Education :: Users')
-@UseGuards(AuthenticatedUser)
+@UseGuards(AuthenticatedUserGuard)
 export class UserRolesController {
   constructor(
     private readonly rolesService: RolesService,

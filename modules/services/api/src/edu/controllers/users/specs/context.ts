@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
-import { AuthService } from '@vidya/api/auth/services';
+import { AuthService, AuthUsersService } from '@vidya/api/auth/services';
+import { UserAuthentication } from '@vidya/api/auth/utils';
 import {
   RolesService,
   SchoolsService,
@@ -30,12 +31,17 @@ export type Context = {
       twoAdmin: User;
     };
   };
-  empty: {
+  misc: {
+    users: {
+      empty: User;
+      adminOfOneAndTwo: User;
+    };
     tokens: {
       dummy: string;
       empty: string;
     };
   };
+  authenticate(user: User): Promise<UserAuthentication>;
 };
 
 export const createContext = async (
@@ -45,6 +51,7 @@ export const createContext = async (
   const schoolsService = app.get(SchoolsService);
   const usersService = app.get(UsersService);
   const authService = app.get(AuthService);
+  const authUsersService = app.get(AuthUsersService);
 
   /* -------------------------------------------------------------------------- */
   /*                                Organizations                               */
@@ -92,6 +99,18 @@ export const createContext = async (
     roles: [twoAdmin],
   });
 
+  const adminOfOneAndTwoUser = await usersService.create({
+    name: 'Admin of One and Two',
+    email: faker.internet.email(),
+    roles: [orgAdmin, twoAdmin],
+  });
+
+  const emptyUser = await usersService.create({
+    name: 'Empty User',
+    email: faker.internet.email(),
+    roles: [],
+  });
+
   /* -------------------------------------------------------------------------- */
   /*                                   Tokens                                   */
   /* -------------------------------------------------------------------------- */
@@ -132,11 +151,24 @@ export const createContext = async (
         twoAdmin: twoAdminUser,
       },
     },
-    empty: {
+    misc: {
+      users: {
+        empty: emptyUser,
+        adminOfOneAndTwo: adminOfOneAndTwoUser,
+      },
       tokens: {
         dummy: dummyToken.accessToken,
         empty: emptyToken.accessToken,
       },
+    },
+    async authenticate(user) {
+      return new UserAuthentication({
+        sub: user.id,
+        jti: faker.string.uuid(),
+        exp: faker.date.future({ years: 1 }).getTime(),
+        iat: Date.now(),
+        permissions: await authUsersService.getUserPermissions(user.id),
+      });
     },
   };
 };

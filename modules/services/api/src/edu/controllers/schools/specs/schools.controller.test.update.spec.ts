@@ -1,9 +1,7 @@
 import { INestApplication } from '@nestjs/common';
-import { UserPermissions } from '@vidya/api/auth/utils';
 import { SchoolsController } from '@vidya/api/edu/controllers';
 import * as dto from '@vidya/api/edu/dto';
 import { createTestingApp } from '@vidya/api/edu/shared';
-import { Role } from '@vidya/entities';
 
 import { Context, createContext } from './context';
 
@@ -18,15 +16,6 @@ describe('SchoolsController', () => {
     ctr = app.get(SchoolsController);
   });
 
-  function getPermissions(roles: Role[]): UserPermissions {
-    return new UserPermissions(
-      roles.map((r) => ({
-        sid: r.schoolId,
-        p: r.permissions,
-      })),
-    );
-  }
-
   /* -------------------------------------------------------------------------- */
   /*                                   Update                                   */
   /* -------------------------------------------------------------------------- */
@@ -39,7 +28,7 @@ describe('SchoolsController', () => {
       const res = await ctr.updateOne(
         ctx.one.school.id,
         request,
-        getPermissions([ctx.one.roles.admin]),
+        await ctx.authenticate(ctx.one.users.admin),
       );
       expect(res.name).toBe(request.name);
     });
@@ -49,7 +38,7 @@ describe('SchoolsController', () => {
         await ctr.updateOne(
           ctx.one.school.id,
           new dto.UpdateSchoolRequest({ name: 'Updated School Name' }),
-          getPermissions([ctx.two.roles.admin]),
+          await ctx.authenticate(ctx.two.users.admin),
         );
       }).rejects.toThrow(`School with id ${ctx.one.school.id} not found`);
     });
@@ -59,7 +48,7 @@ describe('SchoolsController', () => {
         await ctr.updateOne(
           ctx.one.school.id,
           new dto.UpdateSchoolRequest({ name: 'Updated School Name' }),
-          new UserPermissions([]),
+          await ctx.authenticate(ctx.misc.users.empty),
         );
       }).rejects.toThrow(`User does not have permission`);
     });

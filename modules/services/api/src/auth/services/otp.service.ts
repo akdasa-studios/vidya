@@ -1,32 +1,24 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { OtpConfig, RedisConfig } from '@vidya/api/configs';
+import { OtpConfig } from '@vidya/api/configs';
+import { RedisService } from '@vidya/api/shared/services';
 import { Otp, OtpStorageKey, OtpType } from '@vidya/protocol';
-import { Redis } from 'ioredis';
 
 /**
  * Service for generating and validating one-time passwords (OTPs) using Redis.
  */
 @Injectable()
 export class OtpService {
-  private readonly client: Redis;
-
   /**
    * Constructs an instance of the OTP service.
    *
    * @param redisConfig - The configuration for connecting to the Redis server.
    */
   constructor(
-    @Inject(RedisConfig.KEY)
-    private readonly redisConfig: ConfigType<typeof RedisConfig>,
+    private readonly redis: RedisService,
     @Inject(OtpConfig.KEY)
     private readonly otpConfig: ConfigType<typeof OtpConfig>,
-  ) {
-    this.client = new Redis({
-      host: redisConfig.host,
-      port: redisConfig.port,
-    });
-  }
+  ) {}
 
   /**
    * Generates a one-time password for the given login and type.
@@ -40,7 +32,7 @@ export class OtpService {
       code: this.generateCode(),
       type: type,
     };
-    await this.client.set(OtpStorageKey(login), JSON.stringify(otp), 'EX', 300);
+    await this.redis.set(OtpStorageKey(login), JSON.stringify(otp), 300);
     return otp;
   }
 
@@ -52,7 +44,7 @@ export class OtpService {
    */
   async isExpired(login: string): Promise<boolean> {
     const key = OtpStorageKey(login);
-    return !(await this.client.exists(key));
+    return !(await this.redis.exists(key));
   }
 
   /**
@@ -69,13 +61,13 @@ export class OtpService {
    */
   async validate(login: string, code: string): Promise<Otp | undefined> {
     const key = OtpStorageKey(login);
-    const stored: Otp = JSON.parse(await this.client.get(key));
+    const stored: Otp = JSON.parse(await this.redis.get(key));
     if (!stored) return undefined;
 
     // if code is correct, expire it immediately
     // to prevent replay attacks and multiple logins
     if (code === stored.code) {
-      await this.client.expire(key, 0);
+      await this.redis.del(key);
       return stored;
     }
 

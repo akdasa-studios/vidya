@@ -1,5 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
+import { AuthService, AuthUsersService } from '@vidya/api/auth/services';
+import { UserAuthentication } from '@vidya/api/auth/utils';
 import {
   RolesService,
   SchoolsService,
@@ -12,6 +14,7 @@ export type Context = {
     school: School;
     users: {
       admin: User;
+      readonly: User;
     };
     roles: {
       admin: Role;
@@ -20,13 +23,21 @@ export type Context = {
   };
   two: {
     school: School;
+    users: {
+      admin: User;
+    };
     roles: {
       admin: Role;
     };
   };
-  empty: {
-    user: User;
+  misc: {
+    users: {
+      empty: User;
+      adminOfOneAndTwo: User;
+    };
   };
+  authenticate(user: User): Promise<UserAuthentication>;
+  getAuthTokenFor(user: User): Promise<string>;
 };
 
 export const createContext = async (
@@ -35,6 +46,8 @@ export const createContext = async (
   const rolesService = app.get(RolesService);
   const schoolsService = app.get(SchoolsService);
   const usersService = app.get(UsersService);
+  const authUsersService = app.get(AuthUsersService);
+  const authService = app.get(AuthService);
 
   /* -------------------------------------------------------------------------- */
   /*                                   Schools                                  */
@@ -92,6 +105,21 @@ export const createContext = async (
     roles: [oneAdminRole],
   });
 
+  const oneReadonlyUser = await usersService.create({
+    email: faker.internet.email(),
+    roles: [oneReadonlyRole],
+  });
+
+  const twoAdminUser = await usersService.create({
+    email: faker.internet.email(),
+    roles: [twoAdminRole],
+  });
+
+  const adminOfOneAndTwoUser = await usersService.create({
+    email: faker.internet.email(),
+    roles: [oneAdminRole, twoAdminRole],
+  });
+
   const emptyUser = await usersService.create({
     email: faker.internet.email(),
   });
@@ -105,6 +133,7 @@ export const createContext = async (
       school: schoolOne,
       users: {
         admin: oneAdminUser,
+        readonly: oneReadonlyUser,
       },
       roles: {
         admin: oneAdminRole,
@@ -113,12 +142,34 @@ export const createContext = async (
     },
     two: {
       school: schoolTwo,
+      users: {
+        admin: twoAdminUser,
+      },
       roles: {
         admin: twoAdminRole,
       },
     },
-    empty: {
-      user: emptyUser,
+    misc: {
+      users: {
+        adminOfOneAndTwo: adminOfOneAndTwoUser,
+        empty: emptyUser,
+      },
+    },
+    async authenticate(user) {
+      return new UserAuthentication({
+        sub: user.id,
+        jti: faker.string.uuid(),
+        exp: faker.date.future({ years: 1 }).getTime(),
+        iat: Date.now(),
+        permissions: await authUsersService.getUserPermissions(user.id),
+      });
+    },
+    async getAuthTokenFor(user: User) {
+      const tokens = await authService.generateTokens(
+        user.id,
+        await authUsersService.getUserPermissions(user.id),
+      );
+      return `Bearer ${tokens.accessToken}`;
     },
   };
 };

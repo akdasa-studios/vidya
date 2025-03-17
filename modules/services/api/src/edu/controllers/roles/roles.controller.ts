@@ -3,6 +3,7 @@ import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
+  ForbiddenException,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -10,9 +11,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserWithPermissions } from '@vidya/api/auth/decorators';
-import { AuthenticatedUser } from '@vidya/api/auth/guards';
-import { UserPermissions } from '@vidya/api/auth/utils';
+import { Authentication } from '@vidya/api/auth/decorators';
+import { AuthenticatedUserGuard } from '@vidya/api/auth/guards';
+import { UserAuthentication } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/edu/dto';
 import { RoleExistsPipe } from '@vidya/api/edu/pipes';
 import { RolesService } from '@vidya/api/edu/services';
@@ -32,7 +33,7 @@ const Crud = CrudDecorators({
 @Controller()
 @ApiTags('🕵️‍♂️ Education :: Roles')
 @ApiBearerAuth()
-@UseGuards(AuthenticatedUser)
+@UseGuards(AuthenticatedUserGuard)
 export class RolesController {
   constructor(
     private readonly rolesService: RolesService,
@@ -45,16 +46,25 @@ export class RolesController {
   @Crud.GetOne(Routes().edu.roles.get(':id'))
   async getOne(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @UserWithPermissions() permissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.GetRoleResponse> {
-    permissions.check(['roles:read']);
-    const roles = await this.rolesService
-      .scopedBy({ permissions })
-      .findAll({ where: { id } });
-    if (roles.length === 0) {
+    // Check if user has permission to read roles
+    if (!auth.permissions.has(['roles:read'])) {
+      throw new ForbiddenException('User does not have permission');
+    }
+
+    // Get role by Id with user permissions scope
+    const role = await this.rolesService
+      .scopedBy({ permissions: auth.permissions })
+      .findOne({ where: { id } });
+
+    // No role found with the given Id
+    if (!role) {
       throw new NotFoundException(`Role with id ${id} not found`);
     }
-    return this.mapper.map(roles[0], entities.Role, dto.RoleDetails);
+
+    // Return role details
+    return this.mapper.map(role, entities.Role, dto.RoleDetails);
   }
 
   /* -------------------------------------------------------------------------- */
@@ -64,14 +74,23 @@ export class RolesController {
   @Crud.GetMany(Routes().edu.roles.find())
   async getMany(
     @Query() query: dto.GetRoleSummariesListQuery,
-    @UserWithPermissions() permissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.GetRolesResponse> {
-    permissions.check(['roles:read']);
-    const roles = await this.rolesService.scopedBy({ permissions }).findAll({
-      where: {
-        schoolId: query.schoolId,
-      },
-    });
+    // Check if user has permission to read roles
+    if (!auth.permissions.has(['roles:read'])) {
+      throw new ForbiddenException('User does not have permission');
+    }
+
+    // Get roles
+    const roles = await this.rolesService
+      .scopedBy({ permissions: auth.permissions })
+      .findAll({
+        where: {
+          schoolId: query.schoolId,
+        },
+      });
+
+    // Return role summaries
     return new dto.GetRolesResponse({
       items: this.mapper.mapArray(roles, entities.Role, dto.RoleSummary),
     });
@@ -84,14 +103,23 @@ export class RolesController {
   @Crud.CreateOne(Routes().edu.roles.create())
   async createOne(
     @Body() request: dto.CreateRoleRequest,
-    @UserWithPermissions() userPermissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.CreateRoleResponse> {
-    userPermissions.check(['roles:create'], {
-      schoolId: request.schoolId,
-    });
+    // Check if user has permission to create roles
+    if (
+      !auth.permissions.has(['roles:create'], {
+        schoolId: request.schoolId,
+      })
+    ) {
+      throw new ForbiddenException('User does not have permission');
+    }
+
+    // Create role
     const entity = await this.rolesService.create(
       this.mapper.map(request, dto.CreateRoleRequest, entities.Role),
     );
+
+    // Return created role details
     return this.mapper.map(entity, entities.Role, dto.CreateRoleResponse);
   }
 
@@ -103,19 +131,25 @@ export class RolesController {
   async updateOne(
     @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
     @Body() request: dto.UpdateRoleRequest,
-    @UserWithPermissions() userPermissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.UpdateRoleResponse> {
     // Check if user has permission to update role
     let role = await this.rolesService.findOneBy({ id });
-    userPermissions.check(['roles:update'], {
-      schoolId: role.schoolId,
-    });
+    if (
+      !auth.permissions.has(['roles:update'], {
+        schoolId: role.schoolId,
+      })
+    ) {
+      throw new ForbiddenException('User does not have permission');
+    }
 
-    // User has permission to update role. Proceed with update.
+    // Update role
     role = await this.rolesService.updateOneBy(
       { id },
       this.mapper.map(request, dto.UpdateRoleRequest, entities.Role),
     );
+
+    // Return updated role details
     return this.mapper.map(role, entities.Role, dto.UpdateRoleResponse);
   }
 
@@ -126,16 +160,22 @@ export class RolesController {
   @Crud.DeleteOne(Routes().edu.roles.delete(':id'))
   async deleteOne(
     @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
-    @UserWithPermissions() userPermissions: UserPermissions,
+    @Authentication() auth: UserAuthentication,
   ): Promise<dto.DeleteRoleResponse> {
     // Check if user has permission to delete role
     const role = await this.rolesService.findOneBy({ id });
-    userPermissions.check(['roles:delete'], {
-      schoolId: role.schoolId,
-    });
+    if (
+      !auth.permissions.has(['roles:delete'], {
+        schoolId: role.schoolId,
+      })
+    ) {
+      throw new ForbiddenException('User does not have permission');
+    }
 
-    // User has permission to delete role. Proceed with deletion.
+    // Delete role
     await this.rolesService.deleteOneBy({ id });
+
+    // Return success response
     return new dto.DeleteRoleResponse({ success: true });
   }
 }

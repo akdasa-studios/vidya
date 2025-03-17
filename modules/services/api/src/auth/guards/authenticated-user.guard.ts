@@ -16,7 +16,7 @@ import { JwtConfig } from '@vidya/api/configs';
 import { AccessToken } from '@vidya/protocol';
 
 @Injectable()
-export class AuthenticatedUser implements CanActivate {
+export class AuthenticatedUserGuard implements CanActivate {
   constructor(
     @Inject(JwtConfig.KEY)
     private readonly jwtConfig: ConfigType<typeof JwtConfig>,

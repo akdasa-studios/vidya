@@ -8,6 +8,7 @@ import {
   SchoolsService,
   UsersService,
 } from '@vidya/api/edu/services';
+import { RedisService } from '@vidya/api/shared/services';
 import { School, User, UserRole } from '@vidya/entities';
 import { Role } from '@vidya/entities';
 
@@ -36,6 +37,7 @@ import {
   ],
   providers: [
     // Services
+    RedisService,
     AuthUsersService,
     RolesService,
     UsersService,

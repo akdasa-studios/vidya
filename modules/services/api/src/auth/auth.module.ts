@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RedisService } from '@vidya/api/shared/services';
 import { Role, User, UserRole } from '@vidya/entities';
 
 import { OtpController } from './controllers/otp.controller';
@@ -24,6 +25,7 @@ import { RevokedTokensService } from './services/revokedTokens.service';
     AuthService,
     RevokedTokensService,
     AuthRolesMappingProfile,
+    RedisService,
   ],
 })
 export class AuthModule {}

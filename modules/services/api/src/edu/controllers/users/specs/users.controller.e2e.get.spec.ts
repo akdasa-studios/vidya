@@ -43,7 +43,7 @@ describe('/edu/users', () => {
   it(`GET /edu/users returns 403 for unauthorized user`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.user().find())
-      .set('Authorization', `Bearer ${ctx.empty.tokens.empty}`)
+      .set('Authorization', `Bearer ${ctx.misc.tokens.empty}`)
       .expect(403)
       .expect({
         message: 'User does not have permission',
@@ -80,7 +80,7 @@ describe('/edu/users', () => {
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
-            [ctx.one.users.oneAdmin],
+            [ctx.one.users.oneAdmin, ctx.misc.users.adminOfOneAndTwo],
             entities.User,
             dto.UserSummary,
           ),
@@ -118,7 +118,7 @@ describe('/edu/users', () => {
   it(`GET /edu/users returns nothing if user do not have permissions`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.user().find())
-      .set('Authorization', `Bearer ${ctx.empty.tokens.dummy}`)
+      .set('Authorization', `Bearer ${ctx.misc.tokens.dummy}`)
       .expect(200)
       .expect({ items: [] });
   });

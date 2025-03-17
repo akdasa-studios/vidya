@@ -59,7 +59,7 @@ export class GetSchoolsResponse implements protocol.GetSchoolsResponse {
 
 export class CreateSchoolRequest implements protocol.CreateSchoolRequest {
   constructor(options?: { name?: string }) {
-    this.name = options.name;
+    this.name = options?.name;
   }
 
   @ApiProperty({ example: 'name' })
