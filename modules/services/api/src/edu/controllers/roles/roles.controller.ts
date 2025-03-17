@@ -17,7 +17,7 @@ import { UserAuthentication } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/edu/dto';
 import { RoleExistsPipe } from '@vidya/api/edu/pipes';
 import { RolesService } from '@vidya/api/edu/services';
-import { CrudDecorators } from '@vidya/api/utils';
+import { CrudDecorators } from '@vidya/api/shared/decorators';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 

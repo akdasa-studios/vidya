@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthenticatedUserGuard } from '@vidya/api/auth/guards';
 import * as dto from '@vidya/api/edu/dto';
 import { RolesService } from '@vidya/api/edu/services';
-import { CrudDecorators } from '@vidya/api/utils';
+import { CrudDecorators } from '@vidya/api/shared/decorators';
 import * as entities from '@vidya/entities';
 import { Routes } from '@vidya/protocol';
 

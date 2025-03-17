@@ -1,8 +1,8 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '@vidya/api/app.module';
+import { inMemoryDataSource } from '@vidya/api/shared/datasources';
 import { RedisService } from '@vidya/api/shared/services';
-import { inMemoryDataSource } from '@vidya/api/utils';
 import { useContainer } from 'class-validator';
 import { DataSource } from 'typeorm';
 
