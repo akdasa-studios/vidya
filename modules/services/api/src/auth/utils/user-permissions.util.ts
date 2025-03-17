@@ -32,14 +32,21 @@ export class UserAuthentication {
 }
 
 export class AuthenticatedUserPermissions {
-  constructor(private readonly _permissions: protocol.UserPermission[]) {}
+  constructor(private readonly _userPermissions: protocol.UserPermission[]) {}
 
+  /**
+   * Get list of scopes that user has permission for
+   * @param requiredPermissions Permissions required to perform an action
+   * @returns List of scopes that user has permission for
+   */
   public getScopes(
-    permissions: domain.PermissionKey[],
+    requiredPermissions: domain.PermissionKey[],
   ): { schoolId: string }[] {
-    return this._permissions
+    return this._userPermissions
       .filter((p) =>
-        permissions.every((permission) => p.p.includes(permission)),
+        requiredPermissions.every(
+          (permission) => p.p.includes(permission) || p.p.includes('*'),
+        ),
       )
       .map((p) => ({ schoolId: p.sid }));
   }
