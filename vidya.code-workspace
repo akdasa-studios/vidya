@@ -33,6 +33,10 @@
       "path": "./modules/services/gateway"
     },
     {
+      "name": "⚒️ Utils",
+      "path": "./modules/utils"
+    },
+    {
       "name": "📚 Docs",
       "path": "./docs"
     },
