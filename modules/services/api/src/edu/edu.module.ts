@@ -17,7 +17,9 @@ import {
   UserRolesController,
   UsersController,
 } from './controllers';
+import { SchoolConfigsController } from './controllers/schools/schoolConfigs.controller';
 import { SchoolsController } from './controllers/schools/schools.controller';
+import { UserSchoolsController } from './controllers/users/userSchools.controller';
 import { RolesMappingProfile } from './mappers/roles.mapper';
 import { SchoolsMappingProfile } from './mappers/schools.mapper';
 import { UsersMappingProfile } from './mappers/users.mapper';
@@ -34,6 +36,8 @@ import {
     UserRolesController,
     UsersController,
     SchoolsController,
+    SchoolConfigsController,
+    UserSchoolsController,
   ],
   providers: [
     // Services

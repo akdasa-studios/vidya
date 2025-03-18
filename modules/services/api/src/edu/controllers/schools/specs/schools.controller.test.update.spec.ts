@@ -28,7 +28,7 @@ describe('SchoolsController', () => {
       const res = await ctr.updateOne(
         ctx.one.school.id,
         request,
-        await ctx.authenticate(ctx.one.users.admin),
+        await ctx.authenticate(ctx.one.users.owner),
       );
       expect(res.name).toBe(request.name);
     });

@@ -105,6 +105,8 @@ export class RolesController {
     @Body() request: dto.CreateRoleRequest,
     @Authentication() auth: UserAuthentication,
   ): Promise<dto.CreateRoleResponse> {
+    // TODO Can't create role with '*' permissions it is Owner role
+
     // Check if user has permission to create roles
     if (
       !auth.permissions.has(['roles:create'], {
@@ -133,6 +135,8 @@ export class RolesController {
     @Body() request: dto.UpdateRoleRequest,
     @Authentication() auth: UserAuthentication,
   ): Promise<dto.UpdateRoleResponse> {
+    // TODO Can't update role with '*' permissions - it is Owner role
+
     // Check if user has permission to update role
     let role = await this.rolesService.findOneBy({ id });
     if (
@@ -162,6 +166,8 @@ export class RolesController {
     @Param('id', new ParseUUIDPipe(), RoleExistsPipe) id: string,
     @Authentication() auth: UserAuthentication,
   ): Promise<dto.DeleteRoleResponse> {
+    // TODO Can't delete role with '*' permissions - it is Owner role
+
     // Check if user has permission to delete role
     const role = await this.rolesService.findOneBy({ id });
     if (

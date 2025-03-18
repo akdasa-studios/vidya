@@ -28,6 +28,15 @@ export abstract class EntitiesService<TEntity extends object> {
   }
 
   /**
+   * Saves an entity to the database.
+   * @param entity The entity to save.
+   * @returns A promise that resolves to the saved entity.
+   */
+  async save(entity: TEntity): Promise<TEntity> {
+    return await this.repository.save(entity);
+  }
+
+  /**
    * Checks if an entity exists based on the provided query.
    * @param query The query to filter the entity.
    * @returns A promise that resolves to a boolean.

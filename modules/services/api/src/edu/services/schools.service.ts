@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { School } from '@vidya/entities';
+import { Role, School, User } from '@vidya/entities';
 import { In, Repository } from 'typeorm';
 
 import { Scope, ScopedEntitiesService } from './entities.service';
 
 @Injectable()
 export class SchoolsService extends ScopedEntitiesService<School, Scope> {
-  constructor(@InjectRepository(School) repository: Repository<School>) {
+  constructor(
+    @InjectRepository(School) repository: Repository<School>,
+    @InjectRepository(Role) private readonly roles: Repository<Role>,
+    @InjectRepository(User) private readonly users: Repository<User>,
+  ) {
     super(repository, (query, scope) => {
       // HACK: For some reason FindOptionsWhere<School> doesn't
       //       work here, so we have to cast it to any. It doesn't contain
@@ -33,5 +37,39 @@ export class SchoolsService extends ScopedEntitiesService<School, Scope> {
           }
         : { where: { id: In([]) } };
     });
+  }
+
+  async getUserSchools(userId: string): Promise<string[]> {
+    const user = await this.users.findOneOrFail({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+    const schoolRoles = await this.roles.find({
+      where: {
+        id: In(user.roles.map((role) => role.id)),
+      },
+    });
+    return schoolRoles.map((role) => role.schoolId);
+  }
+
+  async addUser(userId: string, schoolId: string): Promise<void> {
+    await this.repository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const school = await transactionalEntityManager.findOneByOrFail(
+          School,
+          { id: schoolId },
+        );
+        const user = await transactionalEntityManager.findOneOrFail(User, {
+          where: { id: userId },
+          relations: ['roles'],
+        });
+        const studentDefaultRole =
+          await transactionalEntityManager.findOneByOrFail(Role, {
+            id: school.config.defaultStudentRoleId,
+          });
+        user.roles.push(studentDefaultRole);
+        await transactionalEntityManager.save(user);
+      },
+    );
   }
 }
