@@ -65,9 +65,6 @@ export class AuthenticatedUserPermissions {
     const resourceScopes = Array.isArray(scope) ? scope : [scope];
     const userScopes = this.getScopes(permissions);
 
-    console.log('userScopes', userScopes);
-    console.log('resourceScopes', resourceScopes);
-
     if (userScopes.length === 0) {
       return false;
     }

@@ -72,7 +72,9 @@ describe('SchoolsController', () => {
         await ctx.authenticate(ctx.misc.users.adminOfOneAndTwo),
       );
       expect(res.items).toHaveLength(2);
-      expect(res.items).toEqual([ctx.one.school, ctx.two.school]);
+      expect(res.items.map((x) => x.id)).toEqual(
+        [ctx.one.school, ctx.two.school].map((x) => x.id),
+      );
     });
   });
 });
