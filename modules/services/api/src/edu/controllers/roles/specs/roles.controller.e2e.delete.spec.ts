@@ -30,7 +30,7 @@ describe('/edu/roles', () => {
   it(`DELETE /edu/roles/:id 400 if id is invalid format`, async () => {
     return request(app.getHttpServer())
       .delete(Routes().edu.roles.delete('invalid-uuid'))
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
       .expect(400)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -44,7 +44,7 @@ describe('/edu/roles', () => {
 
   it(`DELETE /edu/roles/:id returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.roles.delete(ctx.one.roles.admin.id))
+      .delete(Routes().edu.roles.delete(ctx.one.roles.owner.id))
       .expect(401);
   });
 
@@ -55,7 +55,7 @@ describe('/edu/roles', () => {
   it('DELETE /edu/roles/:id returns 403 for unauthorized user', async () => {
     return request(app.getHttpServer())
       .delete(Routes().edu.roles.delete(ctx.two.roles.admin.id))
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
       .expect(403)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');
@@ -69,8 +69,8 @@ describe('/edu/roles', () => {
 
   it(`DELETE /edu/roles/:id deletes an existing role`, async () => {
     return request(app.getHttpServer())
-      .delete(Routes().edu.roles.delete(ctx.one.roles.admin.id))
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .delete(Routes().edu.roles.delete(ctx.two.roles.admin.id))
+      .set('Authorization', `Bearer ${ctx.two.tokens.admin}`)
       .expect(200)
       .expect((res) => {
         expect(res.body).toHaveProperty('success');
@@ -82,11 +82,23 @@ describe('/edu/roles', () => {
   /*                               Negative Cases                               */
   /* -------------------------------------------------------------------------- */
 
+  it(`DELETE /edu/roles/:id deletes an existing role`, async () => {
+    return request(app.getHttpServer())
+      .delete(Routes().edu.roles.delete(ctx.one.roles.owner.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
+      .expect(400)
+      .expect({
+        message: 'Cannot delete Owner role',
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+  });
+
   it(`DELETE /edu/roles/:id returns 404 for non-existent role`, async () => {
     const nonExistentId = faker.string.uuid();
     return request(app.getHttpServer())
       .delete(Routes().edu.roles.delete(nonExistentId))
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
       .expect(404)
       .expect((res) => {
         expect(res.body).toHaveProperty('message');

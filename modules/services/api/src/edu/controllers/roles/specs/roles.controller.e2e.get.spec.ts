@@ -46,12 +46,12 @@ describe('/edu/roles', () => {
   it(`GET /edu/roles returns only permitted roles`, async () => {
     return request(app.getHttpServer())
       .get(Routes().edu.roles.find())
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
       .expect(200)
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
-            [ctx.one.roles.admin, ctx.one.roles.readonly],
+            [ctx.one.roles.owner, ctx.one.roles.readonly],
             entities.Role,
             dto.RoleSummary,
           ),
@@ -67,7 +67,7 @@ describe('/edu/roles', () => {
       .expect({
         items: instanceToPlain(
           mapper.mapArray(
-            [ctx.one.roles.admin, ctx.one.roles.readonly, ctx.two.roles.admin],
+            [ctx.one.roles.owner, ctx.one.roles.readonly, ctx.two.roles.admin],
             entities.Role,
             dto.RoleSummary,
           ),
