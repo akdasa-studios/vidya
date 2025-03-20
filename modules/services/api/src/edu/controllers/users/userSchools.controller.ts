@@ -1,5 +1,3 @@
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
 import {
   Body,
   Controller,
@@ -13,7 +11,7 @@ import { Authentication } from '@vidya/api/auth/decorators';
 import { AuthenticatedUserGuard } from '@vidya/api/auth/guards';
 import { UserAuthentication } from '@vidya/api/auth/utils';
 import * as dto from '@vidya/api/edu/dto';
-import { SchoolsService } from '@vidya/api/edu/services';
+import { UserSchoolsService } from '@vidya/api/edu/services';
 import { CrudDecorators } from '@vidya/api/shared/decorators';
 import { Routes } from '@vidya/protocol';
 
@@ -33,10 +31,7 @@ const Crud = CrudDecorators({
 @ApiBearerAuth()
 @UseGuards(AuthenticatedUserGuard)
 export class UserSchoolsController {
-  constructor(
-    private readonly schoolsService: SchoolsService,
-    @InjectMapper() private readonly mapper: Mapper,
-  ) {}
+  constructor(private readonly userSchoolsService: UserSchoolsService) {}
 
   /* -------------------------------------------------------------------------- */
   /*                        GET /edu/users/:userId/schools                      */
@@ -48,7 +43,7 @@ export class UserSchoolsController {
     @Authentication() auth: UserAuthentication,
   ): Promise<dto.GetUserSchoolsListResponse> {
     // Check if the user has permission to read the schools
-    const schoolIds = await this.schoolsService.getUserSchools(userId);
+    const schoolIds = await this.userSchoolsService.getUserSchools(userId);
     const scope = schoolIds.map((id) => ({ schoolId: id }));
     if (!auth.permissions.has(['users:read'], scope)) {
       throw new ForbiddenException('User does not have permission');
@@ -71,7 +66,7 @@ export class UserSchoolsController {
     if (auth.userId != userId) {
       throw new ForbiddenException('User does not have permission');
     }
-    await this.schoolsService.addUser(userId, request.schoolId);
+    await this.userSchoolsService.addUser(userId, request.schoolId);
     return new dto.AddUserSchoolsResponse({ success: true });
   }
 }

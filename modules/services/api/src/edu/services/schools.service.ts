@@ -38,38 +38,4 @@ export class SchoolsService extends ScopedEntitiesService<School, Scope> {
         : { where: { id: In([]) } };
     });
   }
-
-  async getUserSchools(userId: string): Promise<string[]> {
-    const user = await this.users.findOneOrFail({
-      where: { id: userId },
-      relations: ['roles'],
-    });
-    const schoolRoles = await this.roles.find({
-      where: {
-        id: In(user.roles.map((role) => role.id)),
-      },
-    });
-    return schoolRoles.map((role) => role.schoolId);
-  }
-
-  async addUser(userId: string, schoolId: string): Promise<void> {
-    await this.repository.manager.transaction(
-      async (transactionalEntityManager) => {
-        const school = await transactionalEntityManager.findOneByOrFail(
-          School,
-          { id: schoolId },
-        );
-        const user = await transactionalEntityManager.findOneOrFail(User, {
-          where: { id: userId },
-          relations: ['roles'],
-        });
-        const studentDefaultRole =
-          await transactionalEntityManager.findOneByOrFail(Role, {
-            id: school.config.defaultStudentRoleId,
-          });
-        user.roles.push(studentDefaultRole);
-        await transactionalEntityManager.save(user);
-      },
-    );
-  }
 }

@@ -6,6 +6,7 @@ import {
   RolesService,
   SchoolCreationService,
   SchoolsService,
+  UserSchoolsService,
   UsersService,
 } from '@vidya/api/edu/services';
 import { RedisService } from '@vidya/api/shared/services';
@@ -48,6 +49,7 @@ import {
     SchoolsService,
     SchoolCreationService,
     RevokedTokensService,
+    UserSchoolsService,
     // Constraints
     IsRoleExistConstraint,
     IsUserExistConstraint,
