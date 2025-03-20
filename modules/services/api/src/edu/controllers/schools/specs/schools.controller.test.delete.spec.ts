@@ -23,7 +23,7 @@ describe('SchoolsController', () => {
     it('deletes a school by Id', async () => {
       const res = await ctr.deleteOne(
         ctx.one.school.id,
-        await ctx.authenticate(ctx.one.users.admin),
+        await ctx.authenticate(ctx.one.users.owner),
       );
       expect(res.success).toBe(true);
     });

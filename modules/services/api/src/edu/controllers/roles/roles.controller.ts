@@ -1,6 +1,7 @@
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
 import {
+  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
@@ -170,6 +171,10 @@ export class RolesController {
       })
     ) {
       throw new ForbiddenException('User does not have permission');
+    }
+
+    if (role && role.permissions.includes('*')) {
+      throw new BadRequestException('Cannot delete Owner role');
     }
 
     // Delete role

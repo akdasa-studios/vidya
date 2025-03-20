@@ -12,6 +12,8 @@ import {
   MinLength,
 } from 'class-validator';
 
+import { IsPermissionsProhibited } from '../validations';
+
 /* -------------------------------------------------------------------------- */
 /*                                   Models                                   */
 /* -------------------------------------------------------------------------- */
@@ -100,6 +102,7 @@ export class CreateRoleRequest implements protocol.CreateRoleRequest {
   @ApiProperty({ example: ['permissions'] })
   @IsString({ each: true })
   @IsEnum(domain.PermissionEnum, { each: true })
+  @IsPermissionsProhibited(['*'])
   permissions: string[];
 
   @ApiProperty({ example: 'schoolId' })
@@ -139,6 +142,7 @@ export class UpdateRoleRequest implements protocol.UpdateRoleRequest {
   @IsString({ each: true })
   @IsEnum(domain.PermissionEnum, { each: true })
   @IsOptional()
+  @IsPermissionsProhibited(['*'])
   permissions?: string[];
 }
 

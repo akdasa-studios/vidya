@@ -13,12 +13,14 @@ export type Context = {
   one: {
     school: School;
     users: {
-      admin: User;
+      owner: User;
       readonly: User;
+      empty: User;
     };
     roles: {
-      admin: Role;
+      owner: Role;
       readonly: Role;
+      empty: Role;
     };
   };
   two: {
@@ -55,6 +57,9 @@ export const createContext = async (
 
   const schoolOne = await schoolsService.create({
     name: faker.company.name(),
+    config: {
+      defaultStudentRoleId: faker.string.uuid(),
+    },
   });
 
   const schoolTwo = await schoolsService.create({
@@ -68,12 +73,7 @@ export const createContext = async (
   const oneAdminRole = await rolesService.create({
     name: 'One :: Admin',
     description: 'Admin role for school one',
-    permissions: [
-      'schools:create',
-      'schools:read',
-      'schools:update',
-      'schools:delete',
-    ],
+    permissions: ['*'],
     schoolId: schoolOne.id,
   });
 
@@ -81,6 +81,13 @@ export const createContext = async (
     name: 'One :: Readonly',
     description: 'Readonly role for school one',
     permissions: ['schools:read'],
+    schoolId: schoolOne.id,
+  });
+
+  const oneEmptyRole = await rolesService.create({
+    name: 'One :: Empty',
+    description: 'Empty role for school one',
+    permissions: [],
     schoolId: schoolOne.id,
   });
 
@@ -100,7 +107,7 @@ export const createContext = async (
   /*                                    Users                                   */
   /* -------------------------------------------------------------------------- */
 
-  const oneAdminUser = await usersService.create({
+  const oneOwnerUser = await usersService.create({
     email: faker.internet.email(),
     roles: [oneAdminRole],
   });
@@ -108,6 +115,11 @@ export const createContext = async (
   const oneReadonlyUser = await usersService.create({
     email: faker.internet.email(),
     roles: [oneReadonlyRole],
+  });
+
+  const oneEmptyUser = await usersService.create({
+    email: faker.internet.email(),
+    roles: [oneEmptyRole],
   });
 
   const twoAdminUser = await usersService.create({
@@ -132,12 +144,14 @@ export const createContext = async (
     one: {
       school: schoolOne,
       users: {
-        admin: oneAdminUser,
+        owner: oneOwnerUser,
         readonly: oneReadonlyUser,
+        empty: oneEmptyUser,
       },
       roles: {
-        admin: oneAdminRole,
+        owner: oneAdminRole,
         readonly: oneReadonlyRole,
+        empty: oneEmptyRole,
       },
     },
     two: {

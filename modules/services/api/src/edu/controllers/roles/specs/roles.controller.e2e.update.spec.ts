@@ -41,7 +41,7 @@ describe('/edu/roles', () => {
 
   it(`PATCH /edu/roles/:id returns 401 for unauthorized user`, async () => {
     return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
+      .patch(Routes().edu.roles.update(ctx.one.roles.owner.id))
       .expect(401);
   });
 
@@ -53,7 +53,7 @@ describe('/edu/roles', () => {
     const updatedRole = { name: 'Updated Role' };
 
     return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
+      .patch(Routes().edu.roles.update(ctx.one.roles.owner.id))
       .set('Authorization', `Bearer ${ctx.one.tokens.readOnly}`)
       .send(updatedRole)
       .expect(403)
@@ -88,6 +88,10 @@ describe('/edu/roles', () => {
       payload: { description: faker.lorem.paragraphs(5) },
       errors: ['description must be shorter than or equal to 256 characters'],
     },
+    {
+      payload: { permissions: ['*'] },
+      errors: ['permissions cannot contain *'],
+    },
     // Permissions
     {
       payload: { permissions: ['invalid'] },
@@ -100,8 +104,8 @@ describe('/edu/roles', () => {
     `PATCH /edu/roles/:id 400 if payload is invalid`,
     async ({ payload, errors }) => {
       return request(app.getHttpServer())
-        .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
-        .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+        .patch(Routes().edu.roles.update(ctx.one.roles.owner.id))
+        .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
         .send(payload)
         .expect(400)
         .expect((res) => {
@@ -121,8 +125,8 @@ describe('/edu/roles', () => {
     { name: '#$#$#$%$#%^' },
   ])(`PATCH /edu/roles/:id updates an existing role`, async (payload) => {
     return request(app.getHttpServer())
-      .patch(Routes().edu.roles.update(ctx.one.roles.admin.id))
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .patch(Routes().edu.roles.update(ctx.one.roles.owner.id))
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
       .send(payload)
       .expect(200)
       .expect((res) => {

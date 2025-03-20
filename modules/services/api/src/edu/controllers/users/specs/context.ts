@@ -42,6 +42,7 @@ export type Context = {
     };
   };
   authenticate(user: User): Promise<UserAuthentication>;
+  getAuthTokenFor(user: User): Promise<string>;
 };
 
 export const createContext = async (
@@ -169,6 +170,13 @@ export const createContext = async (
         iat: Date.now(),
         permissions: await authUsersService.getUserPermissions(user.id),
       });
+    },
+    async getAuthTokenFor(user: User) {
+      const tokens = await authService.generateTokens(
+        user.id,
+        await authUsersService.getUserPermissions(user.id),
+      );
+      return `Bearer ${tokens.accessToken}`;
     },
   };
 };

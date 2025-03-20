@@ -27,7 +27,7 @@ describe('SchoolsController', () => {
       const name = faker.company.name();
       const res = await ctr.createOne(
         new dto.CreateSchoolRequest({ name }),
-        await ctx.authenticate(ctx.one.users.admin),
+        await ctx.authenticate(ctx.one.users.owner),
       );
 
       // assert: school is created
@@ -50,15 +50,15 @@ describe('SchoolsController', () => {
       // assert: user has the new owner role
       const userRoles = await app
         .get(RolesService)
-        .getRolesOfUser(ctx.one.users.admin.id);
+        .getRolesOfUser(ctx.one.users.owner.id);
 
-      expect(userRoles).toEqual([ctx.one.roles.admin, createdAdminRole]);
+      expect(userRoles).toEqual([ctx.one.roles.owner, createdAdminRole]);
     });
 
     it('creates a new school for user from another school', async () => {
       const res = await ctr.createOne(
         new dto.CreateSchoolRequest({ name: faker.company.name() }),
-        await ctx.authenticate(ctx.one.users.admin),
+        await ctx.authenticate(ctx.one.users.owner),
       );
 
       // assert: new owner role is created
@@ -69,9 +69,9 @@ describe('SchoolsController', () => {
       // assert: user has the new owner role
       const userRoles = await app
         .get(RolesService)
-        .getRolesOfUser(ctx.one.users.admin.id);
+        .getRolesOfUser(ctx.one.users.owner.id);
 
-      expect(userRoles).toEqual([ctx.one.roles.admin, createdAdminRole]);
+      expect(userRoles).toEqual([ctx.one.roles.owner, createdAdminRole]);
     });
 
     it('throws an error if user does not have required permissions', async () => {

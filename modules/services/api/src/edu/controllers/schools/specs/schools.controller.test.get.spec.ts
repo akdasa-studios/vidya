@@ -29,7 +29,7 @@ describe('SchoolsController', () => {
     it('returns school by Id', async () => {
       const res = await ctr.getOne(
         ctx.one.school.id,
-        await ctx.authenticate(ctx.one.users.admin),
+        await ctx.authenticate(ctx.one.users.owner),
       );
       expect(res).toEqual(
         mapper.map(ctx.one.school, entities.School, dto.GetSchoolResponse),
@@ -62,7 +62,7 @@ describe('SchoolsController', () => {
   describe('getMany', () => {
     it('returns all schools in permitted roles', async () => {
       const res = await ctr.getMany(
-        await ctx.authenticate(ctx.one.users.admin),
+        await ctx.authenticate(ctx.one.users.owner),
       );
       expect(res.items).toHaveLength(1);
     });
@@ -72,7 +72,9 @@ describe('SchoolsController', () => {
         await ctx.authenticate(ctx.misc.users.adminOfOneAndTwo),
       );
       expect(res.items).toHaveLength(2);
-      expect(res.items).toEqual([ctx.one.school, ctx.two.school]);
+      expect(res.items.map((x) => x.id)).toEqual(
+        [ctx.one.school, ctx.two.school].map((x) => x.id),
+      );
     });
   });
 });

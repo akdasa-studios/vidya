@@ -8,11 +8,11 @@ export type Context = {
   one: {
     school: School;
     roles: {
-      admin: Role;
+      owner: Role;
       readonly: Role;
     };
     tokens: {
-      admin: string;
+      owner: string;
       readOnly: string;
       oneAndTwoAdmin: string;
     };
@@ -67,10 +67,10 @@ export const createContext = async (
   /*                                    Roles                                   */
   /* -------------------------------------------------------------------------- */
 
-  const oneAdminRole = await rolesService.create({
-    name: 'One :: Admin',
-    description: 'Admin role for school one',
-    permissions: ['roles:create', 'roles:read', 'roles:update', 'roles:delete'],
+  const oneOwnerRole = await rolesService.create({
+    name: 'One :: Owner',
+    description: 'Owner role for school one',
+    permissions: ['*'],
     schoolId: schoolOne.id,
   });
 
@@ -92,8 +92,8 @@ export const createContext = async (
   /*                                   Tokens                                   */
   /* -------------------------------------------------------------------------- */
 
-  const oneTokenAdmin = await authService.generateTokens(faker.string.uuid(), [
-    { sid: schoolOne.id, p: oneAdminRole.permissions },
+  const oneOwnerAdmin = await authService.generateTokens(faker.string.uuid(), [
+    { sid: schoolOne.id, p: oneOwnerRole.permissions },
   ]);
 
   const oneTokenReadonly = await authService.generateTokens(
@@ -113,7 +113,7 @@ export const createContext = async (
   );
 
   const oneAndTwoAdmin = await authService.generateTokens(faker.string.uuid(), [
-    { sid: schoolOne.id, p: oneAdminRole.permissions },
+    { sid: schoolOne.id, p: oneOwnerRole.permissions },
     { sid: schoolTwo.id, p: twoAdminRole.permissions },
   ]);
 
@@ -130,11 +130,11 @@ export const createContext = async (
     one: {
       school: schoolOne,
       roles: {
-        admin: oneAdminRole,
+        owner: oneOwnerRole,
         readonly: oneReadonlyRole,
       },
       tokens: {
-        admin: oneTokenAdmin.accessToken,
+        owner: oneOwnerAdmin.accessToken,
         readOnly: oneTokenReadonly.accessToken,
         oneAndTwoAdmin: oneAndTwoAdmin.accessToken,
       },

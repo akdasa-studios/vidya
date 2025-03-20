@@ -133,12 +133,37 @@ describe('/edu/roles', () => {
 
     request(app.getHttpServer())
       .post(protocol.Routes().edu.roles.create())
-      .set('Authorization', `Bearer ${ctx.one.tokens.admin}`)
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
       .send(payload)
       .expect(201)
       .expect((res) => {
         expect(res.body).toHaveProperty('id');
         expect(res.body.id).toBeDefined();
+      });
+  });
+
+  /* -------------------------------------------------------------------------- */
+  /*                               Negative Cases                               */
+  /* -------------------------------------------------------------------------- */
+
+  it(`POST /edu/roles returns 400 if permissions contain *`, async () => {
+    const payload: protocol.CreateRoleRequest = {
+      name: 'New Role',
+      description: 'Role description',
+      permissions: ['*'],
+      schoolId: ctx.one.school.id,
+    };
+
+    return request(app.getHttpServer())
+      .post(protocol.Routes().edu.roles.create())
+      .set('Authorization', `Bearer ${ctx.one.tokens.owner}`)
+      .send(payload)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toStrictEqual([
+          'permissions cannot contain *',
+        ]);
       });
   });
 });
