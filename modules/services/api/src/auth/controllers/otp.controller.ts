@@ -4,8 +4,10 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  Inject,
   Post,
 } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import {
   ApiBody,
   ApiOkResponse,
@@ -13,14 +15,21 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
+import { MailerService } from '@nestjs-modules/mailer';
 import * as dto from '@vidya/api/auth/dto';
 import { OtpService } from '@vidya/api/auth/services';
+import { MailerConfig } from '@vidya/api/configs';
 import { Routes } from '@vidya/protocol';
 
 @Controller()
 @ApiTags('🎟️ Authentication :: One-Time Password')
 export class OtpController {
-  constructor(private readonly otpService: OtpService) {}
+  constructor(
+    private readonly otpService: OtpService,
+    private readonly mailService: MailerService,
+    @Inject(MailerConfig.KEY)
+    private readonly mailerConfig: ConfigType<typeof MailerConfig>,
+  ) {}
 
   /* -------------------------------------------------------------------------- */
   /*                               POST /auth/otp                               */
@@ -61,11 +70,28 @@ export class OtpController {
     }
 
     // generate a new OTP
-    await this.otpService.generate(request.destination, request.type);
+    const otp = await this.otpService.generate(
+      request.destination,
+      request.type,
+    );
 
     // send the OTP to the user
     if (request.type === 'email') {
-      // send the OTP to the email
+      // TODO: select template based on the users preferred language
+      // TODO: inject or save images from template somwhere
+      const lang = 'en';
+      this.mailService.sendMail({
+        from: {
+          name: this.mailerConfig.from.name,
+          address: this.mailerConfig.from.address,
+        },
+        to: request.destination,
+        subject: 'Your OTP', // TODO: get from shcool config
+        template: `${lang}/otp`,
+        context: {
+          code: otp.code,
+        },
+      });
     } else if (request.type === 'sms') {
       // send the OTP to the phone number
     }
