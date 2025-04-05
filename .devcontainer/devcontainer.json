@@ -6,7 +6,7 @@
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/devcontainers/features/python:1": {},
     "ghcr.io/meaningful-ooo/devcontainer-features/fish:2": {},
-    "ghcr.io/itsmechlark/features/postgresql:1.5.0": {},
+    "ghcr.io/itsmechlark/features/postgresql:1.6.0": {},
     "ghcr.io/itsmechlark/features/redis-server:1": {},
     "ghcr.io/skriptfabrik/devcontainer-features/mailpit:1.0.0": {},
     "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
